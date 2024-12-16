@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "81360212564",
+    "project_id": "swabi-ac71c",
+    "storage_bucket": "swabi-ac71c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:81360212564:android:cd7f438db5264ecd96d3c1",
+        "android_client_info": {
+          "package_name": "com.example.flutter_driver"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB79cVbf7UIfIuOYZPXwJkolnXcEsH-_wM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
