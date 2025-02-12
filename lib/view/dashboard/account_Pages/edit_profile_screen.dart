@@ -98,23 +98,30 @@ class _EditProfiePageState extends State<EditProfiePage> {
     debugPrint(
         'cnmxncmnbx../././././././././.. cmnnb ${countryController.text}');
     try {
-      var countryProvider = await Provider.of<GetCountryStateListViewModel>(
-          context,
-          listen: false);
-      countryProvider.getAccessToken(context: context).then((onValue) {
-        debugPrint('token,.....c//.c.... $onValue');
-        setState(() {
-          accessToken = onValue['auth_token'].toString();
-        });
-        // countryProvider.getCountryList(context: context, token: accessToken);
-        Provider.of<GetCountryStateListViewModel>(context, listen: false)
+      Provider.of<GetCountryStateListViewModel>(context, listen: false)
             .getStateList(
                 context: context,
-                token: accessToken,
+               
                 country: countryController.text.isEmpty
                     ? 'United Arab Emirates'
                     : countryController.text);
-      });
+      // var countryProvider = await Provider.of<GetCountryStateListViewModel>(
+      //     context,
+      //     listen: false);
+      // countryProvider.getAccessToken(context: context).then((onValue) {
+      //   debugPrint('token,.....c//.c.... $onValue');
+      //   setState(() {
+      //     accessToken = onValue['auth_token'].toString();
+      //   });
+      //   // countryProvider.getCountryList(context: context, token: accessToken);
+      //   Provider.of<GetCountryStateListViewModel>(context, listen: false)
+      //       .getStateList(
+      //           context: context,
+
+      //           country: countryController.text.isEmpty
+      //               ? 'United Arab Emirates'
+      //               : countryController.text);
+      // });
     } catch (e) {
       debugPrint('error $e');
     }
@@ -133,7 +140,7 @@ class _EditProfiePageState extends State<EditProfiePage> {
   @override
   Widget build(BuildContext context) {
     bool status = context.watch<DriverProfileUpdateViewModel>().isLoading;
-    List state =
+    var state =
         context.watch<GetCountryStateListViewModel>().getStateListModel;
     bool isLoadingState =
         context.watch<GetCountryStateListViewModel>().isLoading;
@@ -233,9 +240,8 @@ class _EditProfiePageState extends State<EditProfiePage> {
                       img: address,
                       fillColor: background,
                       hintText: 'Select State',
-                      items: state.map((state) {
-                        return state['state_name'].toString();
-                      }).toList(),
+                      items:
+                          state?.map((stateName) => stateName).toList() ?? [],
                       onChanged: (value) {
                         setState(() {
                           locationController.clear();

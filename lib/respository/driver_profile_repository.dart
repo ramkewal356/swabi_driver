@@ -7,6 +7,7 @@ import 'package:flutter_driver/data/response/baseResponse.dart';
 import 'package:flutter_driver/model/change_password_model.dart';
 import 'package:flutter_driver/model/common_model.dart';
 import 'package:flutter_driver/model/driver_profile_model.dart';
+import 'package:flutter_driver/model/get_state_name_model.dart';
 import 'package:flutter_driver/view_model/services/http_service.dart';
 
 ///Driver Profile Detail Repo
@@ -199,27 +200,24 @@ class DriverProfileUpdateRepository {
     }
   }
 
-  Future<dynamic> getStateListApi(
+  Future<GetStateNameModel> getStateListApi(
       {required BuildContext context,
-      required Map<String, String> header,
-      required String country}) async {
+    required Map<String, dynamic> body,
+  }) async {
     var http = HttpService(
         isAuthorizeRequest: false,
-        baseURL: AppUrl.locationBaseUrl,
-        endURL: AppUrl.getStateList + country,
+        baseURL: AppUrl.stateBaseUrl,
+        endURL: AppUrl.getStateNameUrl,
         methodType: HttpMethodType.GET,
         bodyType: HttpBodyType.JSON,
-        headers: header);
+        // headers: header
+        body: body);
     try {
       Response<dynamic>? response = await http.request<dynamic>();
       debugPrint("getcountry List response ${response?.data}");
-      // var resp = GetStateListModel.fromJson(response?.data);
-      if (response?.data != null) {
-        return response?.data;
-      } else {
-        return null;
-      }
-      // return response?.data;
+      var resp = GetStateNameModel.fromJson(response?.data);
+
+      return resp;
     } catch (error) {
       debugPrint('error.. $error');
       http.handleErrorResponse(context: context, error: error);

@@ -4,6 +4,7 @@ class AppUrl {
   static var baseUrl = 'https://dev-api.swabitours.com';
   static var baseUrlForImage = "https://dev-api.swabitours.com";
   static var locationBaseUrl = 'https://www.universal-tutorial.com';
+  static var stateBaseUrl = 'https://countriesnow.space';
 
   ///registration URL
   static var login = "$baseUrl/login";
@@ -50,4 +51,5 @@ class AppUrl {
   static var getCountryList = '/api/countries/';
   static var getStateList = '/api/states/';
   static var getAccessTokenUrl = '/api/getaccesstoken';
+  static var getStateNameUrl = '/api/v0.1/countries/states';
 }

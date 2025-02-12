@@ -238,7 +238,7 @@ class UploadProfilePicViewModel with ChangeNotifier {
 class GetCountryStateListViewModel with ChangeNotifier {
   final _myRepo = DriverProfileUpdateRepository();
   List<dynamic> getCountryListModel = [];
-  List<dynamic> getStateListModel = [];
+  List<String>? getStateListModel = [];
   bool isLoading = false;
   Future<dynamic> getAccessToken({
     required BuildContext context,
@@ -280,26 +280,43 @@ class GetCountryStateListViewModel with ChangeNotifier {
 
   Future<dynamic> getStateList({
     required BuildContext context,
-    required String token,
+    // required String token,
     required String country,
   }) async {
-    Map<String, String> header = {
-      "Authorization": 'Bearer $token',
+    Map<String, dynamic> body = {
+      "country": country,
     };
     try {
       isLoading = true;
       notifyListeners();
       _myRepo
-          .getStateListApi(context: context, header: header, country: country)
+          .getStateListApi(context: context, body: body)
           .then((onValue) {
-        if (onValue != null) {
-          getStateListModel = onValue;
+        if (onValue.data != null) {
+          // Filter the data to get the country-specific states
+          var countryData = onValue.data?.firstWhere(
+            (item) => item.name == country,
+            // orElse: () => null,
+          );
+
+          if (countryData != null) {
+            var states = countryData.states;
+            getStateListModel = states
+                ?.map((state) => state.name
+                    ?.replaceFirst(RegExp(r' Emirate$'), '') as String)
+                .toList();
+            debugPrint('vcnbxcnbxcn,,,,,,,,....???????? $getStateListModel');
+          } else {
+            // If country is not found in the data, handle accordingly
+            getStateListModel = [];
+          }
+
           isLoading = false;
-          notifyListeners(); // Returns a List
+          notifyListeners(); // Notify listeners after update
         } else {
+          // Handle case when the response is null
           isLoading = false;
           notifyListeners();
-          return []; // Return an empty List if the response is null
         }
       });
     } catch (e) {
