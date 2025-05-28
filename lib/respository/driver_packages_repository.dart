@@ -18,17 +18,16 @@ class DriverpackageserviceRepository {
         queryParameters: query);
     try {
       Response<dynamic>? response = await http.request<dynamic>();
-      print({'response..packageBooking list': response?.data});
+      debugPrint('response..packageBooking list ${response?.data}');
 
       var resp = DriverPackageBookingListModel.fromJson(response?.data);
       return resp;
     } catch (error) {
-      // BaseResponseModel baseResponseModel =
-      //     BaseResponseModel.fromJson(error.response?.data);
-      // print(baseResponseModel.status?.message);
+    
 
-      print({'error..': error});
+      debugPrint('error..$error');
       http.handleErrorResponse(
+        // ignore: use_build_context_synchronously
         context: context,
         error: error,
       );
@@ -49,7 +48,7 @@ class DriverpackageserviceRepository {
         queryParameters: query);
     try {
       Response<dynamic>? response = await http.request<dynamic>();
-      print({'response..packageBooking list': response?.data});
+      debugPrint('response..packageBooking list ${response?.data}');
 
       var resp = DriverPackageDetailModel.fromJson(response?.data);
       return resp;
@@ -58,8 +57,9 @@ class DriverpackageserviceRepository {
       //     BaseResponseModel.fromJson(error.response?.data);
       // print(baseResponseModel.status?.message);
 
-      print({'error..': error});
+      debugPrint('error..$error');
       http.handleErrorResponse(
+        // ignore: use_build_context_synchronously
         context: context,
         error: error,
       );
@@ -78,10 +78,10 @@ class DriverpackageserviceRepository {
         methodType: HttpMethodType.PUT,
         bodyType: HttpBodyType.JSON,
         queryParameters: query);
-    print(http);
+ 
     try {
       Response<dynamic>? response = await http.request<dynamic>();
-      print({'response..package start activity': response});
+      debugPrint('response..packageBooking list ${response?.data}');
 
       var resp = DriverActivityStartModel.fromJson(response?.data ?? {});
       return resp;
@@ -90,8 +90,9 @@ class DriverpackageserviceRepository {
       //     BaseResponseModel.fromJson(error.response?.data);
       // print(baseResponseModel.status?.message);
 
-      print({'error..': error});
+      debugPrint('error..$error');
       http.handleErrorResponse(
+        // ignore: use_build_context_synchronously
         context: context,
         error: error,
       );
@@ -112,16 +113,15 @@ class DriverpackageserviceRepository {
         queryParameters: query);
     try {
       Response<dynamic>? response = await http.request<dynamic>();
-      print({'response..packageBooking list': response?.data});
+      debugPrint('response..packageBooking list ${response?.data}');
 
       var resp = DriverActivityCompleteModel.fromJson(response?.data);
       return resp;
     } catch (error) {
-      // BaseResponseModel baseResponseModel =
-      //     BaseResponseModel.fromJson(error.response?.data);
-      // print(baseResponseModel.status?.message);
+     
 
-      print({'error..': error});
+      debugPrint('error..$error');
+      // ignore: use_build_context_synchronously
       http.handleErrorResponse(context: context, error: error);
     }
     return null;
@@ -140,16 +140,13 @@ class DriverpackageserviceRepository {
         queryParameters: query);
     try {
       Response<dynamic>? response = await http.request<dynamic>();
-      print({'response..packageBookingHistory list': response?.data});
+      debugPrint('response..packageBooking list ${response?.data}');
 
       var resp = DriverPackageBookingListModel.fromJson(response?.data);
       return resp;
     } catch (error) {
-      // BaseResponseModel baseResponseModel =
-      //     BaseResponseModel.fromJson(error.response?.data);
-      // print(baseResponseModel.status?.message);
-
-      // print({'error..': error});
+      debugPrint('error..$error');
+      // ignore: use_build_context_synchronously
       http.handleErrorResponse(context: context, error: error);
     }
     return null;

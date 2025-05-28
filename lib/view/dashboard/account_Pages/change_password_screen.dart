@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_driver/data/validatorclass.dart';
 import 'package:flutter_driver/res/Custom%20%20Button/custom_btn.dart';
 import 'package:flutter_driver/res/custom_text_form_field.dart';
 import 'package:flutter_driver/utils/text_styles.dart';
-import 'package:flutter_driver/utils/utils.dart';
 import 'package:flutter_driver/view_model/driverProfile_view_model.dart';
 import 'package:go_router/go_router.dart';
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_driver/res/Custom%20Page%20Layout/custom_pageLayout.dart';
-import 'package:flutter_driver/res/Custom%20Page%20Layout/pageLayout_curve.dart';
 import 'package:flutter_driver/utils/assets.dart';
 import 'package:flutter_driver/utils/color.dart';
 import 'package:flutter_driver/utils/dimensions.dart';

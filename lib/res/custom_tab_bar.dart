@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-
-import 'package:flutter_driver/res/Custom%20Page%20Layout/pageLayout_curve.dart';
 import 'package:flutter_driver/utils/color.dart';
 
 class Customtabbar extends StatefulWidget {
@@ -29,7 +27,7 @@ class _CustomtabbarState extends State<Customtabbar> {
           const SizedBox(height: 10),
           Container(
               // width: AppDimension.getWidth(context) * .9,
-              padding: EdgeInsets.symmetric(vertical: 5),
+              padding: const EdgeInsets.symmetric(vertical: 5),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: background,
@@ -38,13 +36,7 @@ class _CustomtabbarState extends State<Customtabbar> {
                 // isScrollable: true,
                 controller: widget.controller,
                 onTap: widget.onTap,
-                // indicator: const BoxDecoration(
-                //     color: Colors.transparent,
-                //     border:
-                //         Border(bottom: BorderSide(width: 5, color: btnColor)),
-                //     borderRadius: BorderRadius.only(
-                //         bottomLeft: Radius.circular(15),
-                //         bottomRight: Radius.circular(15))),
+               
                 splashBorderRadius: BorderRadius.circular(20),
                 unselectedLabelColor: Colors.black87,
                 labelColor: Colors.black,
@@ -60,12 +52,13 @@ class _CustomtabbarState extends State<Customtabbar> {
                     child: Text(
                       widget.tabs[index].toString(),
                       style:
-                          TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                          const TextStyle(
+                          fontSize: 13, fontWeight: FontWeight.w600),
                     ),
                   );
                 }),
               )),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Expanded(
               child: TabBarView(
                   controller: widget.controller, children: widget.viewchildren))

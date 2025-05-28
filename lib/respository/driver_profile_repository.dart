@@ -1,9 +1,7 @@
-import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_driver/data/app_url.dart';
-import 'package:flutter_driver/data/response/baseResponse.dart';
 import 'package:flutter_driver/model/change_password_model.dart';
 import 'package:flutter_driver/model/common_model.dart';
 import 'package:flutter_driver/model/driver_profile_model.dart';
@@ -29,6 +27,7 @@ class DriverProfileRepository {
       return resp;
     } catch (e) {
       debugPrint("Driver Profile api repo not successful error");
+      // ignore: use_build_context_synchronously
       http.handleErrorResponse(context: context, error: e);
       rethrow;
     }
@@ -51,6 +50,7 @@ class DriverProfileRepository {
       return resp;
     } catch (error) {
       debugPrint('error $error');
+      // ignore: use_build_context_synchronously
       http.handleErrorResponse(context: context, error: error);
       rethrow;
     }
@@ -70,15 +70,14 @@ class DriverProfileUpdateRepository {
         body: body);
     try {
       Response<dynamic>? response = await http.request<dynamic>();
-      print('response data:--${response?.data}');
+      debugPrint('response data:--${response?.data}');
       var resp = DriverProfileUpdateModel.fromJson(response?.data);
       return resp;
     } catch (error) {
-      // BaseResponseModel baseResponseModel =
-      //     BaseResponseModel.fromJson(error.response?.data);
-      // print(baseResponseModel.status?.message);
+     
 
-      print({'error..': error});
+   
+      // ignore: use_build_context_synchronously
       http.handleErrorResponse(context: context, error: error);
       rethrow;
     }
@@ -97,11 +96,12 @@ class DriverProfileUpdateRepository {
         queryParameters: query);
     try {
       Response<dynamic>? response = await http.request<dynamic>();
-      print({"passord change response": response?.data});
+      debugPrint("passord change response ${response?.data}");
       var resp = CommonModel.fromJson(response?.data);
       return resp;
     } catch (error) {
-      print({'error..': error});
+      debugPrint('error..$error');
+      // ignore: use_build_context_synchronously
       http.handleErrorResponse(context: context, error: error);
       rethrow;
     }
@@ -120,11 +120,12 @@ class DriverProfileUpdateRepository {
         queryParameters: query);
     try {
       Response<dynamic>? response = await http.request<dynamic>();
-      print({"passord change response": response?.data});
+      debugPrint("passord change response  ${response?.data}");
       var resp = CommonModel.fromJson(response?.data);
       return resp;
     } catch (error) {
-      print({'error..': error});
+      debugPrint('error..$error');
+      // ignore: use_build_context_synchronously
       http.handleErrorResponse(context: context, error: error);
     }
     return null;
@@ -142,11 +143,12 @@ class DriverProfileUpdateRepository {
         queryParameters: query);
     try {
       Response<dynamic>? response = await http.request<dynamic>();
-      print({"passord change response": response?.data});
+      debugPrint("passord change response ${response?.data}");
       var resp = CommonModel.fromJson(response?.data);
       return resp;
     } catch (error) {
-      print({'error..': error});
+      debugPrint('error..$error');
+      // ignore: use_build_context_synchronously
       http.handleErrorResponse(context: context, error: error);
     }
     return null;
@@ -169,6 +171,7 @@ class DriverProfileUpdateRepository {
       return resp;
     } catch (error) {
       debugPrint('error . $error');
+      // ignore: use_build_context_synchronously
       http.handleErrorResponse(context: context, error: error);
     }
     return null;
@@ -195,6 +198,7 @@ class DriverProfileUpdateRepository {
       // return resp;
     } catch (error) {
       debugPrint('error.. $error');
+      // ignore: use_build_context_synchronously
       http.handleErrorResponse(context: context, error: error);
       rethrow;
     }
@@ -220,6 +224,7 @@ class DriverProfileUpdateRepository {
       return resp;
     } catch (error) {
       debugPrint('error.. $error');
+      // ignore: use_build_context_synchronously
       http.handleErrorResponse(context: context, error: error);
       rethrow;
     }
@@ -243,6 +248,7 @@ class DriverProfileUpdateRepository {
       return response?.data;
     } catch (error) {
       debugPrint('error.. $error');
+      // ignore: use_build_context_synchronously
       http.handleErrorResponse(context: context, error: error);
       rethrow;
     }

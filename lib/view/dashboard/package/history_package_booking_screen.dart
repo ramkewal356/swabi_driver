@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_driver/utils/color.dart';
-import 'package:flutter_driver/utils/text_styles.dart';
 import 'package:flutter_driver/view/dashboard/package/custom_package_view_screen.dart';
 import 'package:flutter_driver/view_model/driver_package_view_model.dart';
 import 'package:go_router/go_router.dart';
@@ -16,7 +15,6 @@ class HistoryPackagebooking extends StatefulWidget {
 class _HistoryPackagebookingState extends State<HistoryPackagebooking> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<DriverPackageViewModel>(context, listen: false)
@@ -72,13 +70,12 @@ class _HistoryPackagebookingState extends State<HistoryPackagebooking> {
                         //   viewData.isLoading = false;
                         // });
                         if (viewData.isLoading1) {
-                          print(
-                              'object.........updated ${viewData.isLoading1}');
+                       
                           context.push('/packageDetailPage', extra: {
                             "bookingId": package.packageBookingId.toString(),
                             "driverId": package.driverId.toString()
                           }).then((onValue) {
-                            print('object.........updated');
+                        
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               Provider.of<DriverPackageViewModel>(context,
                                       listen: false)

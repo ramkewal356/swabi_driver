@@ -39,7 +39,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
   void startTimer() {
     _isButtonDisabled = true; // Disable the button when the timer starts
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_start == 0) {
         setState(() {
           _isButtonDisabled = false; // Enable the button when countdown is over
@@ -103,11 +103,11 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                         length: 6,
                         onChanged: (value) {
                           // Handle changes in the OTP input
-                          print(value);
+                        
                         },
                         onCompleted: (value) {
                           // Handle when the user completes entering the OTP
-                          print("Completed: $value");
+                          debugPrint("Completed: $value");
                         },
                         // You can customize the appearance of the input field
                         pinTheme: PinTheme(

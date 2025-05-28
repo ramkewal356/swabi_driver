@@ -5,7 +5,6 @@ import 'package:flutter_driver/res/Custom%20Page%20Layout/custom_pageLayout.dart
 
 import 'package:flutter_driver/res/custom_tab_bar.dart';
 import 'package:flutter_driver/utils/color.dart';
-import 'package:flutter_driver/utils/text_styles.dart';
 import 'package:flutter_driver/view/dashboard/raiseIssue_pages/issue_container.dart';
 import 'package:flutter_driver/view_model/raiseIssue_view_model.dart';
 import 'package:intl/intl.dart';
@@ -35,7 +34,7 @@ class _RaiseissuedetailsState extends State<Raiseissuedetails>
   int intialIndex = 0;
   @override
   void initState() {
-    // TODO: implement initState
+
     super.initState();
     _tabController = TabController(length: tabList.length, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -55,7 +54,7 @@ class _RaiseissuedetailsState extends State<Raiseissuedetails>
           _scrollController.position.maxScrollExtent) {
         // User has reached the end of the list
         if (!isLoadingMore && !isLastPage) {
-          print('testing......');
+       
           getRaiseIssue();
         }
       }
@@ -86,7 +85,7 @@ class _RaiseissuedetailsState extends State<Raiseissuedetails>
       // Update history with new data
       final data = resp?.data?.content ?? [];
 
-      print('Fetched data: $data');
+   
       if (data.isNotEmpty) {
         setState(() {
           allRaiseList.addAll(data);
@@ -112,13 +111,7 @@ class _RaiseissuedetailsState extends State<Raiseissuedetails>
   int selectIndex = -1;
   @override
   Widget build(BuildContext context) {
-    // final vieProvider = Provider.of<RaiseissueViewModel>(context);
-    // isLoading1 = vieProvider.isloading1;
-    // print('loding.......$isLoading1');
-    // isLoading = context.watch<RaiseissueViewModel>().isloading;
-    // allRaiseList =
-    //     context.watch<RaiseissueViewModel>().getIssue?.data?.content ?? [];
-    // print('daaa${allRaiseList?.first.bookingId}');
+  
 
     return CustomPagelayout(
       appBarTitle: 'Raised Issue',

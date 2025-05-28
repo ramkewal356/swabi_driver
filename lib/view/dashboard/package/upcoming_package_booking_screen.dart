@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_driver/utils/color.dart';
-import 'package:flutter_driver/utils/text_styles.dart';
-
 import 'package:flutter_driver/view/dashboard/package/custom_package_view_screen.dart';
 import 'package:flutter_driver/view_model/driver_package_view_model.dart';
 import 'package:go_router/go_router.dart';
@@ -20,7 +18,7 @@ class _UpcommingPackagebookingState extends State<UpcommingPackagebooking> {
   // bool _isLoading = false;
   @override
   void initState() {
-    // TODO: implement initState
+ 
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<DriverPackageViewModel>(context, listen: false)
@@ -54,7 +52,7 @@ class _UpcommingPackagebookingState extends State<UpcommingPackagebooking> {
               var package = viewData.driverPackageBookingListModel!.data[index];
               var activity =
                   package.activityList.map((e) => e.activityName).toList();
-              print('activityname...${package.activityList.length}');
+         
               return Custompackageviewpage(
                 driverAssignId: package.driverAssignedId.toString(),
                 date: package.date.toString(),
@@ -83,7 +81,7 @@ class _UpcommingPackagebookingState extends State<UpcommingPackagebooking> {
                             "bookingId": package.packageBookingId.toString(),
                             "driverId": package.driverId.toString()
                           }).then((onValue) {
-                            print('object.........updated');
+                         
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               Provider.of<DriverPackageViewModel>(context,
                                       listen: false)

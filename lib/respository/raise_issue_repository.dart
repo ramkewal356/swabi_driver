@@ -131,6 +131,7 @@ class RaiseissueRepository {
         throw ApiException('Server returned an error: ${response?.statusCode}');
       }
     } catch (dioError) {
+      // ignore: use_build_context_synchronously
       http.handleErrorResponse(context: context, error: dioError);
     }
     return null;

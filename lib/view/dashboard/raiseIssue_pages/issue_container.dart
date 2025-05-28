@@ -26,9 +26,9 @@ class IssueContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('loader..$loader');
+ 
     return Container(
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
           color: background,
           borderRadius: BorderRadius.circular(10),
@@ -60,12 +60,12 @@ class IssueContainer extends StatelessWidget {
                     style: titleTextStyle,
                   ),
                   const SizedBox(width: 5),
-                  Text(':'),
+                  const Text(':'),
                   const SizedBox(width: 5),
                   Container(
                     height: 30,
                     // width: 120,
-                    padding: EdgeInsets.only(left: 10, right: 10),
+                    padding: const EdgeInsets.only(left: 10, right: 10),
                     decoration: BoxDecoration(
                         color: status == 'OPEN'
                             ? redColor
@@ -76,7 +76,7 @@ class IssueContainer extends StatelessWidget {
                     child: Center(
                         child: Text(
                       status == 'IN_PROGRESS' ? 'INPROGRESS' : status,
-                      style: TextStyle(color: background),
+                      style: const TextStyle(color: background),
                     )),
                   )
                 ],
@@ -102,7 +102,7 @@ class IssueContainer extends StatelessWidget {
           style: titleTextStyle,
         ),
         const SizedBox(width: 5),
-        Text(':'),
+        const Text(':'),
         const SizedBox(width: 5),
         Expanded(
           flex: 3,
@@ -122,7 +122,7 @@ class IssueContainer extends StatelessWidget {
         style: titleTextStyle,
       ),
       const SizedBox(width: 5),
-      Text(':'),
+      const Text(':'),
       const SizedBox(width: 5),
       Text(
         vale,

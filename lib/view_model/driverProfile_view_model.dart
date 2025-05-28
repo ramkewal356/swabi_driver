@@ -1,8 +1,5 @@
 // Rental Booking View Model
 import 'dart:convert';
-import 'dart:io';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_driver/data/response/api_response.dart';
 import 'package:flutter_driver/model/change_password_model.dart';
@@ -25,18 +22,18 @@ class DriverProfileViewModel with ChangeNotifier {
 
   Future<void> fetchDriverProfileViewModelApi(
       BuildContext context, data, String uid) async {
-    print("${data}sfsdfsdf");
+    debugPrint("${data}sfsdfsdf");
     setDataList(ApiResponse.loading());
     _myRepo
         .driverBookingListRepositoryApi(context: context, query: data)
         .then((value) async {
       setDataList(ApiResponse.completed(value));
-      print('Driver Profile Api Success');
+      debugPrint('Driver Profile Api Success');
       context.push("/profilePage", extra: {"userId": uid});
       // Utils.toastMessage("Data fetching");
     }).onError((error, stackTrace) {
-      print(error.toString());
-      print('Driver Profile Api Failed');
+      debugPrint(error.toString());
+      debugPrint('Driver Profile Api Failed');
       // Utils.flushBarErrorMessage(error.toString(), context);
       setDataList(ApiResponse.error(error.toString()));
     });
@@ -44,18 +41,18 @@ class DriverProfileViewModel with ChangeNotifier {
 
   Future<void> fetchDriverDetailViewModelApi(
       BuildContext context, data, String uid) async {
-    print("${data}sfsdfsdf");
+    debugPrint("${data}sfsdfsdf");
     setDataList(ApiResponse.loading());
     _myRepo
         .driverBookingListRepositoryApi(context: context, query: data)
         .then((value) async {
       setDataList(ApiResponse.completed(value));
-      print('Driver Profile Api Success');
+      debugPrint('Driver Profile Api Success');
       // context.push("/profilePage", extra: {"userId": uid});
       // Utils.toastMessage("Data fetching");
     }).onError((error, stackTrace) {
-      print(error.toString());
-      print('Driver Profile Api Failed');
+      debugPrint(error.toString());
+      debugPrint('Driver Profile Api Failed');
       // Utils.flushBarErrorMessage(error.toString(), context);
       setDataList(ApiResponse.error(error.toString()));
     });
@@ -106,14 +103,14 @@ class DriverProfileUpdateViewModel with ChangeNotifier {
         Provider.of<DriverProfileViewModel>(context, listen: false)
             .fetchDriverDetailViewModelApi(
                 context, {"driverId": driverId}, driverId ?? '');
-        print('Updated successfull');
+        debugPrint('Updated successfull');
         context.pop(context);
         Utils.toastSuccessMessage("Profile Updated Successfully");
         isLoading = false;
         notifyListeners();
       });
     } catch (e) {
-      print('error$e');
+      debugPrint('error$e');
       setDataList(ApiResponse.error(e.toString()));
       isLoading = false;
       notifyListeners();

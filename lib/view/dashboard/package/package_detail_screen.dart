@@ -30,7 +30,7 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
   String formattedTodayDate = '';
   @override
   void initState() {
-    // TODO: implement initState
+    
     WidgetsBinding.instance.addPostFrameCallback(
       (timeStamp) {
         getIssueBybookingId();
@@ -60,14 +60,14 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
 
     try {
       timezone = await FlutterTimezone.getLocalTimezone();
-      print('hgjhjhj.............$timezone');
+      debugPrint('hgjhjhj.............$timezone');
       if (!mounted) return;
 
       setState(() {
         _timeZone = timezone;
       });
     } catch (e) {
-      print('Could not get the local timezone');
+      debugPrint('Could not get the local timezone');
     }
   }
 
@@ -92,7 +92,7 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
           ));
         } else {
           var package = viewData.driverPackageDetailModel?.data;
-          print('daystatus......${package?.pickupLocation}');
+          debugPrint('daystatus......${package?.pickupLocation}');
           return Padding(
             padding: const EdgeInsets.all(10.0),
             child: SingleChildScrollView(
@@ -154,85 +154,7 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
                         ],
                       ),
                     ),
-                    // child: Row(
-                    //   children: [
-                    //     Container(
-                    //       decoration: BoxDecoration(
-                    //           border: Border.all(color: Colors.black12),
-                    //           borderRadius: BorderRadius.circular(10)),
-                    //       width: 80,
-                    //       height: 80,
-                    //       child: ClipRRect(
-                    //         borderRadius: BorderRadius.circular(10),
-                    //         child: (package?.vehicle?.images ?? []).isEmpty
-                    //             ? Image.asset(
-                    //                 car3,
-                    //                 fit: BoxFit.cover,
-                    //               )
-                    //             : Image.network(
-                    //                 (package?.vehicle?.images ?? []).isEmpty
-                    //                     ? 'https://static.vecteezy.com/system/resources/thumbnails/022/059/000/small/no-image-available-icon-vector.jpg'
-                    //                     : package?.vehicle?.images?[0] ?? '',
-                    //                 fit: BoxFit.fill,
-                    //               ),
-                    //       ),
-                    //     ),
-                    //     const SizedBox(
-                    //       width: 10,
-                    //     ),
-                    //     Expanded(
-                    //       child: Column(
-                    //         crossAxisAlignment: CrossAxisAlignment.start,
-                    //         children: [
-                    //           Expanded(
-                    //             child: Text(
-                    //               package?.vehicle?.carName ?? '',
-                    //               style: pageHeadingTextStyle,
-                    //             ),
-                    //           ),
-                    //           Text(
-                    //               '${package?.vehicle?.brandName} / ${package?.vehicle?.carType} | ${package?.vehicle?.fuelType}'),
-                    //           // Flexible(
-                    //           //   child: Row(
-                    //           //     children: [
-                    //           //       Text(
-                    //           //         '${package?.vehicle?.brandName} / ${package?.vehicle?.carType}',
-                    //           //         // maxLines: 1,
-                    //           //         // overflow: TextOverflow.ellipsis,
-                    //           //       ),
-                    //           //       Text(' | '),
-                    //           //       Text(
-                    //           //         package?.vehicle?.fuelType ?? '',
-                    //           //         maxLines: 1,
-                    //           //         // overflow: TextOverflow.ellipsis,
-                    //           //       )
-                    //           //     ],
-                    //           //   ),
-                    //           // ),
-                    //           Row(
-                    //             children: [
-                    //               Text(
-                    //                 '${package?.vehicle?.vehicleNumber}',
-                    //                 style: textStyle,
-                    //               ),
-                    //               const SizedBox(
-                    //                   height: 15,
-                    //                   child: VerticalDivider(
-                    //                     color: Colors.black,
-                    //                     thickness: 1.5,
-                    //                   )),
-                    //               Text(
-                    //                 '${package?.vehicle?.seats} Seats',
-                    //                 style: textStyle,
-                    //               )
-                    //             ],
-                    //           )
-                    //         ],
-                    //       ),
-                    //     ),
-
-                    //   ],
-                    // ),
+                  
                   ),
                   containerItem(
                       context,
@@ -379,29 +301,7 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
                                       '+${package?.alternateMobileCountryCode} ${package?.alternateMobile}'),
                         ],
                       )),
-                  // Padding(
-                  //   padding:
-                  //       const EdgeInsets.only(left: 10, bottom: 10, top: 10),
-                  //   child: Text(
-                  //     'Traveller Contacts',
-                  //     style: titleTextStyle,
-                  //   ),
-                  // ),
-                  // containerItem(
-                  //     context,
-                  //     null,
-                  //     Column(
-                  //       children: [
-                  //         InfoRow(
-                  //             label: 'Primary Contact',
-                  //             value:
-                  //                 '+${package?.countryCode} ${package?.mobile}'),
-                  //         const SizedBox(
-                  //           height: 5,
-                  //         ),
-
-                  //       ],
-                  //     )),
+                
                   Padding(
                     padding:
                         const EdgeInsets.only(left: 10, bottom: 10, top: 10),
@@ -492,7 +392,8 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
                                         context.push('/rideIssue', extra: {
                                           'bookingId':
                                               package?.packageBookingId ?? '',
-                                          'bookingType': 'PACKAGE_BOOKING'
+                                          'bookingType': 'PACKAGE_BOOKING',
+                                          "vendorId": package?.vendorId ?? ''
                                         });
                                       })
                                   : CustomButtonSmall(
@@ -724,7 +625,7 @@ class InfoRow extends StatelessWidget {
   final String label;
   final String value;
 
-  InfoRow({required this.label, required this.value});
+  const InfoRow({super.key, required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {

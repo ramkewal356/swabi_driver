@@ -31,7 +31,7 @@ class _DriverHistoryManagmentState extends State<DriverHistoryManagment>
   String status = 'BOOKED';
   @override
   void initState() {
-    // TODO: implement initState
+  
     super.initState();
     _tabController = TabController(length: tabList.length, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback(
@@ -53,7 +53,7 @@ class _DriverHistoryManagmentState extends State<DriverHistoryManagment>
           _scrollController.position.maxScrollExtent) {
         // User has reached the end of the list
         if (!isLoadingMore && !lastPage) {
-          print('testing......');
+      
           getPackageBooking();
         }
       }
@@ -81,7 +81,7 @@ class _DriverHistoryManagmentState extends State<DriverHistoryManagment>
       // Update history with new data
       final data = response?.data.content ?? [];
 
-      print('Fetched data: $data');
+      debugPrint('Fetched data: $data');
 
       if (data.isNotEmpty) {
         setState(() {

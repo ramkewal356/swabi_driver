@@ -59,7 +59,7 @@ class FirebaseMessagingService {
     deviceToken = await FirebaseMessaging.instance.getToken();
 
     if (deviceToken != null) {
-      debugPrint('--------Device Token---------- ' + deviceToken);
+      debugPrint('--------Device Token---------- $deviceToken');
     }
     return deviceToken == "" ? "simulatorlogin" : deviceToken ?? "dummyToken";
   }
@@ -69,11 +69,11 @@ class FirebaseMessagingService {
     // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
     // If you have skipped STEP 3 then change app_icon to @mipmap/ic_launcher
     var initializationSettingsAndroid =
-        new AndroidInitializationSettings('@mipmap/ic_launcher');
-    var initializationSettingsIOS = new DarwinInitializationSettings();
-    var initializationSettings = new InitializationSettings(
+        const AndroidInitializationSettings('@mipmap/ic_launcher');
+    var initializationSettingsIOS = const DarwinInitializationSettings();
+    var initializationSettings = InitializationSettings(
         android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
-    flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
     flutterLocalNotificationsPlugin?.initialize(initializationSettings,
         onDidReceiveNotificationResponse: (msg) {
       Fluttertoast.showToast(msg: "Clicked");
@@ -93,14 +93,7 @@ class FirebaseMessagingService {
       dynamic senderGData = json.decode(mapData['sender']);
       debugPrint("mapData['sender']['_id'] ${senderGData["_id"]}");
 
-      // Get.to(ChattingScreen(
-      //   targetUserId: senderGData["_id"], //"64099587f8db67c379fce05b",
-      //   targetUserName: senderGData['firstname'],
-      //   authToken: "",
-      //   image: senderGData['image'][0]["image"],
-      // ));
-      // Navigator.of(context).pushNamed(NotificationDetailScreen.id,
-      //     arguments: {"data": null, "notificationID": notificationId});
+    
     }).then((value) {
       debugPrint("initilize $value");
     });
@@ -108,7 +101,7 @@ class FirebaseMessagingService {
 
   Future showNotificationWithDefaultSound(
       String title, String body, RemoteMessage remoteMessage) async {
-    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+    var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
       'your channel id',
       'your channel name',
       channelDescription: 'your channel description',
@@ -117,8 +110,8 @@ class FirebaseMessagingService {
     );
     // var iOSPlatformChannelSpecifics = new IOSNotificationDetail;
     var iOSPlatformChannelSpecifics =
-        new DarwinNotificationDetails(presentAlert: true);
-    var platformChannelSpecifics = new NotificationDetails(
+        const DarwinNotificationDetails(presentAlert: true);
+    var platformChannelSpecifics = NotificationDetails(
         android: androidPlatformChannelSpecifics,
         iOS: iOSPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin!.show(

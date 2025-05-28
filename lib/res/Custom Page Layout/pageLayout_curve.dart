@@ -39,8 +39,7 @@ class PageLayout_Curve extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: Scaffold(
+    return Scaffold(
       backgroundColor: bgGreyColor,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -82,7 +81,7 @@ class PageLayout_Curve extends StatelessWidget {
                 borderRadius: BorderRadius.circular(5),
                 onTap: addtionalIconReq
                     ? iconOnTap
-                    : () => print("Icon Btn Press"),
+                    : () => debugPrint("Icon Btn Press"),
                 child: SizedBox(
                   height: 30,
                   width: 30,
@@ -117,21 +116,14 @@ class PageLayout_Curve extends StatelessWidget {
                   // CustomButtonSmall()
                   CustomButtonBig(
                       btnHeading: btnHeading,
-                      onTap: onTap ?? () => print("onTap"))
+                      onTap: onTap ?? () => debugPrint("onTap"))
                   : const SizedBox.shrink(),
-              // Expanded(
-              //     child: RefreshIndicator(
-              //       onRefresh: onRefresh ?? () async {},
-              //       child: Padding(
-              //         padding: padding ?? EdgeInsets.symmetric(horizontal: 0,vertical: 0),
-              //         child: child,
-              //       ),
-              //     )),
+             
             ],
           ),
         ),
       ),
-    ));
+    );
   }
 }
 

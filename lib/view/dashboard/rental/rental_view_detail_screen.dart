@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_driver/model/driver_booking_model.dart';
 import 'package:flutter_driver/model/get_issue_by_booking_id_model.dart';
 import 'package:flutter_driver/res/Custom%20%20Button/custom_btn.dart';
@@ -41,7 +40,7 @@ class _BookingDetailsOfDriverState extends State<BookingDetailsOfDriver> {
   String formattedTodayDate = '';
   @override
   void initState() {
-    // TODO: implement initState
+  
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback(
       (timeStamp) {
@@ -76,6 +75,7 @@ class _BookingDetailsOfDriverState extends State<BookingDetailsOfDriver> {
 
       setState(() {
         _timeZone = timezone;
+        debugPrint('hgjhjhj.............$_timeZone');
       });
     } catch (e) {
       debugPrint('Could not get the local timezone');
@@ -84,7 +84,7 @@ class _BookingDetailsOfDriverState extends State<BookingDetailsOfDriver> {
 
   bool loading = false;
   DriverGetBookingDetailsData? bookingDetails, guestDetails;
-  var bookingDetailsStatus;
+  String? bookingDetailsStatus;
   @override
   Widget build(BuildContext context) {
     setState(() {
@@ -105,14 +105,7 @@ class _BookingDetailsOfDriverState extends State<BookingDetailsOfDriver> {
     });
     GetIssueByBookingIdModel? getIssueByBookingId =
         context.watch<RaiseissueViewModel>().getissueDetail.data;
-    // guestDetails = context
-    //     .watch<DriverGetBookingDetailsViewModel>()
-    //     .DataList
-    //     .data
-    //     !.data
-    //     .driverGetBookingDetailsGuest;
-
-    // print(guestDetails.guestName);
+  
     return CustomPagelayout(
       appBarTitle: 'Booking Details',
       child: Column(
@@ -170,91 +163,7 @@ class _BookingDetailsOfDriverState extends State<BookingDetailsOfDriver> {
                 ],
               ),
             ),
-            // child: Row(
-            //   children: [
-            //     Container(
-            //       decoration: BoxDecoration(
-            //           border: Border.all(color: Colors.black12),
-            //           borderRadius: BorderRadius.circular(10)),
-            //       width: 80,
-            //       height: 80,
-            //       child: ClipRRect(
-            //         borderRadius: BorderRadius.circular(10),
-            //         child: (bookingDetails?.vehicle.images ?? []).isEmpty
-            //             ? Image.asset(
-            //                 car3,
-            //                 fit: BoxFit.cover,
-            //               )
-            //             : Image.network(
-            //                 (bookingDetails?.vehicle.images ?? []).isEmpty
-            //                     ? 'https://static.vecteezy.com/system/resources/thumbnails/022/059/000/small/no-image-available-icon-vector.jpg'
-            //                     : bookingDetails?.vehicle.images[0],
-            //                 fit: BoxFit.fill,
-            //               ),
-            //       ),
-            //     ),
-            //     const SizedBox(
-            //       width: 10,
-            //     ),
-            //     Column(
-            //       crossAxisAlignment: CrossAxisAlignment.start,
-            //       children: [
-            //         Expanded(
-            //           child: Text(
-            //             'gjhkjkjlkjklllllklklllkjkjjkjkjkhkjkljklkljkljll',
-            //             style: pageHeadingTextStyle,
-            //           ),
-            //         ),
-            //         Row(
-            //           children: [
-            //             Text(
-            //                 '${bookingDetails?.kilometers} KM / ${bookingDetails?.totalRentTime}Hr'),
-            //             const SizedBox(height: 15, child: VerticalDivider()),
-            //             Text(bookingDetails?.vehicle.fuelType ?? '')
-            //           ],
-            //         ),
-            //         Row(
-            //           children: [
-            //             Text(
-            //               '${bookingDetails?.vehicle.vehicleNumber}',
-            //               style: textStyle,
-            //             ),
-            //             const SizedBox(
-            //                 height: 15,
-            //                 child: VerticalDivider(
-            //                   color: Colors.black,
-            //                   thickness: 1.5,
-            //                 )),
-            //             Text(
-            //               '${bookingDetails?.vehicle.seats} Seats',
-            //               style: textStyle,
-            //             )
-            //           ],
-            //         )
-            //       ],
-            //     ),
-            //     // Expanded(
-            //     //   child: Column(
-            //     //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //     //     crossAxisAlignment: CrossAxisAlignment.end,
-            //     //     children: [
-            //     //       // Text(
-            //     //       //   "⭐ 4.8",
-            //     //       //   style: GoogleFonts.lato(
-            //     //       //       color: Colors.black,
-            //     //       //       fontSize: 14,
-            //     //       //       fontWeight: FontWeight.w700),
-            //     //       // ),
-            //     //       Text(
-            //     //         'AED ${bookingDetails?.rentalCharge ?? ''}',
-            //     //         style: const TextStyle(
-            //     //             fontSize: 13, fontWeight: FontWeight.w600),
-            //     //       )
-            //     //     ],
-            //     //   ),
-            //     // )
-            //   ],
-            // ),
+          
           ),
           containerItem(
               context,
@@ -411,7 +320,8 @@ class _BookingDetailsOfDriverState extends State<BookingDetailsOfDriver> {
                                 onTap: () {
                                   context.push('/rideIssue', extra: {
                                     'bookingId': bookingDetails?.id ?? '',
-                                    'bookingType': 'RENTAL_BOOKING'
+                                    'bookingType': 'RENTAL_BOOKING',
+                                    'vendorId': bookingDetails?.vendorId ?? ''
                                   });
                                 })
                             : CustomButtonSmall(
@@ -623,7 +533,7 @@ class InfoRow extends StatelessWidget {
   final String label;
   final String value;
 
-  InfoRow({required this.label, required this.value});
+  const InfoRow({super.key, required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -1201,22 +1111,7 @@ class BookingContainer extends StatelessWidget {
                   ],
                 ),
 
-                // RichText(
-                //     overflow: TextOverflow.ellipsis,
-                //     text: TextSpan(children: [
-                //       TextSpan(
-                //         text: "Booking ID : ",
-                //         style: titleTextStyle,
-                //       ),
-                //       TextSpan(
-                //         text: bookingId,
-                //         style: GoogleFonts.lato(
-                //             color: greyColor,
-                //             fontSize: 14,
-                //             fontWeight: FontWeight.w400
-                //         ),
-                //       ),
-                //     ])),
+               
               ],
             ),
           ),

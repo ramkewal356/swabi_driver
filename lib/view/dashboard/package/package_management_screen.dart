@@ -21,7 +21,7 @@ class _PackageManagementScreenState extends State<PackageManagementScreen>
   TabController? _tabcontroller;
   @override
   void initState() {
-    // TODO: implement initState
+   
     super.initState();
     _tabcontroller = TabController(length: 2, vsync: this);
     getPackageList();
@@ -29,7 +29,7 @@ class _PackageManagementScreenState extends State<PackageManagementScreen>
       intialIndex = _tabcontroller?.index ?? 0;
 
       getPackageList();
-      print({'gfgfgfgh': _tabcontroller?.index});
+     
     });
   }
 
@@ -51,7 +51,7 @@ class _PackageManagementScreenState extends State<PackageManagementScreen>
 
   @override
   void dispose() {
-    // TODO: implement dispose
+   
     super.dispose();
     _tabcontroller!.dispose();
   }
@@ -77,7 +77,7 @@ class _PackageManagementScreenState extends State<PackageManagementScreen>
                   intialIndex = value;
                 });
                 getPackageList();
-                print({"valueIndex": intialIndex});
+                debugPrint("valueIndex $intialIndex");
               },
             
               unselectedLabelColor: Colors.black87,

@@ -100,7 +100,7 @@ class _CustomDropdownState extends State<CustomDropdown> {
               if (value == null || value.isEmpty) {
                 return 'Please select Item';
               }
-              print({'validator value': value});
+            
 
               return null;
             },

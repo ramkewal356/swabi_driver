@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_driver/model/driver_profile_model.dart';
 import 'package:flutter_driver/res/Custom%20%20Button/custom_btn.dart';
 import 'package:flutter_driver/res/Custom%20Page%20Layout/custom_pageLayout.dart';
-import 'package:flutter_driver/res/Custom%20Page%20Layout/pageLayout_curve.dart';
 import 'package:flutter_driver/res/login/login_customTextFeild.dart';
 import 'package:flutter_driver/utils/assets.dart';
 import 'package:flutter_driver/utils/color.dart';
@@ -33,7 +32,7 @@ class _ProfilePageState extends State<ProfilePage> {
   final ImagePicker _picker = ImagePicker();
   @override
   void initState() {
-    // TODO: implement initState
+   
     super.initState();
     dataUser = widget.user;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -87,7 +86,8 @@ class _ProfilePageState extends State<ProfilePage> {
         final croppedFile = await ImageCropper().cropImage(
           sourcePath: pickedFile.path,
           cropStyle: CropStyle.rectangle,
-          aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1), // Square crop
+          aspectRatio:
+              const CropAspectRatio(ratioX: 1, ratioY: 1), // Square crop
           compressQuality: 100, // Max quality during cropping
           uiSettings: [
             AndroidUiSettings(
@@ -173,11 +173,7 @@ class _ProfilePageState extends State<ProfilePage> {
               'uId': dataUser,
               'phoneNo': driverProfileData?.mobile,
             });
-            // .then((value) {
-            //   Provider.of<DriverProfileViewModel>(context, listen: false)
-            //       .fetchDriverDetailViewModelApi(
-            //           context, {"driverId": userId}, userId);
-            // });
+           
           },
           child: Padding(
             padding: const EdgeInsets.only(right: 22),
@@ -234,11 +230,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
 
-              // const SizedBox(height: 20),
-              // ElevatedButton(
-              //   onPressed: _showImageSourceSelection,
-              //   child: const Text("Select Profile Picture"),
-              // ),
+            
               const SizedBox(height: 10),
               CommonTextFeild(
                 heading: "Driver Id",
@@ -354,13 +346,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               const SizedBox(height: 10),
 
-              // Custom_ListTile(
-              //   headingTitleReq: true,
-              //   headingTitle: "Password",
-              //   onTap: () => context.push("/verifyPassword"),
-              //   heading: "**********",
-              //   img: pass,
-              // )
+             
             ],
           ),
         ),
@@ -369,7 +355,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _showModalBottomSheet(BuildContext context, Widget child) {
-    print('chxzbcbxnzc xzbnmxbmn nbmnc xkjchnxmc x');
+ 
     return showModalBottomSheet(
         context: context,
         isDismissible: false,
@@ -423,19 +409,7 @@ class ProfileContainer extends StatelessWidget {
                           image: FileImage(imgPath), fit: BoxFit.cover)),
                 )
               :
-              // imgPath.toString() == ""
-              //     ? Container(
-              //   decoration: BoxDecoration(
-              //       shape: BoxShape.circle,
-              //       color: curvePageColor.withOpacity(0.5)),
-              //   alignment: Alignment.center,
-              //   child: Text(
-              //     getInitials(name),
-              //     style: const TextStyle(
-              //         fontSize: 18, fontWeight: FontWeight.w700),
-              //   ),
-              // )
-              //     :
+             
               Container(
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
@@ -445,10 +419,7 @@ class ProfileContainer extends StatelessWidget {
                               imgPath),
                           // image: AssetImage(imgPath),
                           fit: BoxFit.cover))),
-          // child: const CircleAvatar(
-          //   backgroundColor: curvePageColor,
-          //   child: Icon(Icons.person,color: background,size: 40,),
-          // ),
+         
         ),
         Positioned(
           bottom: 20,

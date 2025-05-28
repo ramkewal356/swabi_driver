@@ -42,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    
     super.initState();
     requestPermission();
     getToken();
@@ -74,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
     String? token = await messaging.getToken();
     notificationToken = token;
-    print("FCM Token: $notificationToken");
+    debugPrint("FCM Token: $notificationToken");
   }
 
   savecredential() async {

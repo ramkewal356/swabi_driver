@@ -39,12 +39,10 @@ class FormTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          child: Text(
-            title,
-            overflow: TextOverflow.ellipsis,
-            style: appbarTextStyle,
-          ),
+        Text(
+          title,
+          overflow: TextOverflow.ellipsis,
+          style: appbarTextStyle,
         ),
         Container(
           height: 35,
@@ -194,12 +192,10 @@ class _FormDatePickerState extends State<FormDatePicker> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            child: Text(
-              widget.title,
-              overflow: TextOverflow.ellipsis,
-              style: appbarTextStyle,
-            ),
+          Text(
+            widget.title,
+            overflow: TextOverflow.ellipsis,
+            style: appbarTextStyle,
           ),
           Container(
             height: 35,
@@ -831,12 +827,10 @@ class _FormDatePickerExpenseState extends State<FormDatePickerExpense> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          child: Text(
-            widget.title,
-            overflow: TextOverflow.ellipsis,
-            style: titleTextStyle,
-          ),
+        Text(
+          widget.title,
+          overflow: TextOverflow.ellipsis,
+          style: titleTextStyle,
         ),
         const SizedBox(height: 5,),
         Material(
@@ -1029,12 +1023,11 @@ class CommonTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        title1 ? Container(
-          child: Text(
-            title,
-            overflow: TextOverflow.ellipsis,
-            style: appbarTextStyle,
-          ),
+        title1
+            ? Text(
+                title,
+                overflow: TextOverflow.ellipsis,
+                style: appbarTextStyle,
         ) : const SizedBox.shrink(),
         Container(
           height: height ?? 22,

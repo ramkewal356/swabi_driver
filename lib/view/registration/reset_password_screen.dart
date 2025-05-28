@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_driver/data/validatorclass.dart';
 import 'package:flutter_driver/res/Custom%20%20Button/custom_btn.dart';
 import 'package:flutter_driver/res/custom_text_form_field.dart';
 import 'package:flutter_driver/utils/color.dart';
 import 'package:flutter_driver/utils/text_styles.dart';
-import 'package:flutter_driver/view/registration/login_screen.dart';
 import 'package:flutter_driver/view_model/driverProfile_view_model.dart';
 import 'package:go_router/go_router.dart';
 
 // ignore: depend_on_referenced_packages
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
@@ -156,26 +153,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           btnHeading: 'Sign In',
                           sideHeading: 'Back to',
                         ),
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.center,
-                        //   children: [
-                        //     const Text('Remember your password?'),
-                        //     TextButton(
-                        //         onPressed: () {
-                        //           Navigator.push(
-                        //               context,
-                        //               MaterialPageRoute(
-                        //                   builder: (context) =>
-                        //                       const LoginScreen()));
-                        //         },
-                        //         child: Text(
-                        //           'Login',
-                        //           style: GoogleFonts.lato(
-                        //               fontWeight: FontWeight.w700,
-                        //               color: greenColor),
-                        //         ))
-                        //   ],
-                        // )
+                       
                       ],
                     )),
               ),

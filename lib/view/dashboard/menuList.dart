@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_driver/model/driver_profile_model.dart';
 import 'package:flutter_driver/res/Custom%20%20Button/custom_btn.dart';
-import 'package:flutter_driver/res/Custom%20Page%20Layout/custom_pageLayout.dart';
 import 'package:flutter_driver/res/custom_list_tile.dart';
 import 'package:flutter_driver/utils/assets.dart';
 import 'package:flutter_driver/utils/color.dart';
@@ -44,10 +43,10 @@ class _MenuListState extends State<MenuList> {
     });
   }
 
-  Future<void> _saveNotiValue(bool value) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('noti', value);
-  }
+  // Future<void> _saveNotiValue(bool value) async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   await prefs.setBool('noti', value);
+  // }
 
   void getNotification() {
     Provider.of<NotificationViewModel>(context, listen: false)
@@ -91,58 +90,9 @@ class _MenuListState extends State<MenuList> {
               ],
             ),
           ),
-          // ListTile(
-          //   selected: isSelectedindex == 0,
-          //   selectedColor: background,
-          //   selectedTileColor: btnColor,
-          //   leading: Image.asset(
-          //     user,
-          //     height: 20,
-          //     color: background,
-          //   ),
-          //   shape: RoundedRectangleBorder(
-          //       borderRadius: BorderRadius.circular(8),
-          //       side: BorderSide(color: greyColor1)),
-          //   title: Text('data'),
-          //   onTap: () {
-          //     setState(() {
-          //       isSelectedindex = 0;
-          //     });
-          //     context.pop();
-          //   },
-          // ),
+        
           const SizedBox(height: 20),
-          // CustomListtile(
-          //     userIcon: user,
-          //     title: 'hfsdjkfhkjsdhfkj',
-          //     selected: isSelectedindex == 0,
-          //     onTap: () {
-          //       setState(() {
-          //         isSelectedindex = 0;
-          //       });
-          //       Navigator.pop(context);
-          //     }),
-          // CustomListtile(
-          //     userIcon: user,
-          //     title: 'hfsdjkfhkjsdhfkj',
-          //     selected: isSelectedindex == 1,
-          //     onTap: () {
-          //       setState(() {
-          //         isSelectedindex = 1;
-          //         debugPrint('cvvcnvncvn....... $isSelectedindex');
-          //       });
-          //       Navigator.pop(context);
-          //     }),
-          // CustomListtile(
-          //     userIcon: user,
-          //     title: 'hfsdjkfhkjsdhfkj',
-          //     selected: isSelectedindex == 2,
-          //     onTap: () {
-          //       setState(() {
-          //         isSelectedindex = 2;
-          //       });
-          //       Navigator.pop(context);
-          //     }),
+         
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Custom_ListTile(
@@ -150,11 +100,7 @@ class _MenuListState extends State<MenuList> {
               iconColor: btnColor,
               heading: "Profile",
               onTap: () {
-                // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                //   Provider.of<DriverProfileViewModel>(context, listen: false)
-                //       .fetchDriverProfileViewModelApi(
-                //           context, {"driverId": widget.userId}, widget.userId);
-                // });
+               
                 context.push("/profilePage", extra: {"userId": widget.userId});
                 Navigator.pop(context);
               },
@@ -191,15 +137,7 @@ class _MenuListState extends State<MenuList> {
               iconColor: btnColor,
               heading: "Package Management",
               onTap: () {
-                // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-                //   Provider.of<DriverPackageBookingHistoryListViewModel>(context,
-                //           listen: false)
-                //       .fetchDriverPackageBookingHistoryListViewModel(
-                //           {"driverId": widget.userId},
-                //           context,
-                //           widget.userId,
-                //           'historyList');
-                // });
+             
                 context.push('/packageBookingManagement').then((value) {
                   Provider.of<DriverGetBookingListViewModel>(context,
                           listen: false)
@@ -229,15 +167,7 @@ class _MenuListState extends State<MenuList> {
                   context.pop();
                 }),
           ),
-          // Custom_ListTile(
-          //   img: faq,
-          //   iconColor: btnColor,
-          //   heading: "FAQ",
-          //   onTap: () => context.push("/faqPage"),
-          // ),
-          // const SizedBox(
-          //   height: 30,
-          // ),
+       
           const Spacer(),
           Align(
             alignment: Alignment.bottomCenter,
@@ -250,9 +180,7 @@ class _MenuListState extends State<MenuList> {
                     Navigator.pop(context);
                     _confirmLogout();
 
-                    // userViewModel.removeUser(context);
-                    // userViewModel.remove(context);
-                    // context.go("/login");
+                   
                   }),
             ),
           ),
@@ -272,11 +200,7 @@ class _MenuListState extends State<MenuList> {
         return Dialog(
           backgroundColor: background,
           surfaceTintColor: background,
-          // child: Stack(
-          //   clipBehavior: Clip.none,
-          //   children: [
-          //     SizedBox(
-          //       height: 180,
+       
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(20.0),
@@ -315,30 +239,7 @@ class _MenuListState extends State<MenuList> {
             ),
           ),
         );
-        //     Positioned(
-        //         top: -60,
-        //         left: 0,
-        //         right: 0,
-        //         child: SizedBox(
-        //           // decoration: BoxDecoration(
-        //           //   border: Border.all(color: btnColor),
-        //           //   borderRadius: BorderRadius.circular(10)
-        //           // ),
-        //           height: 100,
-        //           width: 100,
-        //           child: Card(
-        //             surfaceTintColor: background,
-        //             elevation: 5,
-        //             shape: const CircleBorder(),
-        //             child: Padding(
-        //               padding: const EdgeInsets.all(8.0),
-        //               child: Image.asset(question),
-        //             ),
-        //           ),
-        //         ))
-        //   ],
-        // ),
-        // );
+      
       },
     );
   }

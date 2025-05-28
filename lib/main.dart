@@ -15,8 +15,8 @@ import 'package:flutter_driver/view_model/user_view_model.dart';
 import 'package:provider/provider.dart';
 
 Future<void> backgroundHandler(RemoteMessage message) async {
-  print(message.data.toString());
-  print(message.notification!.title);
+  debugPrint(message.data.toString());
+  debugPrint(message.notification!.title);
 }
 
 Future<void> main() async {

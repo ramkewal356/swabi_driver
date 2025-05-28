@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class DriverPackageBookingListModel {
   Status status;
   List<Datum> data;
@@ -304,7 +302,7 @@ class Data {
   String? pickupTime;
   String? startTimestamp;
   String? endTimestamp;
-
+  String? vendorId;
   Data(
       {this.driverAssignedId,
       this.date,
@@ -322,7 +320,8 @@ class Data {
       this.alternateMobile,
       this.pickupTime,
       this.startTimestamp,
-      this.endTimestamp});
+      this.endTimestamp,
+      this.vendorId});
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
         driverAssignedId: json["driverAssignedId"]?.toString() ?? "",
@@ -343,6 +342,7 @@ class Data {
         pickupTime: json['pickupTime'],
         startTimestamp: json['startTimestamp']?.toString() ?? "",
         endTimestamp: json['endTimestamp']?.toString() ?? "",
+      vendorId: json["vendorId"]?.toString() ?? ''
       );
 
   Map<String, dynamic> toJson() => {
@@ -364,6 +364,7 @@ class Data {
         "pickupTime": pickupTime,
         "startTimestamp": startTimestamp,
         "endTimestamp": endTimestamp,
+        "vendorId": vendorId
       };
 }
 

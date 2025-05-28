@@ -42,7 +42,8 @@ class RaiseissueViewModel with ChangeNotifier {
       {required BuildContext context,
       required String bookingId,
       required String bookingType,
-      required String issueDescription}) async {
+      required String issueDescription,
+      required String vendorId}) async {
     try {
       UserViewModel userViewModel = UserViewModel();
       UserModel? usermodel = await userViewModel.getUserId();
@@ -52,12 +53,14 @@ class RaiseissueViewModel with ChangeNotifier {
         "raisedById": usermodel.userId,
         "raisedByRole": "DRIVER",
         "issueType": "Service Issue",
-        "issueDescription": issueDescription
+        "issueDescription": issueDescription,
+        "vendor": {'vendorId': vendorId}
       };
       await _myRepo
           .requestRaiseIssueApi(context: context, body: body)
           .then((onValue) {
-        _raiseIssueModel = onValue;
+        if (onValue?.status?.httpCode == '200') {
+          _raiseIssueModel = onValue;
         notifyListeners();
         Utils.toastSuccessMessage('Raise requested Successfully');
         getIssueByBookingId(
@@ -65,6 +68,7 @@ class RaiseissueViewModel with ChangeNotifier {
             bookingId: bookingId,
             userId: usermodel.userId ?? '',
             bookingType: bookingType);
+        }
       }).onError((error, StackTrace) {
         // ErrorHandler().hanErrorResponse(errorResponse: error);
         ErrorHandler.handleError(error.toString());
@@ -120,7 +124,7 @@ class RaiseissueViewModel with ChangeNotifier {
       Map<String, dynamic> query = {
         "issueId": issueId,
       };
-      print('loder1223333$isloading1');
+     
       await _myRepo
           .getRaiseIssueDetailsApi(context: context, query: query)
           .then((onValue) {

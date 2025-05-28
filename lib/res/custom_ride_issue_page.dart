@@ -8,14 +8,17 @@ import 'package:flutter_driver/utils/color.dart';
 import 'package:flutter_driver/utils/text_styles.dart';
 import 'package:flutter_driver/utils/utils.dart';
 import 'package:flutter_driver/view_model/raiseIssue_view_model.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class CustomRideissuePage extends StatefulWidget {
   final String bookingId;
   final String bookingType;
+  final String vendorId;
   const CustomRideissuePage(
-      {super.key, required this.bookingId, required this.bookingType});
+      {super.key,
+      required this.bookingId,
+      required this.bookingType,
+      required this.vendorId});
 
   @override
   State<CustomRideissuePage> createState() => _CustomRideissuePageState();
@@ -24,7 +27,7 @@ class CustomRideissuePage extends StatefulWidget {
 class _CustomRideissuePageState extends State<CustomRideissuePage> {
   String? _selectedIssue;
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
   final List<String> _issueOptions = [
     'Customer Not Present at Pickup Location',
     'Incorrect Rental Details',
@@ -42,22 +45,8 @@ class _CustomRideissuePageState extends State<CustomRideissuePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Padding(
-              //   padding: const EdgeInsets.only(bottom: 5),
-              //   child: Text("Raise Help", style: titleTextStyle),
-              // ),
-              // const Text(
-              //   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-              //   style: TextStyle(
-              //     color: Colors.grey,
-              //     fontSize: 14,
-              //   ),
-              // ),
               const SizedBox(height: 10),
-              // Text(
-              //   'Please Select Raise Issue',
-              //   style: titleTextStyle,
-              // ),
+
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -103,22 +92,6 @@ class _CustomRideissuePageState extends State<CustomRideissuePage> {
                             return null;
                           },
                         ),
-                        // TextformField(
-                        //   controller: _descriptionController,
-                        //   maxLength: 120,
-                        //   maxLines: 3,
-                        //   decoration: const InputDecoration(
-                        //     hintText: "Description For Issue",
-                        //     border: OutlineInputBorder(),
-                        //   ),
-                        // ),
-                        // Align(
-                        //   alignment: Alignment.centerRight,
-                        //   child: Text(
-                        //     '(${_descriptionController.text.length}/120)',
-                        //     style: TextStyle(fontSize: 12),
-                        //   ),
-                        // ),
                       ],
                     ),
                   ),
@@ -146,10 +119,11 @@ class _CustomRideissuePageState extends State<CustomRideissuePage> {
                                   issueDescription: _selectedIssue ==
                                           'My reason is not listed'
                                       ? _descriptionController.text
-                                      : _selectedIssue ?? '');
-                          Utils.toastSuccessMessage(
-                            'Raise Request Successfully',
-                          );
+                                      : _selectedIssue ?? '',
+                                  vendorId: widget.vendorId);
+                          // Utils.toastSuccessMessage(
+                          //   'Raise Request Successfully',
+                          // );
                           Navigator.of(context).pop();
                         }
                       } else {
@@ -161,26 +135,14 @@ class _CustomRideissuePageState extends State<CustomRideissuePage> {
                                 issueDescription:
                                     _selectedIssue == 'My reason is not listed'
                                         ? _descriptionController.text
-                                        : _selectedIssue ?? '');
-                        Utils.toastSuccessMessage(
-                          'Raise Request Successfully',
-                        );
+                                        : _selectedIssue ?? '',
+                                vendorId: widget.vendorId);
+                       
                         Navigator.of(context).pop();
                       }
                     } else {
                       Utils.toastMessage('Please select an issue.');
                     }
-                    // String? issueDescription =
-                    //     _selectedIssue == 'My reason is not listed'
-                    //         ? _descriptionController.text
-                    //         : _selectedIssue;
-                    // Provider.of<RaiseissueViewModel>(context, listen: false)
-                    //     .requestRaiseIssue(
-                    //         context: context,
-                    //         bookingId: widget.bookingId,
-                    //         bookingType: widget.bookingType,
-                    //         issueDescription: issueDescription ?? '');
-                    // context.pop();
                   })
             ],
           ),

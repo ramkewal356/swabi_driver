@@ -142,7 +142,6 @@ class Content {
   DriverBookingUser? user;
   Guest? guest;
   String? cancelledBy;
-
   Content({
     this.id,
     this.rentalBookingId,
@@ -719,7 +718,7 @@ class DriverGetBookingDetailsData {
   User user;
   DriverGetBookingDetailsGuest driverGetBookingDetailsGuest;
   String? cancelledBy;
-
+  String? vendorId;
   DriverGetBookingDetailsData({
     required this.id,
     required this.rentalBookingId,
@@ -748,6 +747,7 @@ class DriverGetBookingDetailsData {
     required this.user,
     required this.driverGetBookingDetailsGuest,
     required this.cancelledBy,
+      this.vendorId
   });
 
   factory DriverGetBookingDetailsData.fromJson(Map<String, dynamic> json) =>
@@ -780,6 +780,7 @@ class DriverGetBookingDetailsData {
         driverGetBookingDetailsGuest: DriverGetBookingDetailsGuest.fromJson(
             json["driverGetBookingDetailsGuest"] ?? {}),
         cancelledBy: json["cancelledBy"]?.toString() ?? '',
+          vendorId: json["vendorId"]?.toString() ?? ''
       );
 
   get guestName => null;
@@ -812,6 +813,7 @@ class DriverGetBookingDetailsData {
         "user": user,
         "driverGetBookingDetailsGuest": driverGetBookingDetailsGuest,
         "cancelledBy": cancelledBy,
+        "vendorId": vendorId
       };
 }
 

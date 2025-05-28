@@ -28,7 +28,7 @@ class _NotificationPageState extends State<NotificationPage> {
   List<Content> earlierNotification = [];
   @override
   void initState() {
-    // TODO: implement initState
+   
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getNotification();

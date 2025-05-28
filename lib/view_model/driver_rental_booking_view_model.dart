@@ -40,11 +40,11 @@ class DriverGetBookingListViewModel with ChangeNotifier {
       var resp = await _myRepo.driverBookingListRepositoryApi(
           context: context, query: data);
       setDataList(ApiResponse.completed(resp));
-      print("Driver Booking List Success");
+      debugPrint("Driver Booking List Success");
       return resp;
     } catch (error) {
       setDataList(ApiResponse.error(error.toString()));
-      print(error.toString());
+      debugPrint(error.toString());
     }
     return null;
     // _myRepo.driverBookingListRepositoryApi(data).then((value) {
@@ -64,11 +64,11 @@ class DriverGetBookingListViewModel with ChangeNotifier {
         .driverBookingListRepositoryApi(context: context, query: data)
         .then((value) {
       setDataList1(ApiResponse.completed(value));
-      print("Driver Booking List Success");
+      debugPrint("Driver Booking List Success");
       // Utils.toastMessage("Driver Booking UP_RUNNING List Successfull");
     }).onError((error, stackTrace) {
       setDataList1(ApiResponse.error(error.toString()));
-      print(error.toString());
+      debugPrint(error.toString());
       // Utils.flushBarErrorMessage(error.toString(),context);
     });
   }
@@ -79,11 +79,11 @@ class DriverGetBookingListViewModel with ChangeNotifier {
         .driverBookingListRepositoryApi(context: context, query: data)
         .then((value) {
       setDataList2(ApiResponse.completed(value));
-      print("Driver Booking List Success");
+      debugPrint("Driver Booking List Success");
       // Utils.toastMessage("Driver Booking BOOKED List Successfull");
     }).onError((error, stackTrace) {
       setDataList2(ApiResponse.error(error.toString()));
-      print(error.toString());
+      debugPrint(error.toString());
       // Utils.flushBarErrorMessage(error.toString(),context);
     });
   }
@@ -94,11 +94,11 @@ class DriverGetBookingListViewModel with ChangeNotifier {
         .driverBookingListRepositoryApi(context: context, query: data)
         .then((value) {
       setDataList3(ApiResponse.completed(value));
-      print("Driver Booking List Success");
+      debugPrint("Driver Booking List Success");
       // Utils.toastMessage("Driver Booking BOOKED List Successfull");
     }).onError((error, stackTrace) {
       setDataList3(ApiResponse.error(error.toString()));
-      print(error.toString());
+      debugPrint(error.toString());
       // Utils.flushBarErrorMessage(error.toString(),context);
     });
   }
@@ -128,7 +128,7 @@ class DriverGetBookingDetailsViewModel with ChangeNotifier {
         .driverBookingDetailsRepositoryApi(context: context, query: data)
         .then((value) {
       setDataList(ApiResponse.completed(value));
-      print("Driver Booking Details Success");
+      debugPrint("Driver Booking Details Success");
       context.push('/bookingDetails',
           extra: {'bookId': bookID, 'myDriverId': myIdDriver}).then((value) {
         Provider.of<DriverGetBookingListViewModel>(context, listen: false)
@@ -142,7 +142,7 @@ class DriverGetBookingDetailsViewModel with ChangeNotifier {
       // Utils.toastMessage("Driver Booking Details Successful");
     }).onError((error, stackTrace) {
       setDataList(ApiResponse.error(error.toString()));
-      print(error.toString());
+      debugPrint(error.toString());
       // Utils.flushBarErrorMessage(error.toString(),context);
     });
   }
@@ -175,7 +175,7 @@ class DriverOnRunningViewModel with ChangeNotifier {
         .then((value) {
       setLoading(false);
       setDataList(ApiResponse.completed(value));
-      print("Driver On Going Success");
+      debugPrint("Driver On Going Success");
       context.pop();
       // Provider.of<DriverOnRunningViewModel>(context,listen: false).
       // fetchDriverStartRideViewModel({
@@ -189,8 +189,8 @@ class DriverOnRunningViewModel with ChangeNotifier {
     }).onError((error, stackTrace) {
       setLoading(false);
       setDataList(ApiResponse.error(error.toString()));
-      print("Driver On Running field");
-      print(error.toString());
+      debugPrint("Driver On Running field");
+      debugPrint(error.toString());
       Utils.toastMessage(error.toString());
     });
   }
@@ -225,7 +225,7 @@ class DriverCompletedBookingViewModel with ChangeNotifier {
       setLoading(false);
       setDataList(ApiResponse.completed(value));
       context.pop();
-      print("Driver Booking Completed Successfully");
+      debugPrint("Driver Booking Completed Successfully");
       Provider.of<DriverGetBookingListViewModel>(context, listen: false)
           .fetchDriverGetBookingListViewModel({
         "driverId": driverId,
@@ -238,8 +238,8 @@ class DriverCompletedBookingViewModel with ChangeNotifier {
     }).onError((error, stackTrace) {
       setLoading(false);
       setDataList(ApiResponse.error(error.toString()));
-      print("Driver Booking Completed field");
-      print(error.toString());
+      debugPrint("Driver Booking Completed field");
+      debugPrint(error.toString());
       // Utils.flushBarErrorMessage(error.toString(),context);
     });
   }

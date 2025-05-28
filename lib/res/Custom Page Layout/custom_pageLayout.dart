@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/utils/assets.dart';
 import 'package:flutter_driver/utils/color.dart';
 import 'package:go_router/go_router.dart';
 
@@ -58,7 +57,7 @@ class CustomPagelayout extends StatelessWidget {
             style: const TextStyle(
                 color: Colors.white, fontWeight: FontWeight.w600),
           ),
-          actions: [actionIcon ?? SizedBox.shrink()],
+          actions: [actionIcon ?? const SizedBox.shrink()],
         ),
         body: LayoutBuilder(
           builder: (context, constraints) => Container(

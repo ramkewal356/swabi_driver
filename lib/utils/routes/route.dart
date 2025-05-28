@@ -233,6 +233,8 @@ final GoRouter myRouter = GoRouter(
         return CustomRideissuePage(
           bookingId: dataValue['bookingId'],
           bookingType: dataValue['bookingType'],
+          vendorId: dataValue["vendorId"],
+
         );
       },
     ),

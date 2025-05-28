@@ -13,12 +13,12 @@ class SplashServices {
     userViewModel.getUser().then((value) async {
       if(value.token == null || value.token == '') {
         await Future.delayed(const Duration(seconds: 4));
-        print('Token ${value.token}');
+        debugPrint('Token ${value.token}');
         context.push('/login');
       }else{
         await Future.delayed(const Duration(seconds: 4));
         // context.push('/');
-        print('Token ${value.token}');
+        debugPrint('Token ${value.token}');
         context.push('/');
       }
     }).onError((error, stackTrace){

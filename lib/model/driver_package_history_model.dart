@@ -2,7 +2,7 @@
 //
 //     final driverPackageBookingHistoryListModel = driverPackageBookingHistoryListModelFromJson(jsonString);
 
-import 'package:meta/meta.dart';
+
 import 'dart:convert';
 
 DriverPackageBookingHistoryListModel
@@ -191,6 +191,7 @@ class ActivityList {
       };
 }
 
+// ignore: constant_identifier_names
 enum ParticipantType { ADULT, SENIOR, TEEN }
 
 final participantTypeValues = EnumValues({
@@ -199,6 +200,7 @@ final participantTypeValues = EnumValues({
   "TEEN": ParticipantType.TEEN
 });
 
+// ignore: constant_identifier_names
 enum WeeklyOff { MONDAY, SUNDAY, WEDNESDAY }
 
 final weeklyOffValues = EnumValues({

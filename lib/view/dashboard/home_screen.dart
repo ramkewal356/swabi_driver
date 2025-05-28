@@ -57,7 +57,7 @@ class _home_screenState extends State<home_screen> {
   ];
   @override
   void initState() {
-    // TODO: implement initState
+ 
     super.initState();
 
     userViewModel.getUserId().then((value) async {
@@ -135,16 +135,9 @@ class _home_screenState extends State<home_screen> {
         .DataList
         .status
         .toString();
-    // String lastLogin = context
-    //         .watch<DriverProfileViewModel>()
-    //         .DataList
-    //         .data
-    //         ?.data
-    //         .lastLogin
-    //         .toString() ??
-    //     '';
+    
 
-    print("DriverId here at homeScreen $status");
+    // ignore: deprecated_member_use
     return WillPopScope(
       // canPop: false,
       onWillPop: () async {
@@ -152,7 +145,7 @@ class _home_screenState extends State<home_screen> {
           context: context,
           builder: (context) => exitContainer(),
         );
-        return shouldExit ?? false;
+        return shouldExit;
         // return await showDialog(context: context, builder: (context) =>
         //     exitContainer());
       },
@@ -210,20 +203,7 @@ class _home_screenState extends State<home_screen> {
                     style: const TextStyle(color: background, fontSize: 14),
                   ),
                 ),
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(horizontal: 15),
-                //   child: Text(
-                //     '$userName $userLastName',
-                //     style: const TextStyle(color: background, fontSize: 24),
-                //   ),
-                // ),
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(horizontal: 15),
-                //   child: Text(
-                //     email,
-                //     style: const TextStyle(color: background, fontSize: 14),
-                //   ),
-                // ),
+               
                 const SizedBox(height: 5),
                 Container(
                   width: double.infinity,
@@ -353,16 +333,7 @@ class _home_screenState extends State<home_screen> {
                                 curve: Curves.easeInOut,
                                 alignment: 0.5,
                               );
-                              // FocusScope.of(context)
-                              //     .requestFocus(_focusScopeNode);
-                              // Scrollable.ensureVisible(context,
-                              //     duration: Duration(milliseconds: 500),
-                              //     alignment: 0.5,
-                              //     curve: Curves.ease);
-                              // setState(() {
-                              //   selectedSection =
-                              //       'package'; // Set to rental section
-                              // });
+                             
                             },
                             icon: Column(
                               children: [
@@ -574,12 +545,7 @@ class _home_screenState extends State<home_screen> {
 
                       Consumer<DriverPackageViewModel>(
                         builder: (context, viewData, child) {
-                          // if (viewData.isLoading) {
-                          //   return const Center(
-                          //       child: CircularProgressIndicator(
-                          //     color: Colors.green,
-                          //   ));
-                          // } else
+                       
                           if (viewData.driverPackageBookingListModel == null ||
                               viewData.driverPackageBookingListModel!.data
                                   .isEmpty) {

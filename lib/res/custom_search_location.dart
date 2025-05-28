@@ -39,44 +39,10 @@ class _CustomSearchLocationState extends State<CustomSearchLocation> {
       // widget.widget = selectedLocation;
       widget.controller?.text = selectedLocation;
     }
-    // if (widget.stateValidation) {
-    //   if (widget.state.isEmpty) {
-    //     Utils.toastMessage('message');
-    //   } else {
-    //     final selectedLocation = await Navigator.push(
-    //       context,
-    //       MaterialPageRoute(
-    //           builder: (context) => SearchLocationPage(
-    //                 state: widget.state,
-    //               )),
-    //     );
-
-    //     if (selectedLocation != null) {
-    //       // widget.widget = selectedLocation;
-    //       widget.controller?.text = selectedLocation;
-    //     }
-    //   }
-    // } else {
-    //   final selectedLocation = await Navigator.push(
-    //     context,
-    //     MaterialPageRoute(
-    //         builder: (context) => SearchLocationPage(
-    //               state: widget.state,
-    //             )),
-    //   );
-
-    //   if (selectedLocation != null) {
-    //     // widget.widget = selectedLocation;
-    //     widget.controller?.text = selectedLocation;
-    //   }
-    // }
+  
   }
 
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  //   widget.controller?.dispose();
-  // }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +121,7 @@ class SearchLocationPage extends StatefulWidget {
 }
 
 class _SearchLocationPageState extends State<SearchLocationPage> {
-  String kGoogleApiKey = 'AIzaSyDhKIUQ4QBoDuOsooDfNY_EjCG0MB7Ami8';
+  String kGoogleApiKey = 'AIzaSyA5TT3UUixs2V3IGu1t9wjXkkCRCn3n2hg';
   final TextEditingController _searchController = TextEditingController();
   late GoogleMapsPlaces googlePlace;
   List<Prediction> predictions = [];
@@ -173,7 +139,7 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
         components: [Component("country", "ae")],
       );
 
-      if (result.predictions != null) {
+      if (result.predictions != []) {
         setState(() {
           predictions = result.predictions;
         });
@@ -181,10 +147,10 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
         setState(() {
           predictions = [];
         });
-        print("No predictions found.");
+        debugPrint("No predictions found.");
       }
     } catch (error) {
-      print("Error occurred while fetching places: $error");
+      debugPrint("Error occurred while fetching places: $error");
       setState(() {
         predictions = [];
       });
@@ -200,7 +166,7 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
+   
     super.dispose();
     _searchController.dispose();
   }
@@ -255,7 +221,7 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
                         Navigator.pop(context, prediction.description);
                       } else {
                         // Show a validation message or feedback to the user if the location is not valid
-                        print("Please select a location in Dubai.");
+                       
                         Utils.toastMessage(
                             "Please select a location in ${widget.state}");
                       }
@@ -263,7 +229,7 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
                   );
                 },
                 separatorBuilder: (context, index) {
-                  return Divider();
+                  return const Divider();
                 },
               ),
             ),

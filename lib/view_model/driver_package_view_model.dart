@@ -47,14 +47,14 @@ class DriverPackageViewModel with ChangeNotifier {
         driverPackageBookingListModel = value;
         isLoading = false;
         notifyListeners();
-        print("Driver Booking Details Success");
+        debugPrint("Driver Booking Details Success");
       } else {
-        print("Failed to fetch booking details");
+        debugPrint("Failed to fetch booking details");
       }
     } catch (e) {
       isLoading = false;
       notifyListeners();
-      print('error: $e');
+      debugPrint('error: $e');
     }
     return null;
   }
@@ -75,14 +75,14 @@ class DriverPackageViewModel with ChangeNotifier {
         driverPackageDetailModel = value;
         isLoading1 = false;
         notifyListeners();
-        print("Driver Booking Details Success");
+        debugPrint("Driver Booking Details Success");
       } else {
-        print("Failed to fetch booking details");
+        debugPrint("Failed to fetch booking details");
       }
     } catch (e) {
       isLoading1 = false;
       notifyListeners();
-      print('error: $e');
+      debugPrint('error: $e');
     } finally {
       isLoading1 = false;
       notifyListeners();
@@ -124,7 +124,7 @@ class DriverPackageViewModel with ChangeNotifier {
     } catch (e) {
       isLoading = false;
       notifyListeners();
-      print('error: $e');
+      debugPrint('error: $e');
     }
     return null;
   }
@@ -183,9 +183,9 @@ class DriverPackageViewModel with ChangeNotifier {
 
       if (value?.status.httpCode == '200') {
         driverPackageBookingListModel = value;
-        print("Driver Booking history Success");
+        debugPrint("Driver Booking history Success");
       } else {
-        print("Failed to fetch booking details");
+        debugPrint("Failed to fetch booking details");
       }
 
       isLoading = false;
@@ -193,7 +193,7 @@ class DriverPackageViewModel with ChangeNotifier {
     } catch (e) {
       isLoading = false;
       notifyListeners();
-      print('error: $e');
+      debugPrint('error: $e');
     }
     return null;
   }
