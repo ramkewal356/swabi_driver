@@ -13,7 +13,6 @@ import 'package:flutter_driver/view/dashboard/account_Pages/term_condition.dart'
 import 'package:flutter_driver/view/dashboard/account_Pages/transaction.dart';
 import 'package:flutter_driver/view/dashboard/account_Pages/verify_password.dart';
 import 'package:flutter_driver/view/dashboard/home_screen.dart';
-import 'package:flutter_driver/view/dashboard/menuList.dart';
 import 'package:flutter_driver/view/dashboard/account_Pages/edit_profile_screen.dart';
 import 'package:flutter_driver/view/dashboard/package/package_detail_screen.dart';
 import 'package:flutter_driver/view/dashboard/package/package_management_screen.dart';
@@ -68,28 +67,28 @@ final GoRouter myRouter = GoRouter(
       },
     ),
     //
-    GoRoute(
-      path: '/menuPage',
-      pageBuilder: (BuildContext context, GoRouterState state) {
-        var data = state.extra as Map<String, dynamic>;
-        return CustomTransitionPage(
-          key: state.pageKey,
-          child: MenuList(userId: data['id']),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(-1.0, 0.0);
-            const end = Offset.zero;
-            const curve = Curves.ease;
-            var tween =
-                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-            var offsetAnimation = animation.drive(tween);
-            return SlideTransition(
-              position: offsetAnimation,
-              child: child,
-            );
-          },
-        );
-      },
-    ),
+    // GoRoute(
+    //   path: '/menuPage',
+    //   pageBuilder: (BuildContext context, GoRouterState state) {
+    //     var data = state.extra as Map<String, dynamic>;
+    //     return CustomTransitionPage(
+    //       key: state.pageKey,
+    //       child: MenuList(userId: data['id']),
+    //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
+    //         const begin = Offset(-1.0, 0.0);
+    //         const end = Offset.zero;
+    //         const curve = Curves.ease;
+    //         var tween =
+    //             Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+    //         var offsetAnimation = animation.drive(tween);
+    //         return SlideTransition(
+    //           position: offsetAnimation,
+    //           child: child,
+    //         );
+    //       },
+    //     );
+    //   },
+    // ),
     GoRoute(
         path: '/profilePage',
         builder: (BuildContext context, GoRouterState state) {

@@ -20,7 +20,10 @@ TextStyle appbarTextStyle1 = GoogleFonts.lato(
 
 TextStyle btnTextStyle = GoogleFonts.lato(
     color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700);
-
+TextStyle selectedTextStyle = GoogleFonts.lato(
+    color: Colors.white, fontSize: 15, fontWeight: FontWeight.w700);
+TextStyle unSelectedTextStyle = GoogleFonts.lato(
+    color: Colors.black, fontSize: 15, fontWeight: FontWeight.w700);
 TextStyle custom_ListTileTextStyle = GoogleFonts.lato(
     color: Colors.black, fontSize: 16, fontWeight: FontWeight.w600);
 TextStyle loginTextStyle = GoogleFonts.lato(

@@ -42,7 +42,7 @@ class ErrorHandler {
     // }
     message = errorResponse?.status?.message;
     responseStatusCode = int.parse(errorResponse?.status?.httpCode ?? '');
-    switch (this.responseStatusCode) {
+    switch (responseStatusCode) {
       case 200:
         // Fluttertoast.showToast(msg: kStringSomethingWentWrong);
         return;

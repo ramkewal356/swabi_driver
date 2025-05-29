@@ -1,7 +1,7 @@
 import 'dart:io';
 
-
 import 'package:flutter/material.dart';
+import 'package:flutter_driver/model/driver_profile_model.dart';
 import 'package:flutter_driver/model/user_model.dart';
 import 'package:flutter_driver/res/Custom%20%20Button/custom_btn.dart';
 import 'package:flutter_driver/utils/assets.dart';
@@ -57,7 +57,6 @@ class _home_screenState extends State<home_screen> {
   ];
   @override
   void initState() {
- 
     super.initState();
 
     userViewModel.getUserId().then((value) async {
@@ -107,35 +106,15 @@ class _home_screenState extends State<home_screen> {
   String selectedSection = 'rental';
   @override
   Widget build(BuildContext context) {
-    var userName =
-        context.watch<DriverProfileViewModel>().DataList.data?.data.firstName ??
-            '';
-    var userLastName =
-        context.watch<DriverProfileViewModel>().DataList.data?.data.lastName ??
-            '';
-    var email =
-        context.watch<DriverProfileViewModel>().DataList.data?.data.email ?? '';
+    DriverProfileData? driverData =
+        context.watch<DriverProfileViewModel>().DataList.data?.data;
     String status =
         context.watch<DriverProfileViewModel>().DataList.status.toString();
-    var driverAddress = context
-            .watch<DriverProfileViewModel>()
-            .DataList
-            .data
-            ?.data
-            .driverAddress ??
-        '';
-    String? userimage = context
-        .watch<DriverProfileViewModel>()
-        .DataList
-        .data
-        ?.data
-        .profileImageUrl;
     String rentalStatus = context
         .watch<DriverGetBookingDetailsViewModel>()
         .DataList
         .status
         .toString();
-    
 
     // ignore: deprecated_member_use
     return WillPopScope(
@@ -152,9 +131,15 @@ class _home_screenState extends State<home_screen> {
       child: Scaffold(
         backgroundColor: appBarbgcolor,
         appBar: AppBar(
+          // centerTitle: true,
           // automaticallyImplyLeading: false,
           backgroundColor: Colors.transparent,
           toolbarHeight: 140,
+          // title: Image.asset(
+          //   appLogo1,
+          //   height: 35,
+          //   width: double.infinity,
+          // ),
           title: const Text(
             'Hi',
             style: TextStyle(color: background),
@@ -174,7 +159,7 @@ class _home_screenState extends State<home_screen> {
               );
             },
           ),
-        
+
           titleSpacing: 0,
 
           bottom: PreferredSize(
@@ -185,9 +170,11 @@ class _home_screenState extends State<home_screen> {
                 ListTile(
                   horizontalTitleGap: 10,
                   dense: true,
-                  leading: (userimage ?? '').isNotEmpty
+                  leading: (driverData?.profileImageUrl ?? '').isNotEmpty
                       ? CircleAvatar(
-                          backgroundImage: Image.network(userimage ?? '').image,
+                          backgroundImage:
+                              Image.network(driverData?.profileImageUrl ?? '')
+                                  .image,
                           radius: 25,
                         )
                       : const CircleAvatar(
@@ -195,15 +182,14 @@ class _home_screenState extends State<home_screen> {
                           child: Icon(Icons.person, size: 24),
                         ),
                   title: Text(
-                    '$userName $userLastName',
+                    '${driverData?.firstName ?? ''} ${driverData?.lastName ?? ''}',
                     style: const TextStyle(color: background, fontSize: 20),
                   ),
                   subtitle: Text(
-                    email,
+                    driverData?.email ?? '',
                     style: const TextStyle(color: background, fontSize: 14),
                   ),
                 ),
-               
                 const SizedBox(height: 5),
                 Container(
                   width: double.infinity,
@@ -222,7 +208,7 @@ class _home_screenState extends State<home_screen> {
                       ),
                       Expanded(
                         child: Text(
-                          driverAddress,
+                          driverData?.driverAddress ?? '',
                           style: const TextStyle(color: btnColor, fontSize: 16),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -262,12 +248,66 @@ class _home_screenState extends State<home_screen> {
             const SizedBox(width: 10)
           ],
         ),
-        drawer: Drawer(
-            elevation: 2,
-            backgroundColor: bgGreyColor,
-            child: MenuList(
-              userId: uId ?? '',
-            )),
+        drawer: MenuList(lastLogin: driverData?.lastLogin ?? '', menuItems: [
+          {"imgUrl": Icons.dashboard, "label": "Dashboard", "onTap": () {}},
+          {
+            "imgUrl": Icons.car_rental_rounded,
+            "label": "Rental Management",
+            "onTap": () {
+              context.push("/historyManagement", extra: {"myID": uId}).then(
+                  (onValue) {
+                Provider.of<DriverGetBookingListViewModel>(context,
+                        listen: false)
+                    .fetchDriverGetBookingListViewModel({
+                  "driverId": uId,
+                  "pageNumber": "0",
+                  "pageSize": "5",
+                  "bookingStatus": "BOOKED"
+                }, context);
+                Provider.of<DriverPackageViewModel>(context, listen: false)
+                    .getPackageBookingList(
+                  context: context,
+                );
+                getNotification();
+              });
+            }
+          },
+          {
+            "imgUrl": Icons.create_new_folder_outlined,
+            "label": "Package Management",
+            "onTap": () {
+              context.push('/packageBookingManagement').then((onValue) {
+                Provider.of<DriverGetBookingListViewModel>(context,
+                        listen: false)
+                    .fetchDriverGetBookingListViewModel({
+                  "driverId": uId,
+                  "pageNumber": "0",
+                  "pageSize": "5",
+                  "bookingStatus": "BOOKED"
+                }, context);
+                Provider.of<DriverPackageViewModel>(context, listen: false)
+                    .getPackageBookingList(
+                  context: context,
+                );
+                getNotification();
+              });
+            }
+          },
+          {
+            "imgUrl": Icons.account_circle_outlined,
+            "label": "Profile",
+            "onTap": () {
+              context.push("/profilePage", extra: {"userId": uId});
+            }
+          },
+          {
+            "imgUrl": Icons.help_sharp,
+            "label": "Help & Support",
+            "onTap": () {
+              context.push("/help&support");
+            }
+          },
+        ]),
         body: Container(
           height: double.infinity,
           width: double.infinity,
@@ -333,7 +373,6 @@ class _home_screenState extends State<home_screen> {
                                 curve: Curves.easeInOut,
                                 alignment: 0.5,
                               );
-                             
                             },
                             icon: Column(
                               children: [
@@ -350,7 +389,6 @@ class _home_screenState extends State<home_screen> {
                             ))
                       ],
                     )
-                  
                   ],
                 ),
               ),
@@ -481,7 +519,7 @@ class _home_screenState extends State<home_screen> {
                                 },
                               );
                             }
-      
+
                             return Container(
                               height: 200,
                               decoration: BoxDecoration(
@@ -496,7 +534,7 @@ class _home_screenState extends State<home_screen> {
                           },
                         ),
                       ),
-                    
+
                       const SizedBox(
                         height: 20,
                       ),
@@ -545,7 +583,6 @@ class _home_screenState extends State<home_screen> {
 
                       Consumer<DriverPackageViewModel>(
                         builder: (context, viewData, child) {
-                       
                           if (viewData.driverPackageBookingListModel == null ||
                               viewData.driverPackageBookingListModel!.data
                                   .isEmpty) {
@@ -636,7 +673,7 @@ class _home_screenState extends State<home_screen> {
                           }
                         },
                       ),
-                    
+
                       const SizedBox(height: 10)
                     ],
                   ),

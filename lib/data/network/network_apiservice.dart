@@ -90,6 +90,7 @@ class NetworkApiService extends BaseApiServices {
         debugPrint(response.statusCode.toString());
         throw UnauthorisedException(jsonEncode({"msg": "File upload error"}));
       }
+      // ignore: deprecated_member_use
     } on dio.DioError catch (e) {
       throw FetchDataException('API Connection Error: ${e.message}');
     }
@@ -101,7 +102,7 @@ class NetworkApiService extends BaseApiServices {
   Future getGetApiResponse(String url) async {
     var prefsToken = await SharedPreferences.getInstance();
     dynamic token = prefsToken.getString('token');
-    print("token==$token");
+   
     dynamic responseJson;
     try {
       if (kDebugMode) {
@@ -122,7 +123,7 @@ class NetworkApiService extends BaseApiServices {
   Future deleteApiResponse(String url) async {
     var prefsToken = await SharedPreferences.getInstance();
     dynamic token = prefsToken.getString('token');
-    print("token==$token");
+  
     dynamic responseJson;
     try {
       if (kDebugMode) {

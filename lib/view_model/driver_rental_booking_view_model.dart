@@ -47,15 +47,7 @@ class DriverGetBookingListViewModel with ChangeNotifier {
       debugPrint(error.toString());
     }
     return null;
-    // _myRepo.driverBookingListRepositoryApi(data).then((value) {
-    //   setDataList(ApiResponse.completed(value));
-    //   print("Driver Booking List Success");
-    //   // Utils.toastMessage("Driver Booking ALL List Successfull");
-    // }).onError((error, stackTrace) {
-    //   setDataList(ApiResponse.error(error.toString()));
-    //   print(error.toString());
-    //   // Utils.flushBarErrorMessage(error.toString(),context);
-    // });
+   
   }
 
   Future fetchDriverGetBookingListViewModel1(data, BuildContext context) async {
@@ -177,14 +169,7 @@ class DriverOnRunningViewModel with ChangeNotifier {
       setDataList(ApiResponse.completed(value));
       debugPrint("Driver On Going Success");
       context.pop();
-      // Provider.of<DriverOnRunningViewModel>(context,listen: false).
-      // fetchDriverStartRideViewModel({
-      //   "id": bookId,
-      //   "bookingStatus":"ON_RUNNING"
-      // },context,bookId,drvID);
-      // context.replace('/bookingDetails',extra: {'bookId': bookId,'myDriverId':drvID});
-      // context.replace('/onRunning_DetailsPage',
-      //     extra: {'bookId': bookId, 'driverID': drvID});
+     
       Utils.toastSuccessMessage("Driver Ongoing Successfully");
     }).onError((error, stackTrace) {
       setLoading(false);

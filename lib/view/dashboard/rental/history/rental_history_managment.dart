@@ -31,7 +31,6 @@ class _DriverHistoryManagmentState extends State<DriverHistoryManagment>
   String status = 'BOOKED';
   @override
   void initState() {
-  
     super.initState();
     _tabController = TabController(length: tabList.length, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback(
@@ -42,8 +41,8 @@ class _DriverHistoryManagmentState extends State<DriverHistoryManagment>
     _tabController?.addListener(() {
       initialIndex = _tabController?.index ?? 0;
       setState(() {
-        currentPage = 0; // Reset pagination when tab changes
-        bookedHistory.clear(); // Clear the history
+        currentPage = 0;
+        bookedHistory.clear(); 
         lastPage = false;
       });
       getPackageBooking();
@@ -53,7 +52,6 @@ class _DriverHistoryManagmentState extends State<DriverHistoryManagment>
           _scrollController.position.maxScrollExtent) {
         // User has reached the end of the list
         if (!isLoadingMore && !lastPage) {
-      
           getPackageBooking();
         }
       }
@@ -79,15 +77,18 @@ class _DriverHistoryManagmentState extends State<DriverHistoryManagment>
         'bookingStatus': status,
       }, context);
       // Update history with new data
-      final data = response?.data.content ?? [];
+      List<Content> newData = response?.data.content ?? [];
+      List<Content> allData =
+          (currentPage == 0) ? newData : [...bookedHistory, ...newData];
 
-      debugPrint('Fetched data: $data');
+      debugPrint('Fetched data: $allData');
 
-      if (data.isNotEmpty) {
+      if (allData.isNotEmpty) {
         setState(() {
-          bookedHistory.addAll(data); // Append new data to the existing list
+          bookedHistory = allData; 
           currentPage++; // Increment page number
-          lastPage = data.length < pageSize; // Check if this is the last page
+          lastPage =
+              newData.length < pageSize; // Check if this is the last page
         });
       } else {
         setState(() {
@@ -103,9 +104,7 @@ class _DriverHistoryManagmentState extends State<DriverHistoryManagment>
     }
   }
 
-  // List<Content> onRunningData = [];
-  // List<Content> completedData = [];
-  // List<Content> cancelledData = [];
+
   int selectedIndex = -1;
   @override
   Widget build(BuildContext context) {
@@ -124,7 +123,8 @@ class _DriverHistoryManagmentState extends State<DriverHistoryManagment>
                 builder: (context, viewModel, child) {
                   final response = viewModel.DataList;
 
-                  if (response.status.toString() == "Status.loading") {
+                  if (response.status.toString() == "Status.loading" &&
+                      currentPage == 0) {
                     return const Center(
                         child: CircularProgressIndicator(
                       color: greenColor,
@@ -156,12 +156,12 @@ class _DriverHistoryManagmentState extends State<DriverHistoryManagment>
                     return ListView.builder(
                       controller: _scrollController,
                       physics: const BouncingScrollPhysics(),
-                      itemCount: bookedHistory.length + (isLoadingMore ? 1 : 0),
+                      itemCount: bookedHistory.length + (lastPage ? 0 : 1),
                       itemBuilder: (context, index) {
                         if (index == bookedHistory.length) {
-                          return isLoadingMore
-                              ? const Center(child: CircularProgressIndicator())
-                              : const SizedBox.shrink(); // Hide if not loading
+                          return const Center(
+                              child: CircularProgressIndicator());
+                          // Hide if not loading
                         }
                         final item = bookedHistory[index];
                         return HistoryDetailsContainer(
