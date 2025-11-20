@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/res/Custom%20Page%20Layout/custom_pageLayout.dart';
-import 'package:flutter_driver/utils/dimensions.dart';
-import 'package:flutter_driver/utils/text_styles.dart';
+import 'package:flutter_driver/widgets/Custom%20Page%20Layout/custom_pageLayout.dart';
+import 'package:flutter_driver/core/utils/dimensions.dart';
+import 'package:flutter_driver/common/styles/text_styles.dart';
 
 class TermCondition extends StatelessWidget {
   const TermCondition({super.key});

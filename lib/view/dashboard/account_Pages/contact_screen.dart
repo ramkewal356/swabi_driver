@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/res/Custom%20Page%20Layout/custom_pageLayout.dart';
-import 'package:flutter_driver/utils/assets.dart';
-import 'package:flutter_driver/utils/color.dart';
-import 'package:flutter_driver/utils/dimensions.dart';
+import 'package:flutter_driver/widgets/Custom%20Page%20Layout/custom_pageLayout.dart';
+import 'package:flutter_driver/core/constants/assets.dart';
+import 'package:flutter_driver/common/styles/app_colors.dart';
+import 'package:flutter_driver/core/utils/dimensions.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ContactPage extends StatelessWidget {

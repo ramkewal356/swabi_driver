@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/res/Custom%20Page%20Layout/custom_pageLayout.dart';
-import 'package:flutter_driver/res/expansion_tile.dart';
-import 'package:flutter_driver/utils/text_styles.dart';
+import 'package:flutter_driver/widgets/Custom%20Page%20Layout/custom_pageLayout.dart';
+import 'package:flutter_driver/widgets/expansion_tile.dart';
+import 'package:flutter_driver/common/styles/text_styles.dart';
 
 class FAQPage extends StatelessWidget {
   const FAQPage({super.key});

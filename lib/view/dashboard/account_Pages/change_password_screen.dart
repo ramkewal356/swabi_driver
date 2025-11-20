@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/data/validatorclass.dart';
-import 'package:flutter_driver/res/Custom%20%20Button/custom_btn.dart';
-import 'package:flutter_driver/res/custom_text_form_field.dart';
-import 'package:flutter_driver/utils/text_styles.dart';
-import 'package:flutter_driver/view_model/driverProfile_view_model.dart';
+import 'package:flutter_driver/core/utils/validatorclass.dart';
+import 'package:flutter_driver/data/response/status.dart';
+import 'package:flutter_driver/view_model/auth_view_model.dart';
+import 'package:flutter_driver/widgets/Custom%20%20Button/custom_btn.dart';
+import 'package:flutter_driver/widgets/custom_text_form_field.dart';
+import 'package:flutter_driver/common/styles/text_styles.dart';
+
 import 'package:go_router/go_router.dart';
 
 import 'package:provider/provider.dart';
 
-import '../../../utils/color.dart';
+import '../../../common/styles/app_colors.dart';
 
 class ChangePassword extends StatefulWidget {
   final String driverId;
@@ -46,7 +48,7 @@ class _ChangePasswordState extends State<ChangePassword> {
     super.dispose();
   }
 
-  bool isLoading = false;
+
 
   void _updatePassword() {
     if (_formKey.currentState!.validate()) {
@@ -56,14 +58,15 @@ class _ChangePasswordState extends State<ChangePassword> {
         "newPassword": _newPasswordController.text
       };
 
-      Provider.of<ChangePasswordViewModel>(context, listen: false)
+      context
+          .read<AuthViewModel>()
           .changePasswordViewModelApi(context: context, query: query);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    isLoading = context.watch<ChangePasswordViewModel>().isLoading;
+    var status = context.watch<AuthViewModel>().changePassResponse.status;
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Form(
@@ -199,7 +202,7 @@ class _ChangePasswordState extends State<ChangePassword> {
             CustomButtonSmall(
               height: 50,
               width: double.infinity,
-              loading: isLoading,
+              loading: status == Status.loading,
               btnHeading: "Submit",
               onTap: () => _updatePassword(),
             ),

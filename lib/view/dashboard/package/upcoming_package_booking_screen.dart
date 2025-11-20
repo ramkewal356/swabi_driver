@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/utils/color.dart';
+import 'package:flutter_driver/common/styles/app_colors.dart';
 import 'package:flutter_driver/view/dashboard/package/custom_package_view_screen.dart';
 import 'package:flutter_driver/view_model/driver_package_view_model.dart';
 import 'package:go_router/go_router.dart';

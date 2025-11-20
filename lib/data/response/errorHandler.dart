@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/data/app_excaptions.dart';
+import 'package:flutter_driver/data/response/app_excaptions.dart';
 import 'package:flutter_driver/data/response/baseResponse.dart';
-import 'package:flutter_driver/data/string.dart';
+import 'package:flutter_driver/core/constants/string.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class ErrorHandler {

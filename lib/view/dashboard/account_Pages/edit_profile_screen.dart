@@ -1,17 +1,17 @@
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/model/driver_profile_model.dart';
-import 'package:flutter_driver/res/Custom%20%20Button/custom_btn.dart';
-import 'package:flutter_driver/res/Custom%20Page%20Layout/custom_pageLayout.dart';
-import 'package:flutter_driver/res/custom_text_form_field.dart';
-import 'package:flutter_driver/res/custom_dropdown_button.dart';
-import 'package:flutter_driver/res/custom_search_location.dart';
-import 'package:flutter_driver/res/login/login_customTextFeild.dart';
-import 'package:flutter_driver/utils/assets.dart';
-import 'package:flutter_driver/utils/color.dart';
-import 'package:flutter_driver/utils/text_styles.dart';
-import 'package:flutter_driver/view_model/driverProfile_view_model.dart';
+import 'package:flutter_driver/data/models/driver_profile_model.dart';
+import 'package:flutter_driver/widgets/Custom%20%20Button/custom_btn.dart';
+import 'package:flutter_driver/widgets/Custom%20Page%20Layout/custom_pageLayout.dart';
+import 'package:flutter_driver/widgets/custom_text_form_field.dart';
+import 'package:flutter_driver/widgets/custom_dropdown_button.dart';
+import 'package:flutter_driver/widgets/custom_search_location.dart';
+import 'package:flutter_driver/widgets/login/login_customTextFeild.dart';
+import 'package:flutter_driver/core/constants/assets.dart';
+import 'package:flutter_driver/common/styles/app_colors.dart';
+import 'package:flutter_driver/common/styles/text_styles.dart';
+import 'package:flutter_driver/view_model/driver_profile_view_model.dart';
 import 'package:provider/provider.dart';
 
 class EditProfiePage extends StatefulWidget {

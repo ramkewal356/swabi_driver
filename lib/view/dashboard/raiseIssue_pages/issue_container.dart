@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_driver/res/Custom%20%20Button/custom_btn.dart';
-import 'package:flutter_driver/utils/color.dart';
-import 'package:flutter_driver/utils/text_styles.dart';
+import 'package:flutter_driver/widgets/Custom%20%20Button/custom_btn.dart';
+import 'package:flutter_driver/common/styles/app_colors.dart';
+import 'package:flutter_driver/common/styles/text_styles.dart';
 
 class IssueContainer extends StatelessWidget {
   final String issueId;

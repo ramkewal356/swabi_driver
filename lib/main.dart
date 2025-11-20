@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_driver/firebase_options.dart';
 import 'package:flutter_driver/service_locator.dart';
-import 'package:flutter_driver/utils/routes/route.dart';
+import 'package:flutter_driver/app/route.dart';
 import 'package:flutter_driver/view_model/auth_view_model.dart';
 import 'package:flutter_driver/view_model/driver_rental_booking_view_model.dart';
-import 'package:flutter_driver/view_model/driverProfile_view_model.dart';
+import 'package:flutter_driver/view_model/driver_profile_view_model.dart';
 import 'package:flutter_driver/view_model/driver_package_view_model.dart';
 import 'package:flutter_driver/view_model/notification_view_model.dart';
 import 'package:flutter_driver/view_model/raiseIssue_view_model.dart';
@@ -37,8 +37,7 @@ Future<void> main() async {
         ChangeNotifierProvider(
             create: (context) => DriverGetBookingDetailsViewModel()),
         ChangeNotifierProvider(create: (context) => DriverProfileViewModel()),
-        ChangeNotifierProvider(
-            create: (context) => ChangePasswordViewModel()),
+       
         ChangeNotifierProvider(
             create: (context) => DriverProfileUpdateViewModel()),
         ChangeNotifierProvider(create: (context) => DriverOnRunningViewModel()),
@@ -47,7 +46,6 @@ Future<void> main() async {
     
         ChangeNotifierProvider(create: (context) => DriverPackageViewModel()),
         ChangeNotifierProvider(create: (context) => RaiseissueViewModel()),
-        ChangeNotifierProvider(create: (context) => ResetPasswordViewModel()),
         ChangeNotifierProvider(create: (context) => NotificationViewModel()),
         ChangeNotifierProvider(
             create: (context) => UploadProfilePicViewModel()),

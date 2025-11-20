@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_driver/model/get_issue_model.dart';
-import 'package:flutter_driver/res/Custom%20Page%20Layout/custom_pageLayout.dart';
+import 'package:flutter_driver/data/models/get_issue_model.dart';
+import 'package:flutter_driver/widgets/Custom%20Page%20Layout/custom_pageLayout.dart';
 
-import 'package:flutter_driver/res/custom_tab_bar.dart';
-import 'package:flutter_driver/utils/color.dart';
+import 'package:flutter_driver/widgets/custom_tab_bar.dart';
+import 'package:flutter_driver/common/styles/app_colors.dart';
 import 'package:flutter_driver/view/dashboard/raiseIssue_pages/issue_container.dart';
 import 'package:flutter_driver/view_model/raiseIssue_view_model.dart';
 import 'package:intl/intl.dart';

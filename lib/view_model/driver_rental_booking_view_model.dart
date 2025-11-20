@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_driver/data/response/api_response.dart';
-import 'package:flutter_driver/model/driver_booking_model.dart';
-import 'package:flutter_driver/respository/driver_rental_repository.dart';
-import 'package:flutter_driver/utils/utils.dart';
+import 'package:flutter_driver/data/models/driver_booking_model.dart';
+import 'package:flutter_driver/data/respositories/driver_rental_repository.dart';
+import 'package:flutter_driver/core/utils/utils.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/model/get_all_notification_model.dart';
-import 'package:flutter_driver/respository/notification_repository.dart';
+import 'package:flutter_driver/data/models/get_all_notification_model.dart';
+import 'package:flutter_driver/data/respositories/notification_repository.dart';
 import 'package:go_router/go_router.dart';
 
 class NotificationViewModel with ChangeNotifier {

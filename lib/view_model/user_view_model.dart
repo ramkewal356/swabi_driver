@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../utils/utils.dart';
-import '/model/user_model.dart';
+import '../core/utils/utils.dart';
+import '../data/models/user_model.dart';
 // ignore: depend_on_referenced_packages
 import 'package:shared_preferences/shared_preferences.dart';
 

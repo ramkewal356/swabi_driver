@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/model/get_issue_by_booking_id_model.dart';
-import 'package:flutter_driver/res/Custom%20%20Button/custom_btn.dart';
-import 'package:flutter_driver/res/Custom%20Page%20Layout/custom_pageLayout.dart';
-import 'package:flutter_driver/utils/assets.dart';
-import 'package:flutter_driver/utils/color.dart';
-import 'package:flutter_driver/utils/text_styles.dart';
-import 'package:flutter_driver/utils/utils.dart';
+import 'package:flutter_driver/data/models/get_issue_by_booking_id_model.dart';
+import 'package:flutter_driver/widgets/Custom%20%20Button/custom_btn.dart';
+import 'package:flutter_driver/widgets/Custom%20Page%20Layout/custom_pageLayout.dart';
+import 'package:flutter_driver/core/constants/assets.dart';
+import 'package:flutter_driver/common/styles/app_colors.dart';
+import 'package:flutter_driver/common/styles/text_styles.dart';
+import 'package:flutter_driver/core/utils/utils.dart';
 import 'package:flutter_driver/view_model/driver_package_view_model.dart';
 import 'package:flutter_driver/view_model/raiseIssue_view_model.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
@@ -56,15 +56,14 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
   }
 
   Future<void> getTimezone() async {
-    String timezone;
-
     try {
-      timezone = await FlutterTimezone.getLocalTimezone();
-      debugPrint('hgjhjhj.............$timezone');
+      final timezoneInfo = await FlutterTimezone.getLocalTimezone();
+      final timezoneString = timezoneInfo.toString();
+      debugPrint('hgjhjhj.............$timezoneString');
       if (!mounted) return;
 
       setState(() {
-        _timeZone = timezone;
+        _timeZone = timezoneString;
       });
     } catch (e) {
       debugPrint('Could not get the local timezone');

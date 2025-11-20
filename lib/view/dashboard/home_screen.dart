@@ -1,17 +1,17 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/model/driver_profile_model.dart';
-import 'package:flutter_driver/model/user_model.dart';
-import 'package:flutter_driver/res/Custom%20%20Button/custom_btn.dart';
-import 'package:flutter_driver/utils/assets.dart';
-import 'package:flutter_driver/utils/color.dart';
-import 'package:flutter_driver/utils/text_styles.dart';
+import 'package:flutter_driver/data/models/driver_profile_model.dart';
+import 'package:flutter_driver/data/models/user_model.dart';
+import 'package:flutter_driver/widgets/Custom%20%20Button/custom_btn.dart';
+import 'package:flutter_driver/core/constants/assets.dart';
+import 'package:flutter_driver/common/styles/app_colors.dart';
+import 'package:flutter_driver/common/styles/text_styles.dart';
 import 'package:flutter_driver/view/dashboard/menuList.dart';
 import 'package:flutter_driver/view/dashboard/package/custom_package_view_screen.dart';
 import 'package:flutter_driver/view/dashboard/rental/history/all_booking_container.dart';
 import 'package:flutter_driver/view_model/driver_rental_booking_view_model.dart';
-import 'package:flutter_driver/view_model/driverProfile_view_model.dart';
+import 'package:flutter_driver/view_model/driver_profile_view_model.dart';
 import 'package:flutter_driver/view_model/driver_package_view_model.dart';
 import 'package:flutter_driver/view_model/notification_view_model.dart';
 import 'package:flutter_driver/view_model/user_view_model.dart';

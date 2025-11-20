@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/model/driver_booking_model.dart';
-import 'package:flutter_driver/res/Custom%20Page%20Layout/custom_pageLayout.dart';
-import 'package:flutter_driver/res/custom_tab_bar.dart';
-import 'package:flutter_driver/utils/color.dart';
+import 'package:flutter_driver/data/models/driver_booking_model.dart';
+import 'package:flutter_driver/widgets/Custom%20Page%20Layout/custom_pageLayout.dart';
+import 'package:flutter_driver/widgets/custom_tab_bar.dart';
+import 'package:flutter_driver/common/styles/app_colors.dart';
 import 'package:flutter_driver/view/dashboard/rental/history/all_booking_container.dart';
 import 'package:flutter_driver/view_model/driver_rental_booking_view_model.dart';
 import 'package:google_fonts/google_fonts.dart';

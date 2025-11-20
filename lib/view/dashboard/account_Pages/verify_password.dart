@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/res/Custom%20%20Button/custom_btn.dart';
-import 'package:flutter_driver/res/Custom%20Page%20Layout/pageLayout_curve.dart';
-import 'package:flutter_driver/res/login/login_customTextFeild.dart';
-import 'package:flutter_driver/utils/assets.dart';
-import 'package:flutter_driver/utils/dimensions.dart';
-import 'package:flutter_driver/utils/text_styles.dart';
+import 'package:flutter_driver/widgets/Custom%20%20Button/custom_btn.dart';
+import 'package:flutter_driver/widgets/Custom%20Page%20Layout/pageLayout_curve.dart';
+import 'package:flutter_driver/widgets/login/login_customTextFeild.dart';
+import 'package:flutter_driver/core/constants/assets.dart';
+import 'package:flutter_driver/core/utils/dimensions.dart';
+import 'package:flutter_driver/common/styles/text_styles.dart';
 import 'package:go_router/go_router.dart';
 
 class VerifyPassword extends StatefulWidget {
