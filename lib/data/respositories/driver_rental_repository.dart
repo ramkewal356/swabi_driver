@@ -23,8 +23,8 @@ class DriverRentalBookingListRepository {
       return resp;
     } catch (e) {
       debugPrint("Driver Booking View List api not successful error $e");
-      // ignore: use_build_context_synchronously
-      http.handleErrorResponse(context: context, error: e);
+  
+      http.handleErrorResponse(error: e);
       rethrow;
     }
   }
@@ -50,8 +50,8 @@ class DriverRentalBookingDetailsRepository {
       return resp;
     } catch (e) {
       debugPrint("Driver Booking View Details api not successful error $e");
-      // ignore: use_build_context_synchronously
-      http.handleErrorResponse(context: context, error: e);
+    
+      http.handleErrorResponse(error: e);
       rethrow;
     }
   }
@@ -76,8 +76,8 @@ class DriverOnRunningRepository {
       return resp;
     } catch (e) {
       debugPrint("Driver  On Running Ride api not successful error $e");
-      // ignore: use_build_context_synchronously
-      http.handleErrorResponse(context: context, error: e);
+
+      http.handleErrorResponse(error: e);
       rethrow;
     }
   }
@@ -103,8 +103,8 @@ class DriverBookingCompletedRepository {
       return resp;
     } catch (e) {
       debugPrint("Driver Booking Not Completed Repo $e");
-      // ignore: use_build_context_synchronously
-      http.handleErrorResponse(context: context, error: e);
+     
+      http.handleErrorResponse(error: e);
       rethrow;
     }
   }

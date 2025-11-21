@@ -1,5 +1,8 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/data/models/get_issue_by_booking_id_model.dart';
+import 'package:flutter_driver/data/models/get_issue_by_booking_id_model.dart'
+    hide Status;
 import 'package:flutter_driver/widgets/Custom%20%20Button/custom_btn.dart';
 import 'package:flutter_driver/widgets/Custom%20Page%20Layout/custom_pageLayout.dart';
 import 'package:flutter_driver/core/constants/assets.dart';
@@ -12,12 +15,13 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../../../data/response/status.dart';
 
 class Packagedetailpage extends StatefulWidget {
-  final String bookingId;
+  final String driverAssignedId;
   final String driverId;
   const Packagedetailpage(
-      {super.key, required this.bookingId, required this.driverId});
+      {super.key, required this.driverAssignedId, required this.driverId});
 
   @override
   State<Packagedetailpage> createState() => _PackagedetailpageState();
@@ -30,9 +34,9 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
   String formattedTodayDate = '';
   @override
   void initState() {
-    
     WidgetsBinding.instance.addPostFrameCallback(
       (timeStamp) {
+        getPackageDetails();
         getIssueBybookingId();
       },
     );
@@ -46,20 +50,25 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
     formattedTodayDate = dateFormat.toString();
   }
 
+  void getPackageDetails() {
+    context
+        .read<DriverPackageViewModel>()
+        .getPackageDetailList(driverAssignId: widget.driverAssignedId);
+  }
+
   Future<void> getIssueBybookingId() async {
-    Provider.of<RaiseissueViewModel>(context, listen: false)
-        .getIssueByBookingId(
-            context: context,
-            bookingId: widget.bookingId,
-            userId: widget.driverId,
-            bookingType: 'PACKAGE_BOOKING');
+    context.read<RaiseissueViewModel>().getIssueByBookingId(
+        context: context,
+        bookingId: widget.driverAssignedId,
+        userId: widget.driverId,
+        bookingType: 'PACKAGE_BOOKING');
   }
 
   Future<void> getTimezone() async {
     try {
       final timezoneInfo = await FlutterTimezone.getLocalTimezone();
       final timezoneString = timezoneInfo.toString();
-      debugPrint('hgjhjhj.............$timezoneString');
+
       if (!mounted) return;
 
       setState(() {
@@ -78,20 +87,20 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
       appBarTitle: 'Package Details',
       child:
           Consumer<DriverPackageViewModel>(builder: (context, viewData, child) {
-        if (viewData.isLoading1) {
+        if (viewData.packageDetails.status == Status.loading) {
           return const Center(
               child: CircularProgressIndicator(
             color: greenColor,
           ));
-        } else if (viewData.driverPackageDetailModel == null) {
+        } else if (viewData.packageDetails.data == null) {
           return const Center(
               child: Text(
             'No packages available',
             style: TextStyle(color: redColor, fontWeight: FontWeight.w600),
           ));
         } else {
-          var package = viewData.driverPackageDetailModel?.data;
-          debugPrint('daystatus......${package?.pickupLocation}');
+          var package = viewData.packageDetails.data?.data;
+
           return Padding(
             padding: const EdgeInsets.all(10.0),
             child: SingleChildScrollView(
@@ -153,7 +162,6 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
                         ],
                       ),
                     ),
-                  
                   ),
                   containerItem(
                       context,
@@ -161,14 +169,6 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // const SizedBox(
-                          //   height: 160,
-                          //   child: VerticalDivider(
-                          //     width: 3,
-                          //     thickness: 3,
-                          //     color: btnColor,
-                          //   ),
-                          // ),
                           Padding(
                             padding: const EdgeInsets.only(bottom: 10),
                             child: Text(
@@ -300,7 +300,6 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
                                       '+${package?.alternateMobileCountryCode} ${package?.alternateMobile}'),
                         ],
                       )),
-                
                   Padding(
                     padding:
                         const EdgeInsets.only(left: 10, bottom: 10, top: 10),
@@ -416,7 +415,7 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
                                           : () {
                                               showConfirmation(
                                                   context: context,
-                                                  loading: viewData.isLoading,
+                                                  loading: false,
                                                   title: "Start",
                                                   onTap: () {
                                                     if (package
@@ -425,28 +424,32 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
                                                       Utils.toastMessage(
                                                           'Pickup location is required to start the ride');
                                                     } else {
-                                                      setState(() {
-                                                        viewData.isLoading =
-                                                            true;
+                                                      viewData
+                                                          .activityStart(
+                                                              context: context,
+                                                              packageBookingId:
+                                                                  package
+                                                                      ?.packageBookingId,
+                                                              date:
+                                                                  package?.date,
+                                                              zoneId: _timeZone)
+                                                          .then((onValue) {
+                                                        if (onValue?.status
+                                                                ?.httpCode ==
+                                                            '200') {
+                                                          getPackageDetails();
+                                                          context.pop();
+                                                        }
                                                       });
-                                                      viewData.activityStart(
-                                                          context: context,
-                                                          packageBookingId: package
-                                                              ?.packageBookingId,
-                                                          date: package?.date,
-                                                          zoneId: _timeZone);
-                                                      setState(() {
-                                                        viewData.isLoading =
-                                                            false;
-                                                      });
-                                                      if (!viewData.isLoading) {
-                                                        Provider.of<DriverPackageViewModel>(
-                                                                context,
-                                                                listen: false)
-                                                            .updateDayStatus(
-                                                                'ONGOING');
-                                                      }
+
+                                                      // if (!viewData.isLoading) {
+                                                      // Provider.of<DriverPackageViewModel>(
+                                                      //         context,
+                                                      //         listen: false)
+                                                      //     .updateDayStatus(
+                                                      //         'ONGOING');
                                                     }
+                                                    // }
                                                   });
                                             })
                                   : package?.dayStatus == 'ONGOING'
@@ -463,17 +466,12 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
                                               : () {
                                                   showConfirmation(
                                                       context: context,
-                                                      loading:
-                                                          viewData.isLoading,
+                                                      loading: false,
                                                       title: 'Complete',
                                                       onTap: () {
-                                                        setState(() {
-                                                          viewData.isLoading =
-                                                              true;
-                                                        });
-                                                        Provider.of<DriverPackageViewModel>(
-                                                                context,
-                                                                listen: false)
+                                                        context
+                                                            .read<
+                                                                DriverPackageViewModel>()
                                                             .activityComplete(
                                                                 context:
                                                                     context,
@@ -483,20 +481,23 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
                                                                 date: package
                                                                     ?.date,
                                                                 zoneId:
-                                                                    _timeZone);
-                                                        setState(() {
-                                                          viewData.isLoading =
-                                                              false;
-                                                        });
-                                                        if (!viewData
-                                                            .isLoading) {
-                                                          Provider.of<DriverPackageViewModel>(
-                                                                  context,
-                                                                  listen: false)
-                                                              .updateDayStatus(
-                                                                  'COMPLETED');
+                                                                    _timeZone)
+                                                            .then((onValue) {
+                                                          getPackageDetails();
                                                           context.pop('update');
-                                                        }
+                                                        });
+
+                                                        // if (viewData
+                                                        //         .packageBookingList
+                                                        //         .status ==
+                                                        //     Status.loading) {
+                                                        //   Provider.of<DriverPackageViewModel>(
+                                                        //           context,
+                                                        //           listen: false)
+                                                        //       .updateDayStatus(
+                                                        //           'COMPLETED');
+                                                        //   context.pop('update');
+                                                        // }
                                                       });
                                                 })
                                       : Container()
@@ -660,7 +661,7 @@ class InfoRow extends StatelessWidget {
   }
 }
 
-textItem({required String title, required String titleValue}) {
+Row textItem({required String title, required String titleValue}) {
   return Row(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -681,7 +682,7 @@ textItem({required String title, required String titleValue}) {
   );
 }
 
-completedTextItem() {
+Container completedTextItem() {
   return Container(
     margin: const EdgeInsets.only(bottom: 10),
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -702,7 +703,7 @@ completedTextItem() {
   );
 }
 
-ongoingTextItem() {
+Container ongoingTextItem() {
   return Container(
     margin: const EdgeInsets.only(bottom: 10),
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -723,7 +724,7 @@ ongoingTextItem() {
   );
 }
 
-pendingTextItem() {
+Container pendingTextItem() {
   return Container(
     margin: const EdgeInsets.only(bottom: 10),
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),

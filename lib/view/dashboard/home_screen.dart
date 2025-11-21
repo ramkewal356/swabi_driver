@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_driver/data/models/driver_profile_model.dart';
 import 'package:flutter_driver/data/models/user_model.dart';
+import 'package:flutter_driver/data/response/status.dart';
 import 'package:flutter_driver/widgets/Custom%20%20Button/custom_btn.dart';
 import 'package:flutter_driver/core/constants/assets.dart';
 import 'package:flutter_driver/common/styles/app_colors.dart';
@@ -73,11 +74,9 @@ class _home_screenState extends State<home_screen> {
     });
   }
 
-  getUser() async {
+  Future<void> getUser() async {
     await Future.delayed(const Duration(seconds: 2), () {
-      Provider.of<DriverProfileViewModel>(context, listen: false)
-          .fetchDriverDetailViewModelApi(
-              context, {"driverId": uId}, uId.toString());
+      context.read<DriverProfileViewModel>().getDriverByIdApi();
 
       Provider.of<DriverGetBookingListViewModel>(context, listen: false)
           .fetchDriverGetBookingListViewModel({
@@ -87,9 +86,7 @@ class _home_screenState extends State<home_screen> {
         "bookingStatus": "BOOKED"
       }, context);
       Provider.of<DriverPackageViewModel>(context, listen: false)
-          .getPackageBookingList(
-        context: context,
-      );
+          .getPackageBookingList();
     });
   }
 
@@ -106,10 +103,10 @@ class _home_screenState extends State<home_screen> {
   String selectedSection = 'rental';
   @override
   Widget build(BuildContext context) {
-    DriverProfileData? driverData =
-        context.watch<DriverProfileViewModel>().DataList.data?.data;
-    String status =
-        context.watch<DriverProfileViewModel>().DataList.status.toString();
+    var driverData =
+        context.watch<DriverProfileViewModel>().getDriverDetails.data?.data;
+    var status =
+        context.watch<DriverProfileViewModel>().getDriverDetails.status;
     String rentalStatus = context
         .watch<DriverGetBookingDetailsViewModel>()
         .DataList
@@ -254,43 +251,14 @@ class _home_screenState extends State<home_screen> {
             "imgUrl": Icons.car_rental_rounded,
             "label": "Rental Management",
             "onTap": () {
-              context.push("/historyManagement", extra: {"myID": uId}).then(
-                  (onValue) {
-                Provider.of<DriverGetBookingListViewModel>(context,
-                        listen: false)
-                    .fetchDriverGetBookingListViewModel({
-                  "driverId": uId,
-                  "pageNumber": "0",
-                  "pageSize": "5",
-                  "bookingStatus": "BOOKED"
-                }, context);
-                Provider.of<DriverPackageViewModel>(context, listen: false)
-                    .getPackageBookingList(
-                  context: context,
-                );
-                getNotification();
-              });
+              context.push("/historyManagement", extra: {"myID": uId});
             }
           },
           {
             "imgUrl": Icons.create_new_folder_outlined,
             "label": "Package Management",
             "onTap": () {
-              context.push('/packageBookingManagement').then((onValue) {
-                Provider.of<DriverGetBookingListViewModel>(context,
-                        listen: false)
-                    .fetchDriverGetBookingListViewModel({
-                  "driverId": uId,
-                  "pageNumber": "0",
-                  "pageSize": "5",
-                  "bookingStatus": "BOOKED"
-                }, context);
-                Provider.of<DriverPackageViewModel>(context, listen: false)
-                    .getPackageBookingList(
-                  context: context,
-                );
-                getNotification();
-              });
+              context.push('/packageBookingManagement');
             }
           },
           {
@@ -411,22 +379,7 @@ class _home_screenState extends State<home_screen> {
                             TextButton(
                                 onPressed: () {
                                   context.push("/historyManagement",
-                                      extra: {"myID": uId}).then((onValue) {
-                                    Provider.of<DriverGetBookingListViewModel>(
-                                            context,
-                                            listen: false)
-                                        .fetchDriverGetBookingListViewModel({
-                                      "driverId": uId,
-                                      "pageNumber": "0",
-                                      "pageSize": "5",
-                                      "bookingStatus": "BOOKED"
-                                    }, context);
-                                    Provider.of<DriverPackageViewModel>(context,
-                                            listen: false)
-                                        .getPackageBookingList(
-                                      context: context,
-                                    );
-                                  });
+                                      extra: {"myID": uId});
                                 },
                                 child: const Text(
                                   'View All',
@@ -551,24 +504,7 @@ class _home_screenState extends State<home_screen> {
                             ),
                             TextButton(
                                 onPressed: () {
-                                  context
-                                      .push('/packageBookingManagement')
-                                      .then((onValue) {
-                                    Provider.of<DriverGetBookingListViewModel>(
-                                            context,
-                                            listen: false)
-                                        .fetchDriverGetBookingListViewModel({
-                                      "driverId": uId,
-                                      "pageNumber": "0",
-                                      "pageSize": "5",
-                                      "bookingStatus": "BOOKED"
-                                    }, context);
-                                    Provider.of<DriverPackageViewModel>(context,
-                                            listen: false)
-                                        .getPackageBookingList(
-                                      context: context,
-                                    );
-                                  });
+                                  context.push('/packageBookingManagement');
                                 },
                                 child: const Text(
                                   'View All',
@@ -583,8 +519,8 @@ class _home_screenState extends State<home_screen> {
 
                       Consumer<DriverPackageViewModel>(
                         builder: (context, viewData, child) {
-                          if (viewData.driverPackageBookingListModel == null ||
-                              viewData.driverPackageBookingListModel!.data
+                          if (viewData.packageBookingList.data == null ||
+                              (viewData.packageBookingList.data?.data ?? [])
                                   .isEmpty) {
                             return Container(
                               margin:
@@ -606,66 +542,49 @@ class _home_screenState extends State<home_screen> {
                             return ListView.builder(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
-                              itemCount: viewData
-                                  .driverPackageBookingListModel?.data.length,
+                              itemCount:
+                                  viewData.packageBookingList.data?.data.length,
                               itemBuilder: (context, index) {
                                 var package = viewData
-                                    .driverPackageBookingListModel!.data[index];
+                                    .packageBookingList.data!.data[index];
                                 var activity = package.activityList
                                     .map((e) => e.activityName)
                                     .toList();
                                 debugPrint(
                                     'activityname...${package.activityList.length}');
-                                return Custompackageviewpage(
+                                return CustomPackageViewPage(
                                   driverAssignId:
                                       package.driverAssignedId.toString(),
                                   date: package.date.toString(),
                                   pickUpLocation:
                                       package.pickupLocation ?? 'N/A',
                                   activityName: activity.join(','),
-                                  daySatus: package.dayStatus.toString(),
+                                  dayStatus: package.dayStatus.toString(),
                                   pickupTime: package.pickupTime ?? 'N/A',
-                                  loader: viewData.isLoading1 &&
-                                      indexValue == index,
-                                  onTap: viewData.isLoading
+                                  loader: indexValue == index,
+                                  onTap: viewData.packageBookingList.status ==
+                                          Status.loading
                                       ? null
                                       : () {
-                                          setState(() {
-                                            // viewData.isLoading = true;
-                                            indexValue = index;
-                                          });
-                                          Provider.of<DriverPackageViewModel>(
-                                                  context,
-                                                  listen: false)
-                                              .getPackageDetailList(
-                                                  context: context,
-                                                  driverAssignId:
-                                                      package.driverAssignedId);
-                                          // setState(() {
-                                          //   viewData.isLoading = false;
-                                          // });
-                                          if (viewData.isLoading1) {
-                                            context.push('/packageDetailPage',
-                                                extra: {
-                                                  "bookingId": package
-                                                      .packageBookingId
-                                                      .toString(),
-                                                  "driverId": package.driverId
-                                                      .toString()
-                                                }).then((onValue) {
-                                              debugPrint(
-                                                  'object.........updated');
-                                              WidgetsBinding.instance
-                                                  .addPostFrameCallback((_) {
-                                                Provider.of<DriverPackageViewModel>(
-                                                        context,
-                                                        listen: false)
-                                                    .getPackageBookingList(
-                                                  context: context,
-                                                );
-                                              });
+                                          context.push('/packageDetailPage',
+                                              extra: {
+                                                "bookingId": package
+                                                    .packageBookingId
+                                                    .toString(),
+                                                "driverId":
+                                                    package.driverId.toString()
+                                              }).then((onValue) {
+                                            debugPrint(
+                                                'object.........updated');
+                                            WidgetsBinding.instance
+                                                .addPostFrameCallback((_) {
+                                              Provider.of<DriverPackageViewModel>(
+                                                      context,
+                                                      listen: false)
+                                                  .getPackageBookingList();
                                             });
-                                          }
+                                          });
+                                          // }
                                         },
                                 );
                               },

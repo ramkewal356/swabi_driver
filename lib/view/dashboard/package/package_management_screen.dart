@@ -3,8 +3,7 @@ import 'package:flutter_driver/widgets/Custom%20Page%20Layout/custom_pageLayout.
 import 'package:flutter_driver/common/styles/app_colors.dart';
 import 'package:flutter_driver/view/dashboard/package/history_package_booking_screen.dart';
 import 'package:flutter_driver/view/dashboard/package/upcoming_package_booking_screen.dart';
-import 'package:flutter_driver/view_model/driver_package_view_model.dart';
-import 'package:provider/provider.dart';
+
 
 class PackageManagementScreen extends StatefulWidget {
   const PackageManagementScreen({super.key});
@@ -24,36 +23,24 @@ class _PackageManagementScreenState extends State<PackageManagementScreen>
    
     super.initState();
     _tabcontroller = TabController(length: 2, vsync: this);
-    getPackageList();
+  
     _tabcontroller?.addListener(() {
-      intialIndex = _tabcontroller?.index ?? 0;
+      setState(() {
+        intialIndex = _tabcontroller?.index ?? 0;
+      });
 
-      getPackageList();
+   
      
     });
   }
 
-  Future<void> getPackageList() async {
-    if (intialIndex == 0) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Provider.of<DriverPackageViewModel>(context, listen: false)
-            .getPackageBookingList(
-          context: context,
-        );
-      });
-    } else if (intialIndex == 1) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Provider.of<DriverPackageViewModel>(context, listen: false)
-            .getPackageBookingHistoryList(context: context);
-      });
-    }
-  }
+
 
   @override
   void dispose() {
-   
-    super.dispose();
     _tabcontroller!.dispose();
+    super.dispose();
+   
   }
 
   @override
@@ -67,6 +54,7 @@ class _PackageManagementScreenState extends State<PackageManagementScreen>
             padding: const EdgeInsets.all(5),
             margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             decoration: BoxDecoration(
+                // ignore: deprecated_member_use
                 border: Border.all(color: naturalGreyColor.withOpacity(0.3)),
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10)),
@@ -76,7 +64,7 @@ class _PackageManagementScreenState extends State<PackageManagementScreen>
                 setState(() {
                   intialIndex = value;
                 });
-                getPackageList();
+            
                 debugPrint("valueIndex $intialIndex");
               },
             

@@ -38,8 +38,8 @@ Future<void> main() async {
             create: (context) => DriverGetBookingDetailsViewModel()),
         ChangeNotifierProvider(create: (context) => DriverProfileViewModel()),
        
-        ChangeNotifierProvider(
-            create: (context) => DriverProfileUpdateViewModel()),
+        // ChangeNotifierProvider(
+        //     create: (context) => DriverProfileUpdateViewModel()),
         ChangeNotifierProvider(create: (context) => DriverOnRunningViewModel()),
         ChangeNotifierProvider(
             create: (context) => DriverCompletedBookingViewModel()),
@@ -47,8 +47,8 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => DriverPackageViewModel()),
         ChangeNotifierProvider(create: (context) => RaiseissueViewModel()),
         ChangeNotifierProvider(create: (context) => NotificationViewModel()),
-        ChangeNotifierProvider(
-            create: (context) => UploadProfilePicViewModel()),
+        // ChangeNotifierProvider(
+        //     create: (context) => UploadProfilePicViewModel()),
         ChangeNotifierProvider(
             create: (context) => GetCountryStateListViewModel()),
       ],

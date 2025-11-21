@@ -1,7 +1,7 @@
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/data/models/driver_profile_model.dart';
+// import 'package:flutter_driver/data/models/driver_profile_model.dart';
+import 'package:flutter_driver/data/response/status.dart';
 import 'package:flutter_driver/widgets/Custom%20%20Button/custom_btn.dart';
 import 'package:flutter_driver/widgets/Custom%20Page%20Layout/custom_pageLayout.dart';
 import 'package:flutter_driver/widgets/custom_text_form_field.dart';
@@ -36,8 +36,6 @@ class _EditProfiePageState extends State<EditProfiePage> {
   final TextEditingController countryController = TextEditingController();
   final TextEditingController stateController = TextEditingController();
 
- 
-
   // 'AIzaSyADRdiTbSYUR8oc6-ryM1F1NDNjkHDr0Yo';
   String? gengerName;
   FocusNode focusNode1 = FocusNode();
@@ -54,29 +52,25 @@ class _EditProfiePageState extends State<EditProfiePage> {
   String profileImg = '';
   @override
   void initState() {
- 
     super.initState();
     getUser();
-
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      firstNameController.text = data?.firstName ?? '';
-      lastNameController.text = data?.lastName ?? '';
-      genderController.text = data?.gender ?? '';
-      locationController.text = data?.driverAddress ?? '';
-      phoneNumberController.text = widget.mobileNumber;
-      countryController.text = data?.country ?? 'United Arab Emirates';
-      stateController.text = data?.state ?? '';
-      profileImg = data?.profileImageUrl ?? '';
-      getCountry();
-    });
   }
 
-  getUser() async {
-    Future.delayed(const Duration(seconds: 2), () {
-      Provider.of<DriverProfileViewModel>(context, listen: false)
-          .fetchDriverDetailViewModelApi(
-              context, {"driverId": widget.usrId}, widget.usrId);
-    });
+  Future<void> getUser() async {
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    var vm = context.read<DriverProfileViewModel>();
+    await vm.getDriverByIdApi();
+    var data = vm.getDriverDetails.data?.data;
+    firstNameController.text = data?.firstName ?? '';
+    lastNameController.text = data?.lastName ?? '';
+    genderController.text = data?.gender ?? '';
+    locationController.text = data?.driverAddress ?? '';
+    phoneNumberController.text = widget.mobileNumber;
+    countryController.text = data?.country ?? 'United Arab Emirates';
+    stateController.text = data?.state ?? '';
+    profileImg = data?.profileImageUrl ?? '';
+    getCountry();
+    // });
   }
 
   Dio? dio;
@@ -86,13 +80,11 @@ class _EditProfiePageState extends State<EditProfiePage> {
         'cnmxncmnbx../././././././././.. cmnnb ${countryController.text}');
     try {
       Provider.of<GetCountryStateListViewModel>(context, listen: false)
-            .getStateList(
-                context: context,
-               
-                country: countryController.text.isEmpty
-                    ? 'United Arab Emirates'
+          .getStateList(
+              context: context,
+              country: countryController.text.isEmpty
+                  ? 'United Arab Emirates'
                   : countryController.text);
-     
     } catch (e) {
       debugPrint('error $e');
     }
@@ -107,15 +99,13 @@ class _EditProfiePageState extends State<EditProfiePage> {
   }
 
   bool loader = false;
-  DriverProfileData? data;
+
   @override
   Widget build(BuildContext context) {
-    bool status = context.watch<DriverProfileUpdateViewModel>().isLoading;
-    var state =
-        context.watch<GetCountryStateListViewModel>().getStateListModel;
+    var status = context.watch<DriverProfileViewModel>().updateDriver.status;
+    var state = context.watch<GetCountryStateListViewModel>().getStateListModel;
 
-    debugPrint(widget.usrId.toString());
-    data = context.watch<DriverProfileViewModel>().DataList.data?.data;
+   
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -234,14 +224,14 @@ class _EditProfiePageState extends State<EditProfiePage> {
                     height: 20,
                   ),
                   CustomButtonBig(
-                      loading: status,
+                      loading: status == Status.loading,
                       btnHeading: "UPDATE",
                       onTap: () {
                         if (_formKey.currentState!.validate()) {
-                          Provider.of<DriverProfileUpdateViewModel>(context,
-                                  listen: false)
-                              .editProfile(
-                            context: context,
+                          context
+                              .read<DriverProfileViewModel>()
+                              .updateProfileApi(
+                                context: context,
                             firstName: firstNameController.text,
                             lastName: lastNameController.text,
                             gender: genderController.text,
@@ -252,7 +242,6 @@ class _EditProfiePageState extends State<EditProfiePage> {
                             location: locationController.text,
                           );
                         }
-                      
                       }),
                   const SizedBox(height: 500),
                 ],
@@ -262,6 +251,5 @@ class _EditProfiePageState extends State<EditProfiePage> {
         ),
       ),
     );
-   
   }
 }

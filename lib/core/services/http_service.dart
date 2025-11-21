@@ -14,14 +14,7 @@ class HttpService<T> {
   final String? endURL;
   final HttpMethodType? methodType;
   Map<String, dynamic>? queryParameters;
-  // {
-  //   "key1":1,
-  //   "key1":1,
-  //   "key1":1,
-  //   "key1":1,
-  //   "key1":"1",
-  //   "key1":"1"
-  // }
+ 
   final HttpBodyType? bodyType;
   Map<String, dynamic>? body;
   Map<String, String>? headers;
@@ -45,28 +38,19 @@ class HttpService<T> {
     _http = Dio();
   }
 
-  // isAuthorizeRequest() {
-  //   // if (_auth.isAuthenticated) {
-
-  //   if (this.headers == null) {
-  //     this.headers = Map<String, String>();
-  //   }
-  //   this.headers!.addAll({
-  //     "Authorization": "Bearer " +
-  //         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MWRlZmZjMGQ1MjE1NjI5MGIyYTgwOTYiLCJuYW1lIjoibWFkaHVzdSIsImVtYWlsIjoibXNzc2RAZ21hb2lsbC5mamYiLCJwaG9uZU51bWJlciI6IjkxODk3ODc3Njc2NyIsImlhdCI6MTY0MjAwNDQyMiwiZXhwIjoxNjQyODY4NDIyfQ.585EsMwtKGXQK3AJX8coewikknodm-Kqbr7dquzoKVk"
-  //   });
-  //   // }
-  // }
-  authorizeRequest() async {
+ 
+  Future<void> authorizeRequest() async {
     if (this.headers == null) {
       this.headers = <String, String>{};
     }
+    // ignore: prefer_adjacent_string_concatenation
     this.headers?.addAll({"Authorization": "Bearer " + "$kToken"});
 
     // this.headers!.addAll({"token": "${_auth.authenticationToken}"});
     // print({'token....jhjh': this.headers});
   }
 
+  // ignore: avoid_shadowing_type_parameters
   Future<Response<T>>? request<T>() {
     dynamic bodyData;
     if (this.headers == null) {
@@ -119,7 +103,7 @@ class HttpService<T> {
             receiveDataWhenStatusError: true,
           ),
         );
-        break;
+    
       case HttpMethodType.POST:
         // FormData dataaa = bodyData;
 
@@ -137,7 +121,7 @@ class HttpService<T> {
             receiveDataWhenStatusError: true,
           ),
         );
-        break;
+      
       case HttpMethodType.PUT:
         return _http!.put<T>(
           this.baseURL! + this.endURL!,
@@ -152,7 +136,7 @@ class HttpService<T> {
             receiveDataWhenStatusError: true,
           ),
         );
-        break;
+      
       case HttpMethodType.PATCH:
         return _http!.patch<T>(
           this.baseURL! + this.endURL!,
@@ -167,7 +151,7 @@ class HttpService<T> {
             receiveDataWhenStatusError: true,
           ),
         );
-        break;
+      
       case HttpMethodType.DELETE:
         return _http!.delete<T>(
           this.baseURL! + this.endURL!,
@@ -182,13 +166,13 @@ class HttpService<T> {
             receiveDataWhenStatusError: true,
           ),
         );
-        break;
+     
       default:
         return null;
     }
   }
 
-  handleErrorResponse({
+  void handleErrorResponse({
     BuildContext? context,
     dynamic error,
     BaseResponseModel? errorResponse,

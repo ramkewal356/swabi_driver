@@ -10,7 +10,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:provider/provider.dart';
 
-import '../../../common/styles/app_colors.dart';
+import '../../common/styles/app_colors.dart';
 
 class ChangePassword extends StatefulWidget {
   final String driverId;
@@ -47,8 +47,6 @@ class _ChangePasswordState extends State<ChangePassword> {
     _focasNode3.dispose();
     super.dispose();
   }
-
-
 
   void _updatePassword() {
     if (_formKey.currentState!.validate()) {

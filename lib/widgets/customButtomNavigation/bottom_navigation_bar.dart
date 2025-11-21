@@ -10,8 +10,7 @@ class CustomBottomNavigationBar extends StatefulWidget {
   final String currentRoute;
 
   const CustomBottomNavigationBar(
-      {Key? key, required this.child, required this.currentRoute})
-      : super(key: key);
+      {super.key, required this.child, required this.currentRoute});
 
   @override
   State<CustomBottomNavigationBar> createState() =>

@@ -9,7 +9,7 @@ import 'package:flutter_driver/widgets/login/login_customTextFeild.dart';
 import 'package:flutter_driver/core/constants/assets.dart';
 import 'package:flutter_driver/common/styles/app_colors.dart';
 import 'package:flutter_driver/core/utils/dimensions.dart';
-import 'package:flutter_driver/view/dashboard/account_Pages/change_password_screen.dart';
+import 'package:flutter_driver/view/auth_screens/change_password_screen.dart';
 import 'package:flutter_driver/view_model/driver_profile_view_model.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:go_router/go_router.dart';
@@ -18,8 +18,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
-  final String user;
-  const ProfilePage({super.key, required this.user});
+ 
+  const ProfilePage({super.key});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -32,13 +32,13 @@ class _ProfilePageState extends State<ProfilePage> {
   final ImagePicker _picker = ImagePicker();
   @override
   void initState() {
-   
     super.initState();
-    dataUser = widget.user;
+    getDriverDetails();
+  }
+
+  void getDriverDetails() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Provider.of<DriverProfileViewModel>(context, listen: false)
-          .fetchDriverDetailViewModelApi(
-              context, {"driverId": widget.user}, widget.user);
+      context.read<DriverProfileViewModel>().getDriverByIdApi();
     });
   }
 
@@ -137,15 +137,15 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _uploadImage(File file) async {
     var profilePic =
         await MultipartFile.fromFile(file.path, filename: "profile.jpg");
-    Map<String, dynamic> body = {"driverId": widget.user, "image": profilePic};
+    // Map<String, dynamic> body = {"driverId": widget.user, "image": profilePic};
     try {
-      Provider.of<UploadProfilePicViewModel>(context, listen: false)
-          .uploadProfilePic(context: context, body: body)
-          .then((onValue) {
-        Provider.of<DriverProfileViewModel>(context, listen: false)
-            .fetchDriverDetailViewModelApi(
-                context, {"driverId": userId}, userId);
-      });
+      // Provider.of<UploadProfilePicViewModel>(context, listen: false)
+      //     .uploadProfilePic(context: context, body: body)
+      //     .then((onValue) {
+      //   Provider.of<DriverProfileViewModel>(context, listen: false)
+      //       .fetchDriverDetailViewModelApi(
+      //           context, {"driverId": userId}, userId);
+      // });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error: $e")),
@@ -153,15 +153,12 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  var userId;
-  // var userName, userLastName, userMobile, userAdd, userEmail, userGender,userImg,userId;
-  DriverProfileData? driverProfileData;
   @override
   Widget build(BuildContext context) {
     debugPrint(dataUser);
 
-    driverProfileData =
-        context.watch<DriverProfileViewModel>().DataList.data?.data;
+    var driverProfileData =
+        context.watch<DriverProfileViewModel>().getDriverDetails.data?.data;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -173,7 +170,6 @@ class _ProfilePageState extends State<ProfilePage> {
               'uId': dataUser,
               'phoneNo': driverProfileData?.mobile,
             });
-           
           },
           child: Padding(
             padding: const EdgeInsets.only(right: 22),
@@ -229,8 +225,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   )
                 ],
               ),
-
-            
               const SizedBox(height: 10),
               CommonTextFeild(
                 heading: "Driver Id",
@@ -341,12 +335,14 @@ class _ProfilePageState extends State<ProfilePage> {
                     btnHeading: 'CHANGE PASSWORD',
                     onTap: () {
                       _showModalBottomSheet(
-                          context, ChangePassword(driverId: widget.user));
+                          context,
+                          ChangePassword(
+                              driverId:
+                                  driverProfileData?.driverId.toString() ??
+                                      ''));
                     }),
               ),
               const SizedBox(height: 10),
-
-             
             ],
           ),
         ),
@@ -355,7 +351,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _showModalBottomSheet(BuildContext context, Widget child) {
- 
     return showModalBottomSheet(
         context: context,
         isDismissible: false,
@@ -408,9 +403,7 @@ class ProfileContainer extends StatelessWidget {
                       image: DecorationImage(
                           image: FileImage(imgPath), fit: BoxFit.cover)),
                 )
-              :
-             
-              Container(
+              : Container(
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       image: DecorationImage(
@@ -419,7 +412,6 @@ class ProfileContainer extends StatelessWidget {
                               imgPath),
                           // image: AssetImage(imgPath),
                           fit: BoxFit.cover))),
-         
         ),
         Positioned(
           bottom: 20,

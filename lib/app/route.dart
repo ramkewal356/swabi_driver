@@ -2,16 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_driver/widgets/custom_ride_issue_page.dart';
-import 'package:flutter_driver/view/dashboard/account_Pages/change_password_screen.dart';
-import 'package:flutter_driver/view/dashboard/account_Pages/contact_screen.dart';
-import 'package:flutter_driver/view/dashboard/account_Pages/faq_page_screen.dart';
+import 'package:flutter_driver/view/auth_screens/change_password_screen.dart';
 import 'package:flutter_driver/view/dashboard/account_Pages/help&support.dart';
 import 'package:flutter_driver/view/dashboard/account_Pages/notification.dart';
 import 'package:flutter_driver/view/dashboard/account_Pages/profile_screen.dart';
 import 'package:flutter_driver/view/dashboard/account_Pages/raise_issue_details.dart';
 import 'package:flutter_driver/view/dashboard/account_Pages/term_condition.dart';
-import 'package:flutter_driver/view/dashboard/account_Pages/transaction.dart';
-import 'package:flutter_driver/view/dashboard/account_Pages/verify_password.dart';
 import 'package:flutter_driver/view/dashboard/home_screen.dart';
 import 'package:flutter_driver/view/dashboard/account_Pages/edit_profile_screen.dart';
 import 'package:flutter_driver/view/dashboard/package/package_detail_screen.dart';
@@ -26,7 +22,6 @@ import 'package:flutter_driver/view/auth_screens/reset_password_screen.dart';
 import 'package:flutter_driver/view/auth_screens/splash_screen.dart';
 import 'package:go_router/go_router.dart';
 
-final _shellNavigatorKey = GlobalKey<NavigatorState>();
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final GoRouter myRouter = GoRouter(
@@ -65,35 +60,13 @@ final GoRouter myRouter = GoRouter(
         );
       },
     ),
-    //
-    // GoRoute(
-    //   path: '/menuPage',
-    //   pageBuilder: (BuildContext context, GoRouterState state) {
-    //     var data = state.extra as Map<String, dynamic>;
-    //     return CustomTransitionPage(
-    //       key: state.pageKey,
-    //       child: MenuList(userId: data['id']),
-    //       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-    //         const begin = Offset(-1.0, 0.0);
-    //         const end = Offset.zero;
-    //         const curve = Curves.ease;
-    //         var tween =
-    //             Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-    //         var offsetAnimation = animation.drive(tween);
-    //         return SlideTransition(
-    //           position: offsetAnimation,
-    //           child: child,
-    //         );
-    //       },
-    //     );
-    //   },
-    // ),
+ 
     GoRoute(
         path: '/profilePage',
         builder: (BuildContext context, GoRouterState state) {
-          var data = state.extra as Map<String, dynamic>;
+          // var data = state.extra as Map<String, dynamic>;
           return ProfilePage(
-            user: data['userId'],
+              // user: data['userId'],
           );
         },
         routes: [
@@ -134,7 +107,7 @@ final GoRouter myRouter = GoRouter(
         var bookingId = state.extra as Map<String, dynamic>;
         var driverId = state.extra as Map<String, dynamic>;
         return Packagedetailpage(
-          bookingId: bookingId["bookingId"],
+          driverAssignedId: bookingId["driverAssignedId"],
           driverId: driverId["driverId"],
         );
       },
@@ -159,13 +132,7 @@ final GoRouter myRouter = GoRouter(
         );
       },
     ),
-    GoRoute(
-      path: '/verifyPassword',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (BuildContext context, GoRouterState state) {
-        return const VerifyPassword();
-      },
-    ),
+   
 
     GoRoute(
       path: '/forgotPassword',
@@ -195,13 +162,7 @@ final GoRouter myRouter = GoRouter(
         );
       },
     ),
-    GoRoute(
-      path: '/faqPage',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (BuildContext context, GoRouterState state) {
-        return const FAQPage();
-      },
-    ),
+  
     GoRoute(
       path: '/termCondition',
       parentNavigatorKey: _rootNavigatorKey,
@@ -209,13 +170,7 @@ final GoRouter myRouter = GoRouter(
         return const TermCondition();
       },
     ),
-    GoRoute(
-      path: '/contact',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (BuildContext context, GoRouterState state) {
-        return const ContactPage();
-      },
-    ),
+   
     GoRoute(
       path: '/help&support',
       parentNavigatorKey: _rootNavigatorKey,
@@ -250,13 +205,6 @@ final GoRouter myRouter = GoRouter(
       },
     ),
 
-    GoRoute(
-      path: '/myTransaction',
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (BuildContext context, GoRouterState state) {
-        return const MyTransaction();
-      },
-    ),
 
     GoRoute(
       path: '/bookingDetails',

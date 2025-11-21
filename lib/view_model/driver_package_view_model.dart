@@ -1,96 +1,103 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_driver/data/models/common_model.dart';
 import 'package:flutter_driver/data/models/driver_package_model.dart';
-import 'package:flutter_driver/data/models/driver_package_history_model.dart';
+// import 'package:flutter_driver/data/models/driver_package_history_model.dart';
+import 'package:flutter_driver/data/models/get_package_details_model.dart';
+import 'package:flutter_driver/data/models/package_history_model.dart';
+import 'package:flutter_driver/data/response/api_response.dart';
 import 'package:flutter_driver/data/respositories/driver_packages_repository.dart';
 import 'package:flutter_driver/core/utils/utils.dart';
-import 'package:go_router/go_router.dart';
+// import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DriverPackageViewModel with ChangeNotifier {
   DriverpackageserviceRepository driverpackageserviceRepository =
       DriverpackageserviceRepository();
-  DriverPackageBookingListModel? driverPackageBookingListModel;
-  DriverPackageDetailModel? driverPackageDetailModel;
-  DriverPackageBookingHistoryListModel? driverPackageBookingHistoryListModel;
-  bool isLoading = false;
-  bool isLoading1 = false;
-  bool get loading => isLoading;
-  setLoading(bool value) {
-    isLoading = value;
+
+  ApiResponse<DriverPackageBookingListModel> packageBookingList =
+      ApiResponse.initial();
+  void setPackageList(ApiResponse<DriverPackageBookingListModel> response) {
+    packageBookingList = response;
+    notifyListeners();
+  }
+
+  ApiResponse<GetPackageDetailsModel> packageDetails = ApiResponse.initial();
+  void setPackageDetails(ApiResponse<GetPackageDetailsModel> response) {
+    packageDetails = response;
+    notifyListeners();
+  }
+
+  ApiResponse<PackageHistoryModel> packageHistoryList = ApiResponse.initial();
+  void setPackageHistoryList(ApiResponse<PackageHistoryModel> response) {
+    packageHistoryList = response;
+    notifyListeners();
+  }
+
+  ApiResponse<CommonModel> startActivity = ApiResponse.initial();
+  void setOnStartActivity(ApiResponse<CommonModel> response) {
+    startActivity = response;
+    notifyListeners();
+  }
+
+  ApiResponse<CommonModel> completeActivity = ApiResponse.initial();
+  void setOnCompleteActivity(ApiResponse<CommonModel> response) {
+    completeActivity = response;
     notifyListeners();
   }
 
   void updateDayStatus(String newStatus) {
-    if (driverPackageDetailModel?.data != null) {
-      driverPackageDetailModel?.data.dayStatus = newStatus;
+    if (packageDetails.data != null) {
+      packageDetails.data?.data?.dayStatus = newStatus;
       notifyListeners();
     }
   }
 
-  Future<DriverPackageBookingListModel?> getPackageBookingList({
-    required BuildContext context,
-  }) async {
+  Future<DriverPackageBookingListModel?> getPackageBookingList() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var driverId = pref.getString('userId');
     Map<String, dynamic> query = {"driverId": driverId};
     try {
-      isLoading = true;
-      notifyListeners();
+      setPackageList(ApiResponse.loading());
 
-      var value =
-          await driverpackageserviceRepository.getPackageUpcommingListApi(
-        query: query,
-        context: context,
-      );
+      var value = await driverpackageserviceRepository
+          .getPackageUpcommingListApi(query: query);
 
       if (value?.status.httpCode == '200') {
-        driverPackageBookingListModel = value;
-        isLoading = false;
-        notifyListeners();
+        setPackageList(ApiResponse.completed(value));
         debugPrint("Driver Booking Details Success");
       } else {
         debugPrint("Failed to fetch booking details");
       }
     } catch (e) {
-      isLoading = false;
-      notifyListeners();
+      setPackageList(ApiResponse.error(e.toString()));
       debugPrint('error: $e');
     }
     return null;
   }
 
   Future<DriverPackageDetailModel?> getPackageDetailList({
-    required BuildContext context,
-    required driverAssignId,
+    required String driverAssignId,
   }) async {
     Map<String, dynamic> query = {"driverAssignedId": driverAssignId};
     try {
-      isLoading1 = true;
-      notifyListeners();
-      // setLoading(true);
+      setPackageDetails(ApiResponse.loading());
       var value = await driverpackageserviceRepository.getPackageDetailListApi(
-          query: query, context: context);
+          query: query);
 
-      if (value?.status.httpCode == '200') {
-        driverPackageDetailModel = value;
-        isLoading1 = false;
-        notifyListeners();
+      if (value.status?.httpCode == '200') {
+        setPackageDetails(ApiResponse.completed(value));
         debugPrint("Driver Booking Details Success");
       } else {
         debugPrint("Failed to fetch booking details");
       }
     } catch (e) {
-      isLoading1 = false;
-      notifyListeners();
+      setPackageDetails(ApiResponse.error(e.toString()));
       debugPrint('error: $e');
-    } finally {
-      isLoading1 = false;
-      notifyListeners();
     }
     return null;
   }
 
-  Future<DriverActivityStartModel?> activityStart(
+  Future<CommonModel?> activityStart(
       {required BuildContext context,
       required packageBookingId,
       required date,
@@ -101,35 +108,20 @@ class DriverPackageViewModel with ChangeNotifier {
       "zoneId": zoneId
     };
     try {
-      // return null;
-      isLoading = true;
-      notifyListeners();
-
-      await driverpackageserviceRepository
-          .startActivityApi(query: query, context: context)
-          .then((value) {
-        if (value?.status.httpCode == '200') {
-          // driverPackageDetailModel = value;
-          // ignore: use_build_context_synchronously
-          Utils.toastSuccessMessage('Activity Started');
-          context.pop();
-          debugPrint("Driver activity started");
-        } else {
-          debugPrint("Failed to fetch booking details");
-        }
-
-        isLoading = false;
-        notifyListeners();
-      });
+      setOnStartActivity(ApiResponse.loading());
+      var resp =
+          await driverpackageserviceRepository.startActivityApi(query: query);
+      setOnStartActivity(ApiResponse.completed(resp));
+      Utils.toastSuccessMessage(resp?.data?.body ?? '');
+      return resp;
     } catch (e) {
-      isLoading = false;
-      notifyListeners();
+      setOnStartActivity(ApiResponse.error(e.toString()));
       debugPrint('error: $e');
     }
     return null;
   }
 
-  Future<DriverActivityCompleteModel?> activityComplete(
+  Future<CommonModel?> activityComplete(
       {required BuildContext context,
       required packageBookingId,
       required date,
@@ -140,59 +132,36 @@ class DriverPackageViewModel with ChangeNotifier {
       "zoneId": zoneId
     };
     try {
-      isLoading = true;
-      notifyListeners();
-
-      await driverpackageserviceRepository
-          .completeActivityApi(query: query, context: context)
-          .then((value) {
-        if (value?.status.httpCode == '200') {
-          // driverPackageDetailModel = value;
-          updateDayStatus('COMPLETED');
-          // ignore: use_build_context_synchronously
-          Utils.toastSuccessMessage('Activity Completed');
-          // context.pop();
-          debugPrint("Driver Activity completed");
-        } else {
-          debugPrint("Failed to fetch booking details");
-        }
-
-        isLoading = false;
-        notifyListeners();
-      });
+      setOnCompleteActivity(ApiResponse.loading());
+      var resp = await driverpackageserviceRepository.completeActivityApi(
+          query: query);
+      setOnCompleteActivity(ApiResponse.completed(resp));
+      Utils.toastSuccessMessage(resp?.data?.body ?? '');
+      return resp;
     } catch (e) {
-      isLoading = false;
-      notifyListeners();
+      setOnCompleteActivity(ApiResponse.error(e.toString()));
       debugPrint('error: $e');
     }
     return null;
   }
 
-  Future<DriverPackageBookingHistoryListModel?> getPackageBookingHistoryList({
-    required BuildContext context,
-  }) async {
+  Future<PackageHistoryModel?> getPackageBookingHistoryList() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var driverId = pref.getString('userId');
     Map<String, dynamic> query = {"driverId": driverId};
     try {
-      isLoading = true;
-      notifyListeners();
-
+      setPackageHistoryList(ApiResponse.loading());
       var value = await driverpackageserviceRepository.getPackageHistoryListApi(
-          query: query, context: context);
+          query: query);
 
-      if (value?.status.httpCode == '200') {
-        driverPackageBookingListModel = value;
+      if (value.status?.httpCode == '200') {
+        setPackageHistoryList(ApiResponse.completed(value));
         debugPrint("Driver Booking history Success");
       } else {
         debugPrint("Failed to fetch booking details");
       }
-
-      isLoading = false;
-      notifyListeners();
     } catch (e) {
-      isLoading = false;
-      notifyListeners();
+      setPackageHistoryList(ApiResponse.error(e.toString()));
       debugPrint('error: $e');
     }
     return null;

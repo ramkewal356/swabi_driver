@@ -1,13 +1,18 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_driver/core/constants/app_url.dart';
+import 'package:flutter_driver/data/models/common_model.dart';
+// import 'package:flutter_driver/data/models/driver_package_history_model.dart';
+
 import 'package:flutter_driver/data/models/driver_package_model.dart';
 import 'package:flutter_driver/core/services/http_service.dart';
+import 'package:flutter_driver/data/models/get_package_details_model.dart';
+import 'package:flutter_driver/data/models/package_history_model.dart';
 
 class DriverpackageserviceRepository {
   Future<DriverPackageBookingListModel?> getPackageUpcommingListApi({
     required Map<String, dynamic> query,
-    required BuildContext context,
+
   }) async {
     var http = HttpService(
         isAuthorizeRequest: false,
@@ -25,17 +30,15 @@ class DriverpackageserviceRepository {
     } catch (error) {
       debugPrint('error..$error');
       http.handleErrorResponse(
-        // ignore: use_build_context_synchronously
-        context: context,
         error: error,
       );
+      rethrow;
     }
-    return null;
   }
 
-  Future<DriverPackageDetailModel?> getPackageDetailListApi({
+  Future<GetPackageDetailsModel> getPackageDetailListApi({
     required Map<String, dynamic> query,
-    required BuildContext context,
+  
   }) async {
     var http = HttpService(
         isAuthorizeRequest: false,
@@ -48,26 +51,20 @@ class DriverpackageserviceRepository {
       Response<dynamic>? response = await http.request<dynamic>();
       debugPrint('response..packageBooking list ${response?.data}');
 
-      var resp = DriverPackageDetailModel.fromJson(response?.data);
+      var resp = GetPackageDetailsModel.fromJson(response?.data);
       return resp;
     } catch (error) {
-      // BaseResponseModel baseResponseModel =
-      //     BaseResponseModel.fromJson(error.response?.data);
-      // print(baseResponseModel.status?.message);
-
       debugPrint('error..$error');
       http.handleErrorResponse(
-        // ignore: use_build_context_synchronously
-        context: context,
         error: error,
       );
+      rethrow;
     }
-    return null;
   }
 
-  Future<DriverActivityStartModel?> startActivityApi({
+  Future<CommonModel?> startActivityApi({
     required Map<String, dynamic> query,
-    required BuildContext context,
+  
   }) async {
     var http = HttpService(
         isAuthorizeRequest: false,
@@ -81,26 +78,20 @@ class DriverpackageserviceRepository {
       Response<dynamic>? response = await http.request<dynamic>();
       debugPrint('response..packageBooking list ${response?.data}');
 
-      var resp = DriverActivityStartModel.fromJson(response?.data ?? {});
+      var resp = CommonModel.fromJson(response?.data ?? {});
       return resp;
     } catch (error) {
-      // BaseResponseModel baseResponseModel =
-      //     BaseResponseModel.fromJson(error.response?.data);
-      // print(baseResponseModel.status?.message);
-
       debugPrint('error..$error');
       http.handleErrorResponse(
-        // ignore: use_build_context_synchronously
-        context: context,
         error: error,
       );
+      rethrow;
     }
-    return null;
   }
 
-  Future<DriverActivityCompleteModel?> completeActivityApi({
+  Future<CommonModel?> completeActivityApi({
     required Map<String, dynamic> query,
-    required BuildContext context,
+  
   }) async {
     var http = HttpService(
         isAuthorizeRequest: false,
@@ -113,19 +104,19 @@ class DriverpackageserviceRepository {
       Response<dynamic>? response = await http.request<dynamic>();
       debugPrint('response..packageBooking list ${response?.data}');
 
-      var resp = DriverActivityCompleteModel.fromJson(response?.data);
+      var resp = CommonModel.fromJson(response?.data);
       return resp;
     } catch (error) {
       debugPrint('error..$error');
-      // ignore: use_build_context_synchronously
-      http.handleErrorResponse(context: context, error: error);
+
+      http.handleErrorResponse(error: error);
+      rethrow;
     }
-    return null;
   }
 
-  Future<DriverPackageBookingListModel?> getPackageHistoryListApi({
+  Future<PackageHistoryModel> getPackageHistoryListApi({
     required Map<String, dynamic> query,
-    required BuildContext context,
+  
   }) async {
     var http = HttpService(
         isAuthorizeRequest: false,
@@ -138,13 +129,13 @@ class DriverpackageserviceRepository {
       Response<dynamic>? response = await http.request<dynamic>();
       debugPrint('response..packageBooking list ${response?.data}');
 
-      var resp = DriverPackageBookingListModel.fromJson(response?.data);
+      var resp = PackageHistoryModel.fromJson(response?.data);
       return resp;
     } catch (error) {
       debugPrint('error..$error');
-      // ignore: use_build_context_synchronously
-      http.handleErrorResponse(context: context, error: error);
+
+      http.handleErrorResponse(error: error);
+      rethrow;
     }
-    return null;
   }
 }

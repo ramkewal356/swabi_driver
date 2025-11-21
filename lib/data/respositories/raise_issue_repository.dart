@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -33,21 +32,9 @@ class RaiseissueRepository {
       } else {
         throw ApiException('Server returned an error: $response');
       }
-    } on DioException catch (dioError) {
-      // throw FetchDataException(dioError.message);
-      if (dioError.type == DioExceptionType.connectionTimeout ||
-          dioError.type == DioExceptionType.receiveTimeout) {
-        throw TimeoutException('Connection TimeOut');
-      } else if (dioError.type == DioExceptionType.connectionError) {
-        throw NetworkException('Internet Connection error');
-      } else if (dioError.response != null) {
-        throw ApiException(
-            'Server responded with an error: ${dioError.response}');
-      } else {
-        throw UnknownException('Unknown error occurred');
-      }
-    } catch (e) {
-      throw UnknownException('Unknown error occurred');
+    } catch (error) {
+      http.handleErrorResponse(error: error);
+      rethrow;
     }
   }
 
@@ -73,10 +60,9 @@ class RaiseissueRepository {
         throw BadRequestException(
             'Server returned an error: ${response?.statusCode}');
       }
-    } on SocketException catch (dioError) {
-      throw FetchDataException(dioError.toString());
-    } catch (e) {
-      throw UnauthorisedException(e.toString());
+    } catch (error) {
+      http.handleErrorResponse(error: error);
+      rethrow;
     }
   }
 
@@ -102,10 +88,9 @@ class RaiseissueRepository {
         throw BadRequestException(
             'Server returned an error: ${response?.statusCode}');
       }
-    } on SocketException catch (dioError) {
-      throw FetchDataException(dioError.toString());
-    } catch (e) {
-      throw UnauthorisedException(e.toString());
+    } catch (error) {
+      http.handleErrorResponse(error: error);
+      rethrow;
     }
   }
 
@@ -130,10 +115,10 @@ class RaiseissueRepository {
       } else {
         throw ApiException('Server returned an error: ${response?.statusCode}');
       }
-    } catch (dioError) {
-      // ignore: use_build_context_synchronously
-      http.handleErrorResponse(context: context, error: dioError);
+    } catch (error) {
+      http.handleErrorResponse(error: error);
+      rethrow;
     }
-    return null;
+ 
   }
 }

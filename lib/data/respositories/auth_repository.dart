@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_driver/core/constants/app_url.dart';
@@ -24,8 +26,8 @@ class AuthRepository {
     } catch (e) {
       debugPrint("registration api not successful error $e");
 
-      // ignore: use_build_context_synchronously
-      http.handleErrorResponse(context: context, error: e);
+   
+      http.handleErrorResponse(error: e);
       rethrow;
     }
   }
@@ -47,8 +49,8 @@ class AuthRepository {
       return resp;
     } catch (error) {
       debugPrint('error $error');
-      // ignore: use_build_context_synchronously
-      http.handleErrorResponse(context: context, error: error);
+    
+      http.handleErrorResponse(error: error);
       rethrow;
     }
   }
@@ -60,18 +62,26 @@ class AuthRepository {
         isAuthorizeRequest: false,
         baseURL: AppUrl.baseUrl,
         endURL: AppUrl.sendOtpsUrl,
-        methodType: HttpMethodType.POST,
+        methodType: HttpMethodType.GET,
         bodyType: HttpBodyType.JSON,
         queryParameters: query);
     try {
       Response<dynamic>? response = await http.request<dynamic>();
       debugPrint("passord change response ${response?.data}");
-      var resp = CommonModel.fromJson(response?.data);
-      return resp;
+      if (response?.data is Map<String, dynamic>) {
+        // Already JSON decoded
+        return CommonModel.fromJson(response?.data as Map<String, dynamic>);
+      } else if (response?.data is String) {
+        // Need to decode
+        final decoded = jsonDecode(response?.data as String);
+        return CommonModel.fromJson(decoded);
+      } else {
+        throw Exception("Unexpected response format: ${response?.data}");
+      }
     } catch (error) {
       debugPrint('error..$error');
-      // ignore: use_build_context_synchronously
-      http.handleErrorResponse(context: context, error: error);
+     
+      http.handleErrorResponse(error: error);
       rethrow;
     }
     // return null;
@@ -94,10 +104,10 @@ class AuthRepository {
       return resp;
     } catch (error) {
       debugPrint('error..$error');
-      // ignore: use_build_context_synchronously
-      http.handleErrorResponse(context: context, error: error);
+      
+      http.handleErrorResponse(error: error);
+      rethrow;
     }
-    return null;
   }
 
   Future<CommonModel?> resetPasswordApi(
@@ -117,9 +127,9 @@ class AuthRepository {
       return resp;
     } catch (error) {
       debugPrint('error..$error');
-      // ignore: use_build_context_synchronously
-      http.handleErrorResponse(context: context, error: error);
+    
+      http.handleErrorResponse(error: error);
+      rethrow;
     }
-    return null;
   }
 }

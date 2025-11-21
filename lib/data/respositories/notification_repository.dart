@@ -22,8 +22,8 @@ class NotificationRepository {
       var resp = UpdateNotificationStatusModel.fromJson(response?.data);
       return resp;
     } catch (error) {
-      // ignore: use_build_context_synchronously
-      http.handleErrorResponse(context: context, error: error);
+  
+      http.handleErrorResponse(error: error);
       rethrow;
     }
   }
@@ -44,8 +44,8 @@ class NotificationRepository {
       var resp = GetAllNotificationModel.fromJson(response?.data);
       return resp;
     } catch (error) {
-      // ignore: use_build_context_synchronously
-      http.handleErrorResponse(context: context, error: error);
+   
+      http.handleErrorResponse(error: error);
       rethrow;
     }
   }

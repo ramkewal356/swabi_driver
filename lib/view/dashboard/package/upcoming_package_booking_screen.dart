@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_driver/common/styles/app_colors.dart';
+import 'package:flutter_driver/data/response/status.dart';
 import 'package:flutter_driver/view/dashboard/package/custom_package_view_screen.dart';
 import 'package:flutter_driver/view_model/driver_package_view_model.dart';
 import 'package:go_router/go_router.dart';
@@ -14,17 +15,16 @@ class UpcommingPackagebooking extends StatefulWidget {
 }
 
 class _UpcommingPackagebookingState extends State<UpcommingPackagebooking> {
-  // DriverPackageViewModel driverPackageViewModel = DriverPackageViewModel();
-  // bool _isLoading = false;
+
   @override
   void initState() {
- 
     super.initState();
+    getUpcommingPackage();
+  }
+
+  void getUpcommingPackage() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<DriverPackageViewModel>(context, listen: false)
-          .getPackageBookingList(
-        context: context,
-      );
+      context.read<DriverPackageViewModel>().getPackageBookingList();
     });
   }
 
@@ -33,13 +33,13 @@ class _UpcommingPackagebookingState extends State<UpcommingPackagebooking> {
   Widget build(BuildContext context) {
     return Consumer<DriverPackageViewModel>(
       builder: (context, viewData, child) {
-        if (viewData.isLoading) {
+        if (viewData.packageBookingList.status == Status.loading) {
           return const Center(
               child: CircularProgressIndicator(
             color: Colors.green,
           ));
-        } else if (viewData.driverPackageBookingListModel == null ||
-            viewData.driverPackageBookingListModel!.data.isEmpty) {
+        } else if (viewData.packageBookingList.data == null ||
+            viewData.packageBookingList.data!.data.isEmpty) {
           return const Center(
               child: Text(
             'No Data Found',
@@ -47,50 +47,27 @@ class _UpcommingPackagebookingState extends State<UpcommingPackagebooking> {
           ));
         } else {
           return ListView.builder(
-            itemCount: viewData.driverPackageBookingListModel?.data.length,
+            itemCount: viewData.packageBookingList.data?.data.length,
             itemBuilder: (context, index) {
-              var package = viewData.driverPackageBookingListModel!.data[index];
+              var package = viewData.packageBookingList.data!.data[index];
               var activity =
                   package.activityList.map((e) => e.activityName).toList();
-         
-              return Custompackageviewpage(
+
+              return CustomPackageViewPage(
                 driverAssignId: package.driverAssignedId.toString(),
                 date: package.date.toString(),
                 pickUpLocation: package.pickupLocation ?? 'N/A',
                 activityName: activity.join(','),
-                daySatus: package.dayStatus.toString(),
+                dayStatus: package.dayStatus.toString(),
                 pickupTime: package.pickupTime ?? 'N/A',
-                loader: viewData.isLoading1 && indexValue == index,
-                onTap: viewData.isLoading
-                    ? null
-                    : () {
-                        setState(() {
-                          // viewData.isLoading = true;
-                          indexValue = index;
-                        });
-                        Provider.of<DriverPackageViewModel>(context,
-                                listen: false)
-                            .getPackageDetailList(
-                                context: context,
-                                driverAssignId: package.driverAssignedId);
-                        // setState(() {
-                        //   viewData.isLoading = false;
-                        // });
-                        if (viewData.isLoading1) {
-                          context.push('/packageDetailPage', extra: {
-                            "bookingId": package.packageBookingId.toString(),
-                            "driverId": package.driverId.toString()
-                          }).then((onValue) {
-                         
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              Provider.of<DriverPackageViewModel>(context,
-                                      listen: false)
-                                  .getPackageBookingList(
-                                context: context,
-                              );
-                            });
-                          });
-                        }
+                loader: indexValue == index,
+                onTap: () {
+                  context.push('/packageDetailPage', extra: {
+                    "driverAssignedId": package.driverAssignedId.toString(),
+                    "driverId": package.driverId.toString()
+                  }).then((onValue) {
+                    getUpcommingPackage();
+                  });
                       },
               );
             },
