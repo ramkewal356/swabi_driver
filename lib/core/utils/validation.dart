@@ -1,3 +1,5 @@
+import 'package:phone_numbers_parser/phone_numbers_parser.dart';
+
 class Validation {
 //sync text fill check
   Future<bool> istextField(String value) async {
@@ -38,4 +40,19 @@ class Validation {
   }
 }
 
+Future<String?> globalPhoneValidator(String fullNumber) async {
+  try {
+    // Parse safely
+    final phone = PhoneNumber.parse(fullNumber);
+
+    // Check if valid
+    final isValid = phone.isValid();
+
+    if (!isValid) return "Invalid phone number";
+
+    return null;
+  } catch (e) {
+    return "Invalid phone number";
+  }
+}
 

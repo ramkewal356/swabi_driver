@@ -1,15 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/widgets/Custom%20Page%20Layout/custom_pageLayout.dart';
 import 'package:flutter_driver/core/utils/dimensions.dart';
 import 'package:flutter_driver/common/styles/text_styles.dart';
+import 'package:flutter_driver/widgets/custom_page_layout.dart';
 
 class TermCondition extends StatelessWidget {
   const TermCondition({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return CustomPagelayout(
+    return CustomPageLayout(
         appBarTitle: 'Term & Condition',
         child: Padding(
           padding: const EdgeInsets.all(10.0),

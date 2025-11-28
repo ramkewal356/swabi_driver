@@ -38,21 +38,7 @@ class Utils {
 
   static void flushBarSuccessMessage(String? message, BuildContext? context) {
     if (message != null && context != null) {
-      // showFlushbar(context: context,
-      //   flushbar: Flushbar(
-      //     forwardAnimationCurve:Curves.decelerate,
-      //     margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      //     padding: const EdgeInsets.all(15),
-      //     message: message,
-      //     duration: const Duration(seconds: 3),
-      //     borderRadius: BorderRadius.circular(8),
-      //     flushbarPosition: FlushbarPosition.TOP,
-      //     backgroundColor: const Color(0xff23974B),
-      //     reverseAnimationCurve: Curves.easeInOut,
-      //     positionOffset: 20,
-      //     icon: const Icon(Icons.error , size: 28 , color: Colors.white,),
-      //   )..show(context),
-      // );
+    
       DelightToastBar(
         position: DelightSnackbarPosition.bottom,
         builder: (context) => ToastCard(
@@ -84,26 +70,7 @@ class Utils {
   }
 
   static void flushBarErrorMessage(String message, BuildContext context) {
-    // showFlushbar(
-    //   context: context,
-    //   flushbar: Flushbar(
-    //     forwardAnimationCurve: Curves.decelerate,
-    //     margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-    //     padding: const EdgeInsets.all(15),
-    //     message: message,
-    //     duration: const Duration(seconds: 3),
-    //     borderRadius: BorderRadius.circular(8),
-    //     flushbarPosition: FlushbarPosition.TOP,
-    //     backgroundColor: Colors.red,
-    //     reverseAnimationCurve: Curves.easeInOut,
-    //     positionOffset: 20,
-    //     icon: const Icon(
-    //       Icons.error,
-    //       size: 28,
-    //       color: Colors.white,
-    //     ),
-    //   )..show(context),
-    // );
+  
     DelightToastBar(
       position: DelightSnackbarPosition.bottom,
       builder: (context) => ToastCard(
@@ -134,26 +101,7 @@ class Utils {
   }
 
   static void flushBarInfoMessage(String message, BuildContext context) {
-    // showFlushbar(
-    //   context: context,
-    //   flushbar: Flushbar(
-    //     forwardAnimationCurve: Curves.decelerate,
-    //     margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-    //     padding: const EdgeInsets.all(15),
-    //     message: message,
-    //     duration: const Duration(seconds: 3),
-    //     borderRadius: BorderRadius.circular(8),
-    //     flushbarPosition: FlushbarPosition.TOP,
-    //     backgroundColor: const Color.fromRGBO(42, 98, 184, 1),
-    //     reverseAnimationCurve: Curves.easeInOut,
-    //     positionOffset: 20,
-    //     icon: const Icon(
-    //       Icons.error,
-    //       size: 28,
-    //       color: Colors.white,
-    //     ),
-    //   )..show(context),
-    // );
+ 
     DelightToastBar(
       position: DelightSnackbarPosition.top,
       builder: (context) => ToastCard(
@@ -188,7 +136,8 @@ class Utils {
     });
   }
 
-  static snackBar(String message, BuildContext context) {
+  static ScaffoldFeatureController<SnackBar, SnackBarClosedReason> snackBar(
+      String message, BuildContext context) {
     return ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(backgroundColor: Colors.red, content: Text(message)));
   }

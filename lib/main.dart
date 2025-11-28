@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_driver/firebase_options.dart';
 import 'package:flutter_driver/service_locator.dart';
 import 'package:flutter_driver/app/route.dart';
@@ -10,7 +11,7 @@ import 'package:flutter_driver/view_model/driver_rental_booking_view_model.dart'
 import 'package:flutter_driver/view_model/driver_profile_view_model.dart';
 import 'package:flutter_driver/view_model/driver_package_view_model.dart';
 import 'package:flutter_driver/view_model/notification_view_model.dart';
-import 'package:flutter_driver/view_model/raiseIssue_view_model.dart';
+import 'package:flutter_driver/view_model/raise_issue_view_model.dart';
 import 'package:flutter_driver/view_model/user_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -23,6 +24,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   setupLocator();
+  await dotenv.load();
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -33,22 +35,11 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => AuthViewModel()),
         ChangeNotifierProvider(create: (context) => UserViewModel()),
         ChangeNotifierProvider(
-            create: (context) => DriverGetBookingListViewModel()),
-        ChangeNotifierProvider(
-            create: (context) => DriverGetBookingDetailsViewModel()),
+            create: (context) => DriverRentalBookingViewModel()),
         ChangeNotifierProvider(create: (context) => DriverProfileViewModel()),
-       
-        // ChangeNotifierProvider(
-        //     create: (context) => DriverProfileUpdateViewModel()),
-        ChangeNotifierProvider(create: (context) => DriverOnRunningViewModel()),
-        ChangeNotifierProvider(
-            create: (context) => DriverCompletedBookingViewModel()),
-    
         ChangeNotifierProvider(create: (context) => DriverPackageViewModel()),
-        ChangeNotifierProvider(create: (context) => RaiseissueViewModel()),
+        ChangeNotifierProvider(create: (context) => RaiseIssueViewModel()),
         ChangeNotifierProvider(create: (context) => NotificationViewModel()),
-        // ChangeNotifierProvider(
-        //     create: (context) => UploadProfilePicViewModel()),
         ChangeNotifierProvider(
             create: (context) => GetCountryStateListViewModel()),
       ],

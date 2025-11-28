@@ -34,6 +34,7 @@ const bglightGreyColor = Color(0xffFBFBFC);
 // linear-gradient(0deg, #2A62B8, #2A62B8);
 const allStatusColor = Color(0xffEAEFF8);
 const darkBlueColor = Color(0xff2A62B8);
+// ignore: deprecated_member_use
 Color lightBlueColor = const Color(0xff9BBAE8).withOpacity(0.3);
 
 const naturalGreyColor1 = Color(0xff23282E);

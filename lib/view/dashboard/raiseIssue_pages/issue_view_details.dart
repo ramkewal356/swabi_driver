@@ -1,115 +1,167 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/data/models/issue_detail_model.dart';
-import 'package:flutter_driver/widgets/Custom%20Page%20Layout/custom_pageLayout.dart';
+import 'package:flutter_driver/data/response/status.dart';
+import 'package:flutter_driver/widgets/custom_page_layout.dart';
 import 'package:flutter_driver/common/styles/app_colors.dart';
-import 'package:flutter_driver/common/styles/text_styles.dart';
-import 'package:flutter_driver/view_model/raiseIssue_view_model.dart';
+import 'package:flutter_driver/view_model/raise_issue_view_model.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class Issueviewdetails extends StatefulWidget {
-  const Issueviewdetails({super.key});
+class IssueViewDetails extends StatefulWidget {
+  final String issueId;
+  const IssueViewDetails({super.key, required this.issueId});
 
   @override
-  State<Issueviewdetails> createState() => _IssueviewdetailsState();
+  State<IssueViewDetails> createState() => _IssueViewDetailsState();
 }
 
-class _IssueviewdetailsState extends State<Issueviewdetails> {
-  Data? issueData;
+class _IssueViewDetailsState extends State<IssueViewDetails> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((callback) {
+      getIssueDetails();
+    });
+  }
+
+  void getIssueDetails() {
+    context
+        .read<RaiseIssueViewModel>()
+        .getRaiseIssueDetailsApi(issueId: widget.issueId);
+  }
+
   @override
   Widget build(BuildContext context) {
-    issueData = context.watch<RaiseissueViewModel>().issueDetail.data?.data;
-    return CustomPagelayout(
+    var issueData =
+        context.watch<RaiseIssueViewModel>().getIssueDetail.data?.data;
+    var status = context.watch<RaiseIssueViewModel>().getIssueDetail.status;
+    return CustomPageLayout(
       appBarTitle: 'Issue Details',
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            margin: const EdgeInsets.all(10),
-            width: double.infinity,
-            decoration: BoxDecoration(
-                color: background,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.black12)),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: Text(
-                        "Status",
-                        style: titleTextStyle,
-                      ),
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      ':',
-                      style: titleTextStyle,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      flex: 3,
+      child: status == Status.loading
+          ? const Center(
+              child: CircularProgressIndicator(
+              color: greenColor,
+            ))
+          : Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                children: [
+                  /// 🔹 Status Card
+                  Card(
+                    color: background,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    elevation: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.all(14),
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Container(
-                            height: 30,
-                            // width: 120,
-                            padding: const EdgeInsets.only(left: 10, right: 10),
-                            decoration: BoxDecoration(
-                                color: issueData?.issueStatus == 'OPEN'
-                                    ? redColor
-                                    : issueData?.issueStatus == 'IN_PROGRESS'
-                                        ? Colors.orange
-                                        : Colors.green,
-                                borderRadius: BorderRadius.circular(5)),
-                            child: Center(
-                              child: Text(
-                                issueData?.issueStatus.toString() ==
-                                        'IN_PROGRESS'
-                                    ? 'INPROGRESS'
-                                    : issueData?.issueStatus ?? '',
-                                style: const TextStyle(color: background),
-                              ),
-                            ),
-                          )
+                          const Text("Status",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 16)),
+                          _statusBadge(issueData?.issueStatus ?? "OPEN"),
                         ],
                       ),
-                    )
-                  ],
-                ),
-                itemText(
-                    lable: 'Issue Id',
-                    value: issueData?.issueId.toString() ?? ''),
-                itemText(
-                    lable: 'Booking Id',
-                    value: issueData?.bookingId.toString() ?? ''),
-                itemText(
-                    lable: 'Created Date',
-                    value: DateFormat('dd-MM-yyyy').format(
-                        DateTime.fromMillisecondsSinceEpoch(
-                            issueData?.createdDate ?? 0))),
-                itemText(
-                    lable: 'Booking Type',
-                    value: issueData?.bookingType == "RENTAL_BOOKING"
-                        ? 'Rental Booking'
-                        : "Package Booking"),
-                itemText(
-                    lable: 'Issue Description',
-                    value: issueData?.issueDescription.toString() ?? ''),
-                issueData?.resolutionDescription == null
-                    ? const SizedBox()
-                    : Text(
-                        'Resolution Description :-',
-                        style: titleTextStyle,
+                    ),
+                  ),
+            
+                  const SizedBox(height: 12),
+
+                  /// 🔹 Issue Information
+                  Card(
+                    color: background,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    elevation: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _infoTile(Icons.confirmation_number, "Issue ID",
+                              issueData?.issueId.toString() ?? ''),
+                          _infoTile(Icons.assignment, "Booking ID",
+                              issueData?.bookingId.toString() ?? ''),
+                          _infoTile(
+                              Icons.calendar_today,
+                              "Created Date",
+                              DateFormat('dd-MM-yyyy').format(
+                                  DateTime.fromMillisecondsSinceEpoch(
+                                      issueData?.createdDate ?? 0))),
+                          _infoTile(
+                            Icons.directions_car,
+                            "Booking Type",
+                            issueData?.bookingType == 'PACKAGE_BOOKING'
+                                ? "Package Booking"
+                                : "Rental Booking",
+                          ),
+                          _infoTile(Icons.description, "Issue Description",
+                              issueData?.issueDescription ?? ''),
+                        ],
                       ),
-                Text(
-                  issueData?.resolutionDescription ?? '',
-                  style: titleTextStyle,
-                )
-              ],
+                    ),
+                  ),
+            
+                  const SizedBox(height: 12),
+
+                  /// 🔹 Resolution (if available)
+                  if (issueData?.resolutionDescription != null &&
+                      issueData?.resolutionDescription!.isNotEmpty)
+                    Card(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      elevation: 3,
+                      child: Padding(
+                        padding: const EdgeInsets.all(14),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text("Resolution",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 16)),
+                            const Divider(),
+                            Text(
+                              issueData?.resolutionDescription ?? '',
+                              style: const TextStyle(
+                                  fontSize: 14, color: Colors.black87),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+    );
+  }
+
+  /// 🔹 Info Row with Icon
+  Widget _infoTile(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 18, color: btnColor),
+          const SizedBox(width: 8),
+          Expanded(
+            child: RichText(
+              text: TextSpan(
+                text: "$label: ",
+                style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    color: Colors.black87),
+                children: [
+                  TextSpan(
+                    text: value,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 14,
+                        color: Colors.black54),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -117,50 +169,35 @@ class _IssueviewdetailsState extends State<Issueviewdetails> {
     );
   }
 
-  itemText({required String lable, required String value}) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          flex: 2,
-          child: Text(
-            lable,
-            style: titleTextStyle,
-          ),
+  /// 🔹 Status Badge
+  Widget _statusBadge(String status) {
+    Color bgColor;
+    switch (status) {
+      case "OPEN":
+        bgColor = Colors.redAccent;
+        break;
+      case "IN_PROGRESS":
+        bgColor = Colors.orangeAccent;
+        break;
+      default:
+        bgColor = Colors.green;
+    }
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+      decoration: BoxDecoration(
+        // ignore: deprecated_member_use
+        color: bgColor.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: bgColor, width: 1),
+      ),
+      child: Text(
+        status == "IN_PROGRESS" ? "In Progress" : status,
+        style: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+          color: bgColor,
         ),
-        const SizedBox(width: 5),
-        Text(
-          ':',
-          style: titleTextStyle,
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          flex: 3,
-          child: Text(
-            value,
-            style: textStyle,
-          ),
-        )
-      ],
+      ),
     );
-  }
-
-  itemtile({required String lable, required String vale}) {
-    return Row(children: [
-      Text(
-        lable,
-        style: titleTextStyle,
-      ),
-      const SizedBox(width: 5),
-      Text(
-        ':',
-        style: titleTextStyle,
-      ),
-      const SizedBox(width: 5),
-      Text(
-        vale,
-        style: textStyle,
-      )
-    ]);
   }
 }

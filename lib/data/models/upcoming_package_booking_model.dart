@@ -1,28 +1,26 @@
 // To parse this JSON data, do
 //
-//     final packageHistoryModel = packageHistoryModelFromJson(jsonString);
-
-// ignore_for_file: constant_identifier_names
+//     final upcomingPackagebookingModel = upcomingPackagebookingModelFromJson(jsonString);
 
 import 'dart:convert';
 
-PackageHistoryModel packageHistoryModelFromJson(String str) =>
-    PackageHistoryModel.fromJson(json.decode(str));
+UpcomingPackagebookingModel upcomingPackagebookingModelFromJson(String str) =>
+    UpcomingPackagebookingModel.fromJson(json.decode(str));
 
-String packageHistoryModelToJson(PackageHistoryModel data) =>
+String upcomingPackagebookingModelToJson(UpcomingPackagebookingModel data) =>
     json.encode(data.toJson());
 
-class PackageHistoryModel {
+class UpcomingPackagebookingModel {
   Status? status;
   List<Datum>? data;
 
-  PackageHistoryModel({
+  UpcomingPackagebookingModel({
     this.status,
     this.data,
   });
 
-  factory PackageHistoryModel.fromJson(Map<String, dynamic> json) =>
-      PackageHistoryModel(
+  factory UpcomingPackagebookingModel.fromJson(Map<String, dynamic> json) =>
+      UpcomingPackagebookingModel(
         status: json["status"] == null ? null : Status.fromJson(json["status"]),
         data: json["data"] == null
             ? []
@@ -140,8 +138,8 @@ class ActivityList {
   String? startTime;
   String? endTime;
   String? description;
-  List<ParticipantType>? participantType;
-  List<String>? weeklyOff;
+  List<String>? participantType;
+  List<dynamic>? weeklyOff;
   List<String>? activityImageUrl;
   String? activityStatus;
   DateTime? createdDate;
@@ -191,11 +189,10 @@ class ActivityList {
         description: json["description"],
         participantType: json["participantType"] == null
             ? []
-            : List<ParticipantType>.from(json["participantType"]!
-                .map((x) => participantTypeValues.map[x]!)),
+            : List<String>.from(json["participantType"]!.map((x) => x)),
         weeklyOff: json["weeklyOff"] == null
             ? []
-            : List<String>.from(json["weeklyOff"]!.map((x) => x)),
+            : List<dynamic>.from(json["weeklyOff"]!.map((x) => x)),
         activityImageUrl: json["activityImageUrl"] == null
             ? []
             : List<String>.from(json["activityImageUrl"]!.map((x) => x)),
@@ -229,8 +226,7 @@ class ActivityList {
         "description": description,
         "participantType": participantType == null
             ? []
-            : List<dynamic>.from(
-                participantType!.map((x) => participantTypeValues.reverse[x])),
+            : List<dynamic>.from(participantType!.map((x) => x)),
         "weeklyOff": weeklyOff == null
             ? []
             : List<dynamic>.from(weeklyOff!.map((x) => x)),
@@ -248,38 +244,29 @@ class ActivityList {
 }
 
 class AgeGroupDiscountPercent {
+  double? child;
   double? infant;
   double? senior;
-  double? child;
 
   AgeGroupDiscountPercent({
+    this.child,
     this.infant,
     this.senior,
-    this.child,
   });
 
   factory AgeGroupDiscountPercent.fromJson(Map<String, dynamic> json) =>
       AgeGroupDiscountPercent(
+        child: json["CHILD"],
         infant: json["INFANT"],
         senior: json["SENIOR"],
-        child: json["CHILD"],
       );
 
   Map<String, dynamic> toJson() => {
+        "CHILD": child,
         "INFANT": infant,
         "SENIOR": senior,
-        "CHILD": child,
       };
 }
-
-enum ParticipantType { ADULT, CHILD, INFANT, SENIOR }
-
-final participantTypeValues = EnumValues({
-  "ADULT": ParticipantType.ADULT,
-  "CHILD": ParticipantType.CHILD,
-  "INFANT": ParticipantType.INFANT,
-  "SENIOR": ParticipantType.SENIOR
-});
 
 class User {
   int? userId;
@@ -297,7 +284,7 @@ class User {
   String? userType;
   String? profileImageUrl;
   String? countryCode;
-  String? notificationToken;
+  dynamic notificationToken;
   String? lastLogin;
   String? country;
   String? state;
@@ -478,16 +465,4 @@ class Status {
         "success": success,
         "message": message,
       };
-}
-
-class EnumValues<T> {
-  Map<String, T> map;
-  late Map<T, String> reverseMap;
-
-  EnumValues(this.map);
-
-  Map<T, String> get reverse {
-    reverseMap = map.map((k, v) => MapEntry(v, k));
-    return reverseMap;
-  }
 }

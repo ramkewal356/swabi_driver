@@ -1,11 +1,12 @@
-// Rental Booking View Model
+
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_driver/data/models/common_model.dart';
 import 'package:flutter_driver/data/models/get_driver_by_id_model.dart';
 import 'package:flutter_driver/data/response/api_response.dart';
-import 'package:flutter_driver/data/models/common_model.dart';
 import 'package:flutter_driver/data/respositories/driver_profile_repository.dart';
 import 'package:flutter_driver/core/utils/utils.dart';
 import 'package:go_router/go_router.dart';
@@ -24,6 +25,13 @@ class DriverProfileViewModel with ChangeNotifier {
 
   void setOnUpdateDriver(ApiResponse<bool> response) {
     updateDriver = response;
+    notifyListeners();
+  }
+
+  ApiResponse<CommonModel> profilePicUpdate = ApiResponse.initial();
+
+  void setOnProfilePicUpdate(ApiResponse<CommonModel> response) {
+    profilePicUpdate = response;
     notifyListeners();
   }
 
@@ -75,102 +83,43 @@ class DriverProfileViewModel with ChangeNotifier {
       setOnUpdateDriver(ApiResponse.error(e.toString()));
     }
   }
+
+  Future<void> uploadProfilePicApi({required String file}) async {
+    SharedPreferences srp = await SharedPreferences.getInstance();
+    var driverId = srp.getString('userId');
+    var profilePic =
+        await MultipartFile.fromFile(file, filename: "profile.jpg");
+    Map<String, dynamic> body = {"driverId": driverId, "image": profilePic};
+    try {
+      setOnProfilePicUpdate(ApiResponse.loading());
+      var resp = await _myRepo.uploadProfilePicApi(body: body);
+      if (resp.status?.httpCode == '200') {
+        setOnProfilePicUpdate(ApiResponse.completed(resp));
+        Utils.toastSuccessMessage(resp.data?.body ?? '');
+      }
+    } catch (e) {
+      setOnProfilePicUpdate(ApiResponse.error(e.toString()));
+    }
+  }
 }
 
-// ///Driver Profile Update View Model
-// class DriverProfileUpdateViewModel with ChangeNotifier {
-//   final _myRepo = DriverProfileUpdateRepository();
-//   ApiResponse<GetDriverByIdModel> updateProfile = ApiResponse.loading();
-//   bool isLoading = false;
-//   setDataList(ApiResponse<GetDriverByIdModel> response) {
-//     updateProfile = response;
-//     notifyListeners();
-//   }
-
-//   Future editProfile({
-//     required BuildContext context,
-//     required String firstName,
-//     required String lastName,
-//     required String country,
-//     required String state,
-//     required String location,
-//     required String gender,
-//   }) async {
-//     SharedPreferences srp = await SharedPreferences.getInstance();
-//     var driverId = srp.getString('userId');
-
-//     Map<String, dynamic> driverRequest = {
-//       "driverId": driverId,
-//       "firstName": firstName,
-//       "lastName": lastName,
-//       "gender": gender,
-//       "country": country,
-//       "state": state,
-//       "driverAddress": location,
-//     };
-//     final body = {
-//       "driverRequest": jsonEncode(driverRequest)
-//       // "image": profilePic
-//     };
-//     try {
-//       setDataList(ApiResponse.loading());
-//       isLoading = true;
-//       notifyListeners();
-//       await _myRepo.editProfile(context: context, body: body).then((value) {
-//         setDataList(ApiResponse.completed(value));
-//         // Provider.of<DriverProfileViewModel>(context, listen: false)
-//         //     .fetchDriverDetailViewModelApi(
-//         //         context, {"driverId": driverId}, driverId ?? '');
-//         debugPrint('Updated successfull');
-//         context.pop(context);
-//         Utils.toastSuccessMessage("Profile Updated Successfully");
-//         isLoading = false;
-//         notifyListeners();
-//       });
-//     } catch (e) {
-//       debugPrint('error$e');
-//       setDataList(ApiResponse.error(e.toString()));
-//       isLoading = false;
-//       notifyListeners();
-//     }
-//   }
-// }
-
-// class UploadProfilePicViewModel with ChangeNotifier {
-//   final _myRepo = DriverProfileUpdateRepository();
-
-//   bool isLoading = false;
-//   Future<CommonModel?> uploadProfilePic(
-//       {required BuildContext context,
-//       required Map<String, dynamic> body}) async {
-//     try {
-//       isLoading = true;
-//       notifyListeners();
-//       var resp =
-//           await _myRepo.uploadProfilePicApi(context: context, body: body);
-//       if (resp?.status?.httpCode == '200') {
-//         Utils.toastSuccessMessage(resp?.data?.body ?? '');
-//         // context.push('/login');
-//         isLoading = false;
-//         notifyListeners();
-//       }
-//     } catch (e) {
-//       isLoading = false;
-//       notifyListeners();
-//       debugPrint('error$e');
-//     } finally {
-//       isLoading = false;
-//       notifyListeners();
-//     }
-//     return null;
-//   }
-// }
-
 class GetCountryStateListViewModel with ChangeNotifier {
-  final _myRepo = DriverProfileUpdateRepository();
-  List<dynamic> getCountryListModel = [];
-  List<String>? getStateListModel = [];
-  bool isLoading = false;
+  final _myRepo = CountryStateRepository();
+
+  ApiResponse<List<dynamic>> getCountryListModel = ApiResponse.initial();
+
+  void setOnCountryList(ApiResponse<List<dynamic>> response) {
+    getCountryListModel = response;
+    notifyListeners();
+  }
+
+  ApiResponse<List<String>> stateList = ApiResponse.initial();
+
+  void setOnStateList(ApiResponse<List<String>> response) {
+    stateList = response;
+    notifyListeners();
+  }
+
   Future<dynamic> getAccessToken({
     required BuildContext context,
   }) async {
@@ -180,8 +129,7 @@ class GetCountryStateListViewModel with ChangeNotifier {
       'user-email': 'saurabhm@shilshatech.com',
     };
     try {
-      var resp =
-          await _myRepo.getAccessTokentApi(context: context, header: headers);
+      var resp = await _myRepo.getAccessTokentApi(header: headers);
       return resp;
     } catch (e) {
       debugPrint('error$e');
@@ -189,7 +137,7 @@ class GetCountryStateListViewModel with ChangeNotifier {
     return null;
   }
 
-  Future<dynamic> getCountryList({
+  Future<void> getCountryList({
     required BuildContext context,
     required String token,
   }) async {
@@ -197,30 +145,25 @@ class GetCountryStateListViewModel with ChangeNotifier {
       "Authorization": 'Bearer $token',
     };
     try {
-      _myRepo
-          .getCountryListApi(context: context, header: header)
-          .then((onValue) {
-        getCountryListModel = onValue;
-        notifyListeners();
-      });
+      setOnCountryList(ApiResponse.loading());
+      var resp = await _myRepo.getCountryListApi(header: header);
+      setOnCountryList(ApiResponse.completed(resp));
     } catch (e) {
       debugPrint('error$e');
+      setOnCountryList(ApiResponse.error(e.toString()));
     }
-    return null;
+  
   }
 
-  Future<dynamic> getStateList({
-    required BuildContext context,
-    // required String token,
+  Future<void> getStateList({
     required String country,
   }) async {
     Map<String, dynamic> body = {
       "country": country,
     };
     try {
-      isLoading = true;
-      notifyListeners();
-      _myRepo.getStateListApi(context: context, body: body).then((onValue) {
+      setOnStateList(ApiResponse.loading());
+      _myRepo.getStateListApi(body: body).then((onValue) {
         if (onValue.data != null) {
           // Filter the data to get the country-specific states
           var countryData = onValue.data?.firstWhere(
@@ -230,32 +173,17 @@ class GetCountryStateListViewModel with ChangeNotifier {
 
           if (countryData != null) {
             var states = countryData.states;
-            getStateListModel = states
+            var getStateListModel = states
                 ?.map((state) => state.name
                     ?.replaceFirst(RegExp(r' Emirate$'), '') as String)
                 .toList();
-            debugPrint('vcnbxcnbxcn,,,,,,,,....???????? $getStateListModel');
-          } else {
-            // If country is not found in the data, handle accordingly
-            getStateListModel = [];
+            setOnStateList(ApiResponse.completed(getStateListModel));
           }
-
-          isLoading = false;
-          notifyListeners(); // Notify listeners after update
-        } else {
-          // Handle case when the response is null
-          isLoading = false;
-          notifyListeners();
         }
       });
     } catch (e) {
       debugPrint('error$e');
-      isLoading = false;
-      notifyListeners();
-    } finally {
-      isLoading = false;
-      notifyListeners();
+      setOnStateList(ApiResponse.error(e.toString()));
     }
-    return null;
   }
 }

@@ -42,6 +42,7 @@ class AppUrl {
       '/notification/update_notification_status';
   static var getAllNotificationUrl =
       '/notification/get_notification_by_receiverId';
+  static var clearAllNotificationUrl = '/api/notification/delete-Notification';
   static var getDriverUrl = '/driver/get_driver_by_driverId';
   static var getRentalBookingByIdUrl = '/rental/get_rental_booking_by_id';
   static var getRentalBookingByDriverdUrl =

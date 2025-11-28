@@ -2,15 +2,13 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_driver/core/constants/app_url.dart';
 import 'package:flutter_driver/data/models/common_model.dart';
-// import 'package:flutter_driver/data/models/driver_package_history_model.dart';
-
-import 'package:flutter_driver/data/models/driver_package_model.dart';
 import 'package:flutter_driver/core/services/http_service.dart';
 import 'package:flutter_driver/data/models/get_package_details_model.dart';
 import 'package:flutter_driver/data/models/package_history_model.dart';
+import 'package:flutter_driver/data/models/upcoming_package_booking_model.dart';
 
 class DriverpackageserviceRepository {
-  Future<DriverPackageBookingListModel?> getPackageUpcommingListApi({
+  Future<UpcomingPackagebookingModel> getPackageUpcommingListApi({
     required Map<String, dynamic> query,
 
   }) async {
@@ -25,7 +23,7 @@ class DriverpackageserviceRepository {
       Response<dynamic>? response = await http.request<dynamic>();
       debugPrint('response..packageBooking list ${response?.data}');
 
-      var resp = DriverPackageBookingListModel.fromJson(response?.data);
+      var resp = UpcomingPackagebookingModel.fromJson(response?.data);
       return resp;
     } catch (error) {
       debugPrint('error..$error');

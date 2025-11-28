@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_driver/core/constants/app_url.dart';
 import 'package:flutter_driver/data/models/common_model.dart';
-// import 'package:flutter_driver/data/models/driver_profile_model.dart';
 import 'package:flutter_driver/data/models/get_driver_by_id_model.dart';
 import 'package:flutter_driver/data/models/get_state_name_model.dart';
 import 'package:flutter_driver/core/services/http_service.dart';
@@ -56,8 +55,8 @@ class DriverProfileRepository {
     }
   }
 
-  Future<CommonModel?> uploadProfilePicApi(
-      {required BuildContext context,
+  Future<CommonModel> uploadProfilePicApi(
+      {
       required Map<String, dynamic> body}) async {
     var http = HttpService(
         isAuthorizeRequest: false,
@@ -80,11 +79,11 @@ class DriverProfileRepository {
   }
 }
 
-class DriverProfileUpdateRepository {
+class CountryStateRepository {
  
 
   Future<dynamic> getCountryListApi(
-      {required BuildContext context,
+      {
       required Map<String, String> header}) async {
     var http = HttpService(
         isAuthorizeRequest: false,
@@ -109,12 +108,11 @@ class DriverProfileUpdateRepository {
   }
 
   Future<GetStateNameModel> getStateListApi({
-    required BuildContext context,
     required Map<String, dynamic> body,
   }) async {
     var http = HttpService(
         isAuthorizeRequest: false,
-        baseURL: AppUrl.stateBaseUrl,
+        baseURL: AppUrl.locationBaseUrl,
         endURL: AppUrl.getStateNameUrl,
         methodType: HttpMethodType.GET,
         bodyType: HttpBodyType.JSON,
@@ -124,18 +122,16 @@ class DriverProfileUpdateRepository {
       Response<dynamic>? response = await http.request<dynamic>();
       debugPrint("getcountry List response ${response?.data}");
       var resp = GetStateNameModel.fromJson(response?.data);
-
       return resp;
     } catch (error) {
       debugPrint('error.. $error');
-   
       http.handleErrorResponse(error: error);
       rethrow;
     }
   }
 
   Future<dynamic> getAccessTokentApi({
-    required BuildContext context,
+  
     required Map<String, String> header,
   }) async {
     var http = HttpService(
@@ -148,7 +144,6 @@ class DriverProfileUpdateRepository {
     try {
       Response<dynamic>? response = await http.request<dynamic>();
       debugPrint("getcountry List response ${response?.data}");
-      // var resp = GetStateListModel.fromJson(response?.data);
       return response?.data;
     } catch (error) {
       debugPrint('error.. $error');

@@ -1,651 +1,531 @@
-import 'dart:io';
+// ignore_for_file: deprecated_member_use
+
+import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/data/models/driver_profile_model.dart';
-import 'package:flutter_driver/data/models/user_model.dart';
-import 'package:flutter_driver/data/response/status.dart';
-import 'package:flutter_driver/widgets/Custom%20%20Button/custom_btn.dart';
-import 'package:flutter_driver/core/constants/assets.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_driver/common/styles/app_colors.dart';
-import 'package:flutter_driver/common/styles/text_styles.dart';
-import 'package:flutter_driver/view/dashboard/menuList.dart';
-import 'package:flutter_driver/view/dashboard/package/custom_package_view_screen.dart';
-import 'package:flutter_driver/view/dashboard/rental/history/all_booking_container.dart';
-import 'package:flutter_driver/view_model/driver_rental_booking_view_model.dart';
-import 'package:flutter_driver/view_model/driver_profile_view_model.dart';
-import 'package:flutter_driver/view_model/driver_package_view_model.dart';
-import 'package:flutter_driver/view_model/notification_view_model.dart';
-import 'package:flutter_driver/view_model/user_view_model.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_driver/widgets/custom_btn.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-class home_screen extends StatefulWidget {
-  // final String timeZone;
-  const home_screen({
-    super.key,
-    // required this.timeZone
-  });
+import 'package:flutter_driver/view_model/driver_profile_view_model.dart';
+import 'package:flutter_driver/view_model/driver_rental_booking_view_model.dart';
+import 'package:flutter_driver/view_model/driver_package_view_model.dart';
+import 'package:flutter_driver/view_model/notification_view_model.dart';
+import 'package:flutter_driver/data/response/status.dart';
+import 'package:flutter_driver/view/dashboard/rental/booking_details_container.dart';
+import 'package:flutter_driver/view/dashboard/package/custom_package_view_screen.dart';
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<home_screen> createState() => _home_screenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _home_screenState extends State<home_screen> {
-  UserViewModel userViewModel = UserViewModel();
-  final isFilteredList = ValueNotifier<bool>(true);
-  int selectedIndex = -1;
-  int indexValue = -1;
-  String? uId;
-  UserModel? userModel;
-  int unReadItem = 0;
-  // final _focusScopeNode = FocusScopeNode();
-  final _globalKey = GlobalKey();
+class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _rentalKey = GlobalKey();
   final GlobalKey _packageKey = GlobalKey();
-  List<Map<String, dynamic>> images = [
-    {'image': carImage1},
-    {'image': carImage2},
-    {'image': carImage3},
-    {'image': carImage4},
-    {'image': carImage5},
-    {'image': carImage6},
-    {'image': carImage7},
-    {'image': carImage8},
-    {'image': carImage9},
-  ];
+
+  int? selectedIndex;
+  int indexValue = -1;
+  Timer? _timer;
   @override
   void initState() {
     super.initState();
-
-    userViewModel.getUserId().then((value) async {
-      setState(() {
-        if (value.userId != null && value.userId != '') {
-          uId = value.userId.toString();
-          userModel = value;
-        }
-      });
-    });
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      await getUser();
-      getNotification();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadData();
+      startNotificationPolling();
     });
   }
 
-  Future<void> getUser() async {
-    await Future.delayed(const Duration(seconds: 2), () {
-      context.read<DriverProfileViewModel>().getDriverByIdApi();
+  void _loadData() {
+    context.read<DriverProfileViewModel>().getDriverByIdApi();
+    context
+        .read<DriverRentalBookingViewModel>()
+        .fetchDriverGetBookingListViewModel(
+          isFilter: true,
+          isPagination: false,
+          filterText: 'BOOKED',
+          pageNumer1: 0,
+          pageSize1: 5,
+        );
 
-      Provider.of<DriverGetBookingListViewModel>(context, listen: false)
-          .fetchDriverGetBookingListViewModel({
-        "driverId": uId,
-        "pageNumber": "0",
-        "pageSize": "5",
-        "bookingStatus": "BOOKED"
-      }, context);
-      Provider.of<DriverPackageViewModel>(context, listen: false)
-          .getPackageBookingList();
+    context.read<DriverPackageViewModel>().getPackageBookingList();
+  }
+
+  void startNotificationPolling() {
+    _timer = Timer.periodic(Duration(seconds: 15), (timer) {
+      fetchNotifications();
     });
   }
 
-  void getNotification() {
-    Provider.of<NotificationViewModel>(context, listen: false)
-        .getAllNotificationList(
-            context: context,
-            userId: uId ?? '',
-            pageNumber: 0,
-            pageSize: 100,
-            readStatus: 'FALSE');
+  void fetchNotifications() {
+    context.read<NotificationViewModel>().getAllNotificationList(
+          isPagination: false,
+          isFilter: true,
+          pageNumber1: -1,
+          pageSize1: -1,
+          readStatus: "FALSE",
+        );
   }
 
-  String selectedSection = 'rental';
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+      ),
+    );
     var driverData =
         context.watch<DriverProfileViewModel>().getDriverDetails.data?.data;
     var status =
         context.watch<DriverProfileViewModel>().getDriverDetails.status;
-    String rentalStatus = context
-        .watch<DriverGetBookingDetailsViewModel>()
-        .DataList
-        .status
-        .toString();
+    return Scaffold(
+      backgroundColor: const Color(0xfff1f3f6),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(100),
+        child: _buildModernAppBar(driverData),
+      ),
+      body: status == Status.loading
+          ? SpinKitFadingCircle(
+              color: btnColor,
+            )
+          : _buildBody(),
+    );
+  }
 
-    // ignore: deprecated_member_use
-    return WillPopScope(
-      // canPop: false,
-      onWillPop: () async {
-        bool shouldExit = await showDialog(
-          context: context,
-          builder: (context) => exitContainer(),
-        );
-        return shouldExit;
-        // return await showDialog(context: context, builder: (context) =>
-        //     exitContainer());
-      },
-      child: Scaffold(
-        backgroundColor: appBarbgcolor,
-        appBar: AppBar(
-          // centerTitle: true,
-          // automaticallyImplyLeading: false,
-          backgroundColor: Colors.transparent,
-          toolbarHeight: 140,
-          // title: Image.asset(
-          //   appLogo1,
-          //   height: 35,
-          //   width: double.infinity,
-          // ),
-          title: const Text(
-            'Hi',
-            style: TextStyle(color: background),
-          ),
-          leading: Builder(
-            builder: (BuildContext context) {
-              return IconButton(
-                icon: const Icon(
-                  Icons.notes_rounded,
-                  size: 26,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  Scaffold.of(context)
-                      .openDrawer(); // Use the context from Builder
-                },
-              );
-            },
-          ),
+  // ---------------------------- MODERN APP BAR ----------------------------
 
-          titleSpacing: 0,
-
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(30),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ListTile(
-                  horizontalTitleGap: 10,
-                  dense: true,
-                  leading: (driverData?.profileImageUrl ?? '').isNotEmpty
-                      ? CircleAvatar(
-                          backgroundImage:
-                              Image.network(driverData?.profileImageUrl ?? '')
-                                  .image,
-                          radius: 25,
-                        )
-                      : const CircleAvatar(
-                          radius: 25,
-                          child: Icon(Icons.person, size: 24),
-                        ),
-                  title: Text(
-                    '${driverData?.firstName ?? ''} ${driverData?.lastName ?? ''}',
-                    style: const TextStyle(color: background, fontSize: 20),
-                  ),
-                  subtitle: Text(
-                    driverData?.email ?? '',
-                    style: const TextStyle(color: background, fontSize: 14),
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Container(
-                  width: double.infinity,
-                  margin:
-                      const EdgeInsets.only(left: 15, right: 15, bottom: 15),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                      color: background,
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.location_on_rounded,
-                        color: btnColor,
-                      ),
-                      Expanded(
-                        child: Text(
-                          driverData?.driverAddress ?? '',
-                          style: const TextStyle(color: btnColor, fontSize: 16),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            Consumer<NotificationViewModel>(
-              builder: (context, value, child) {
-                unReadItem = value.totalUnreadNotification ?? 0;
-                return InkWell(
-                  onTap: () {
-                    Provider.of<NotificationViewModel>(context, listen: false)
-                        .updateNotification(context: context, userId: uId ?? '')
-                        .then((onValue) {
-                      getNotification();
-                    });
-                  },
-                  child: Badge(
-                    backgroundColor: greenColor,
-                    isLabelVisible: unReadItem == 0 ? false : true,
-                    label: Text(unReadItem.toString()),
-                    child: const Icon(
-                      Icons.notifications_none_outlined,
-                      size: 30,
-                      color: background,
-                    ),
-                  ),
-                );
-              },
-            ),
-            const SizedBox(width: 10)
+  Widget _buildModernAppBar(dynamic driverData) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xff8A0B23),
+            Color(0xff81001E),
           ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        drawer: MenuList(lastLogin: driverData?.lastLogin ?? '', menuItems: [
-          {"imgUrl": Icons.dashboard, "label": "Dashboard", "onTap": () {}},
-          {
-            "imgUrl": Icons.car_rental_rounded,
-            "label": "Rental Management",
-            "onTap": () {
-              context.push("/historyManagement", extra: {"myID": uId});
-            }
-          },
-          {
-            "imgUrl": Icons.create_new_folder_outlined,
-            "label": "Package Management",
-            "onTap": () {
-              context.push('/packageBookingManagement');
-            }
-          },
-          {
-            "imgUrl": Icons.account_circle_outlined,
-            "label": "Profile",
-            "onTap": () {
-              context.push("/profilePage", extra: {"userId": uId});
-            }
-          },
-          {
-            "imgUrl": Icons.help_sharp,
-            "label": "Help & Support",
-            "onTap": () {
-              context.push("/help&support");
-            }
-          },
-        ]),
-        body: Container(
-          height: double.infinity,
-          width: double.infinity,
-          decoration: const BoxDecoration(
-              color: background,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20), topRight: Radius.circular(20))),
-          child: Column(
-            children: [
-              Container(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                // decoration: const BoxDecoration(color: background),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.dashboard,
-                          color: btnColor,
-                        ),
-                        Text(
-                          'Dashboard',
-                          style: appbarTextStyle,
-                        ),
-                      ],
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(25),
+          bottomRight: Radius.circular(25),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 12,
+            spreadRadius: 2,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          _buildProfile(driverData),
+          const SizedBox(width: 16),
+          Expanded(child: _buildDriverInfo(driverData)),
+          _buildNotificationButton(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfile(dynamic driverData) {
+    return CircleAvatar(
+      radius: 28,
+      backgroundColor: Colors.white,
+      backgroundImage: (driverData?.profileImageUrl ?? "").isNotEmpty
+          ? NetworkImage(driverData!.profileImageUrl!)
+          : null,
+      child: (driverData?.profileImageUrl ?? "").isEmpty
+          ? const Icon(Icons.person, size: 30, color: Colors.grey)
+          : null,
+    );
+  }
+
+  Widget _buildDriverInfo(dynamic driverData) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          "${driverData?.firstName ?? ''} ${driverData?.lastName ?? ''}",
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontSize: 19,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        Text(
+          driverData?.email ?? "",
+          style: GoogleFonts.poppins(
+            color: Colors.white70,
+            fontSize: 13,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNotificationButton() {
+    return Consumer<NotificationViewModel>(
+      builder: (context, value, child) {
+        return Stack(
+          children: [
+            IconButton(
+              onPressed: () {
+                _timer?.cancel();
+                context.push('/notification').then((onValue) {
+                  _loadData();
+                  startNotificationPolling();
+                });
+              },
+              icon: const Icon(Icons.notifications_none,
+                  size: 30, color: Colors.white),
+            ),
+            if (value.totalUnreadNotification > 0)
+              Positioned(
+                right: 6,
+                top: 8,
+                child: CircleAvatar(
+                  radius: 10,
+                  backgroundColor: Colors.red,
+                  child: Text(
+                    value.totalUnreadNotification.toString(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
                     ),
-                    Row(
-                      children: [
-                        IconButton(
-                            onPressed: () {
-                              // setState(() {
-                              //   selectedSection =
-                              //       'rental'; // Set to rental section
-                              // });
-
-                              Scrollable.ensureVisible(
-                                _rentalKey.currentContext!,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut,
-                                alignment: 0.5,
-                              );
-                            },
-                            icon: Column(
-                              children: [
-                                Image.asset(
-                                  carRental,
-                                  height: 24,
-                                  // color: bgGreyColor,
-                                ),
-                                Text(
-                                  'Rental',
-                                  style: detailstextTextStyle,
-                                )
-                              ],
-                            )),
-                        IconButton(
-                            onPressed: () {
-                              Scrollable.ensureVisible(
-                                _packageKey.currentContext!,
-                                duration: const Duration(milliseconds: 500),
-                                curve: Curves.easeInOut,
-                                alignment: 0.5,
-                              );
-                            },
-                            icon: Column(
-                              children: [
-                                Image.asset(
-                                  holidays,
-                                  height: 24,
-                                  // color: bgGreyColor,
-                                ),
-                                Text(
-                                  'Package',
-                                  style: detailstextTextStyle,
-                                )
-                              ],
-                            ))
-                      ],
-                    )
-                  ],
-                ),
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        key: _rentalKey,
-                        padding: const EdgeInsets.only(left: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Recent Rental Bookings',
-                              style: appbarTextStyle1,
-                            ),
-                            TextButton(
-                                onPressed: () {
-                                  context.push("/historyManagement",
-                                      extra: {"myID": uId});
-                                },
-                                child: const Text(
-                                  'View All',
-                                  style: TextStyle(
-                                      color: greenColor,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600),
-                                ))
-                          ],
-                        ),
-                      ),
-                      // const SizedBox(
-                      //   height: 10,
-                      // ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Consumer<DriverGetBookingListViewModel>(
-                          builder: (context, viewModel, child) {
-                            final response = viewModel.DataList;
-
-                            if (response.status.toString() ==
-                                    "Status.loading" ||
-                                status == "Status.loading") {
-                              return const SpinKitFadingCube(
-                                color: btnColor,
-                                size: 70,
-                              );
-                            } else if (response.status.toString() ==
-                                "Status.completed") {
-                              final data = response.data?.data.content ?? [];
-
-                              if (data.isEmpty) {
-                                // return const Center(child: Text('No Data Available'));
-                                return Container(
-                                    height: 200,
-                                    decoration: BoxDecoration(
-                                        color: bgGreyColor,
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                    child: Center(
-                                      child: Text(
-                                        'No booking available',
-                                        style: GoogleFonts.lato(
-                                          fontSize: 15,
-                                          color: Colors.red,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ));
-                              }
-                              return ListView.builder(
-                                shrinkWrap: true,
-                                physics: const BouncingScrollPhysics(),
-                                itemCount: data.length,
-                                itemBuilder: (context, index) {
-                                  final item = data[index];
-                                  return HistoryDetailsContainer(
-                                    loader: rentalStatus == "Status.loading" &&
-                                        selectedIndex == index,
-                                    onTapContainer: () {
-                                      setState(() {
-                                        selectedIndex = index;
-                                      });
-                                      Provider.of<DriverGetBookingDetailsViewModel>(
-                                              context,
-                                              listen: false)
-                                          .fetchDriverGetBookingDetailsViewModel(
-                                              {
-                                            "id": item.id.toString(),
-                                          },
-                                              context,
-                                              item.id.toString(),
-                                              uId ?? '');
-                                    },
-                                    bookingId: item.id ?? '',
-                                    carImage: item.vehicle?.images ?? [],
-                                    seat: item.vehicle?.seats?.toString() ?? "",
-                                    fuelType:
-                                        item.vehicle?.fuelType?.toString() ??
-                                            "",
-                                    carName:
-                                        item.vehicle?.carName.toString() ?? "",
-                                    status: item.bookingStatus == 'ON_RUNNING'
-                                        ? 'ONGOING'
-                                        : item.bookingStatus.toString(),
-                                    date: item.date?.toString() ?? "",
-                                    // rentalCharge:
-                                    //     item.rentalCharge?.toString() ?? "",
-                                  );
-                                },
-                              );
-                            }
-
-                            return Container(
-                              height: 200,
-                              decoration: BoxDecoration(
-                                  color: bgGreyColor,
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: const Center(
-                                  child: Text('No booking available',
-                                      style: TextStyle(
-                                          color: redColor,
-                                          fontWeight: FontWeight.w600))),
-                            );
-                          },
-                        ),
-                      ),
-
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Padding(
-                        key: _packageKey,
-                        padding: const EdgeInsets.only(left: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              key: _globalKey,
-                              'Recent Package Bookings',
-                              style: appbarTextStyle1,
-                            ),
-                            TextButton(
-                                onPressed: () {
-                                  context.push('/packageBookingManagement');
-                                },
-                                child: const Text(
-                                  'View All',
-                                  style: TextStyle(
-                                      color: greenColor,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600),
-                                ))
-                          ],
-                        ),
-                      ),
-
-                      Consumer<DriverPackageViewModel>(
-                        builder: (context, viewData, child) {
-                          if (viewData.packageBookingList.data == null ||
-                              (viewData.packageBookingList.data?.data ?? [])
-                                  .isEmpty) {
-                            return Container(
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              height: 200,
-                              decoration: BoxDecoration(
-                                  color: bgGreyColor,
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: const Center(
-                                  child: Text(
-                                // 'Currently, you have no bookings assigned. Stay tuned for new bookings',
-                                'No booking available',
-                                style: TextStyle(
-                                    color: redColor,
-                                    fontWeight: FontWeight.w600),
-                              )),
-                            );
-                          } else {
-                            return ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount:
-                                  viewData.packageBookingList.data?.data.length,
-                              itemBuilder: (context, index) {
-                                var package = viewData
-                                    .packageBookingList.data!.data[index];
-                                var activity = package.activityList
-                                    .map((e) => e.activityName)
-                                    .toList();
-                                debugPrint(
-                                    'activityname...${package.activityList.length}');
-                                return CustomPackageViewPage(
-                                  driverAssignId:
-                                      package.driverAssignedId.toString(),
-                                  date: package.date.toString(),
-                                  pickUpLocation:
-                                      package.pickupLocation ?? 'N/A',
-                                  activityName: activity.join(','),
-                                  dayStatus: package.dayStatus.toString(),
-                                  pickupTime: package.pickupTime ?? 'N/A',
-                                  loader: indexValue == index,
-                                  onTap: viewData.packageBookingList.status ==
-                                          Status.loading
-                                      ? null
-                                      : () {
-                                          context.push('/packageDetailPage',
-                                              extra: {
-                                                "bookingId": package
-                                                    .packageBookingId
-                                                    .toString(),
-                                                "driverId":
-                                                    package.driverId.toString()
-                                              }).then((onValue) {
-                                            debugPrint(
-                                                'object.........updated');
-                                            WidgetsBinding.instance
-                                                .addPostFrameCallback((_) {
-                                              Provider.of<DriverPackageViewModel>(
-                                                      context,
-                                                      listen: false)
-                                                  .getPackageBookingList();
-                                            });
-                                          });
-                                          // }
-                                        },
-                                );
-                              },
-                            );
-                          }
-                        },
-                      ),
-
-                      const SizedBox(height: 10)
-                    ],
                   ),
                 ),
+              )
+          ],
+        );
+      },
+    );
+  }
+
+  // ---------------------------- BODY ----------------------------
+
+  Widget _buildBody() {
+    return Container(
+      padding: const EdgeInsets.only(top: 12),
+      child: Column(
+        children: [
+          _buildStatsRow(),
+          SizedBox(height: 15),
+          _buildQuickActions(),
+          const SizedBox(height: 12),
+          Expanded(
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSectionHeader("Recent Rental Bookings", () {
+                    Scrollable.ensureVisible(_rentalKey.currentContext!,
+                        duration: const Duration(milliseconds: 600));
+                  }),
+                  const SizedBox(height: 8),
+                  Padding(
+                    key: _rentalKey,
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: _buildRentalList(),
+                  ),
+                  const SizedBox(height: 20),
+                  _buildSectionHeader("Recent Package Bookings", () {
+                    Scrollable.ensureVisible(_rentalKey.currentContext!,
+                        duration: const Duration(milliseconds: 600));
+                  }),
+                  const SizedBox(height: 8),
+                  Padding(
+                    key: _packageKey,
+                    padding: const EdgeInsets.symmetric(horizontal: 0),
+                    child: _buildPackageList(),
+                  ),
+                  const SizedBox(height: 25),
+                  _buildRaiseIssueCard(),
+                  const SizedBox(height: 30),
+                ],
               ),
-            ],
+            ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatsRow() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _statCard("Today's Rides", "12", Colors.blue),
+          SizedBox(width: 10),
+          _statCard("Upcoming's Rides", "45", Colors.green),
+        ],
+      ),
+    );
+  }
+
+  Widget _statCard(String title, String value, Color color) {
+    return Expanded(
+      child: Container(
+        // margin: const EdgeInsets.only(right: 10),
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: color.withOpacity(0.15),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title,
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black87)),
+            const SizedBox(height: 6),
+            Text(value,
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+          ],
         ),
       ),
     );
   }
 
-  ///Exit Container Dialog Box
-  Widget exitContainer() {
-    return Dialog(
-      backgroundColor: Colors.white,
-      surfaceTintColor: Colors.transparent,
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 15),
-          child: Column(
-            children: [
-              Text(
-                'Are you sure want to exit ?',
-                style: pageHeadingTextStyle,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CustomButtonSmall(
-                    width: 70,
-                    height: 40,
-                    btnHeading: "NO",
-                    onTap: () {
-                      context.pop();
-                    },
-                  ),
-                  const SizedBox(
-                    width: 25,
-                  ),
-                  CustomButtonSmall(
-                    width: 70,
-                    height: 40,
-                    btnHeading: "YES",
-                    onTap: () {
-                      exit(0);
-                    },
-                  )
-                ],
-              )
-            ],
+  Widget _buildQuickActions() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _quickAction(Icons.directions_car, "Go Online", Colors.indigo, () {
+            // handle online
+          }),
+          _quickAction(Icons.history, "History", Colors.orange, () {
+            context.push('/historyManagement');
+          }),
+          _quickAction(Icons.support_agent, "Support", Colors.red, () {
+            context.push('/help&support');
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _quickAction(
+      IconData icon, String title, Color color, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            height: 70,
+            width: 70,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Icon(icon, color: color, size: 32),
+          ),
+          const SizedBox(height: 8),
+          Text(title,
+              style: GoogleFonts.poppins(fontSize: 13, color: Colors.black87)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRaiseIssueCard() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            height: 48,
+            width: 48,
+            decoration: BoxDecoration(
+              color: Colors.red.withOpacity(0.15),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.error_outline, color: Colors.red, size: 26),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(
+              "Having issues with rental or package booking?\nRaise a ticket now.",
+              style: GoogleFonts.poppins(fontSize: 14),
+            ),
+          ),
+          CustomButtonSmall(
+            height: 40,
+            width: 120,
+            btnHeading: 'Raised Issue',
+            onTap: () {
+              context.push('/getRaiseIssue');
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  // ---------------------------- SECTION HEADER ----------------------------
+  Widget _buildSectionHeader(String title, VoidCallback onTapShortcut) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(title,
+              style: GoogleFonts.poppins(
+                  fontSize: 18, fontWeight: FontWeight.w600)),
+          TextButton(
+            onPressed: onTapShortcut,
+            child:
+                const Text("Scroll To", style: TextStyle(color: Colors.blue)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ---------------------------- RENTAL LIST ----------------------------
+  Widget _buildRentalList() {
+    return Consumer<DriverRentalBookingViewModel>(
+      builder: (context, viewModel, child) {
+        final response = viewModel.bookingdataList;
+
+        if (response.status == Status.loading) {
+          return const Center(
+              child: SpinKitCircle(color: Colors.blue, size: 50));
+        }
+
+        if (response.status == Status.completed) {
+          final data = response.data ?? [];
+          if (data.isEmpty) return _emptyCard();
+
+          return ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: data.length,
+            itemBuilder: (context, index) {
+              final item = data[index];
+              return BookingDetailsContainer(
+                loader: selectedIndex == index,
+                onTapContainer: () {
+                  setState(() => selectedIndex = index);
+                  context.push('/bookingDetails', extra: {
+                    "bookingId": item.id.toString(),
+                    "driverId": item.driver?.driverId.toString()
+                  }).then((_) {
+                    setState(() => selectedIndex = null);
+                    _loadData();
+                  });
+                },
+                bookingId: item.id.toString(),
+                carImage: item.vehicle?.images ?? [],
+                seat: item.vehicle?.seats.toString() ?? "",
+                fuelType: item.vehicle?.fuelType.toString() ?? "",
+                carName: item.vehicle?.carName ?? "",
+                status: item.bookingStatus == "ON_RUNNING"
+                    ? "ONGOING"
+                    : item.bookingStatus.toString(),
+                date: item.date.toString(),
+              );
+            },
+          );
+        }
+
+        return _emptyCard();
+      },
+    );
+  }
+
+  // ---------------------------- PACKAGE LIST ----------------------------
+  Widget _buildPackageList() {
+    return Consumer<DriverPackageViewModel>(
+      builder: (context, viewData, child) {
+        final packages = viewData.packageBookingList.data?.data ?? [];
+
+        if (packages.isEmpty) return _emptyCard();
+
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: packages.length,
+          itemBuilder: (context, index) {
+            var pkg = packages[index];
+            var activity =
+                pkg.activityList?.map((e) => e.activityName).join(", ");
+
+            return CustomPackageViewPage(
+              driverAssignId: pkg.driverAssignedId.toString(),
+              date: pkg.date ?? "",
+              pickUpLocation: pkg.pickupLocation ?? "N/A",
+              activityName: activity ?? '',
+              dayStatus: pkg.dayStatus ?? "",
+              pickupTime: pkg.pickupTime ?? "N/A",
+              loader: indexValue == index,
+              onTap: () {
+                context.push('/packageDetailPage', extra: {
+                  "driverAssignedId": pkg.driverAssignedId.toString(),
+                  "driverId": pkg.driverId.toString()
+                }).then((_) => _loadData());
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // ---------------------------- EMPTY CARD ----------------------------
+  Widget _emptyCard() {
+    return Container(
+      height: 180,
+      margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Center(
+        child: Text(
+          "No bookings available",
+          style: GoogleFonts.poppins(
+            color: Colors.redAccent,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),

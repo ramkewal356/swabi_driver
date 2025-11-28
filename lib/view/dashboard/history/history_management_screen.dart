@@ -1,52 +1,44 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/widgets/Custom%20Page%20Layout/custom_pageLayout.dart';
+import 'package:flutter_driver/view/dashboard/rental/history_rental_booking_screen.dart';
 import 'package:flutter_driver/common/styles/app_colors.dart';
 import 'package:flutter_driver/view/dashboard/package/history_package_booking_screen.dart';
-import 'package:flutter_driver/view/dashboard/package/upcoming_package_booking_screen.dart';
+import 'package:flutter_driver/widgets/custom_page_layout.dart';
 
-
-class PackageManagementScreen extends StatefulWidget {
-  const PackageManagementScreen({super.key});
+class HistoryManagementScreen extends StatefulWidget {
+  const HistoryManagementScreen({super.key});
 
   @override
-  State<PackageManagementScreen> createState() =>
-      _PackageManagementScreenState();
+  State<HistoryManagementScreen> createState() =>
+      _HistoryManagementScreenState();
 }
 
-class _PackageManagementScreenState extends State<PackageManagementScreen>
+class _HistoryManagementScreenState extends State<HistoryManagementScreen>
     with TickerProviderStateMixin {
   int intialIndex = 0;
   int hoveredIndex = -1;
   TabController? _tabcontroller;
   @override
   void initState() {
-   
     super.initState();
     _tabcontroller = TabController(length: 2, vsync: this);
-  
+
     _tabcontroller?.addListener(() {
       setState(() {
         intialIndex = _tabcontroller?.index ?? 0;
       });
-
-   
-     
     });
   }
-
-
 
   @override
   void dispose() {
     _tabcontroller!.dispose();
     super.dispose();
-   
   }
 
   @override
   Widget build(BuildContext context) {
-    return CustomPagelayout(
-      appBarTitle: 'Package Management',
+    return CustomPageLayout(
+      appBarTitle: 'History Management',
       child: Column(
         children: [
           const SizedBox(height: 5),
@@ -64,10 +56,9 @@ class _PackageManagementScreenState extends State<PackageManagementScreen>
                 setState(() {
                   intialIndex = value;
                 });
-            
+
                 debugPrint("valueIndex $intialIndex");
               },
-            
               unselectedLabelColor: Colors.black87,
               labelColor: Colors.black,
               indicatorWeight: 2.5,
@@ -78,13 +69,13 @@ class _PackageManagementScreenState extends State<PackageManagementScreen>
               tabs: const [
                 Tab(
                   child: Text(
-                    'UP COMING',
+                    'Rental',
                     style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                   ),
                 ),
                 Tab(
                   child: Text(
-                    'HISTORY',
+                    'Package',
                     style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
                   ),
                 )
@@ -93,7 +84,7 @@ class _PackageManagementScreenState extends State<PackageManagementScreen>
           ),
           Expanded(
             child: TabBarView(controller: _tabcontroller, children: const [
-              UpcommingPackagebooking(),
+              HistoryRentalBookingScreen(),
               HistoryPackagebooking()
             ]),
           ),

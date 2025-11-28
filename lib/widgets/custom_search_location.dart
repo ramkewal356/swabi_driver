@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_driver/common/styles/app_colors.dart';
 import 'package:flutter_driver/common/styles/text_styles.dart';
 import 'package:flutter_driver/core/utils/utils.dart';
@@ -11,15 +12,19 @@ class CustomSearchLocation extends StatefulWidget {
   final FocusNode? focusNode;
   final String state;
   // final bool stateValidation;
-  const CustomSearchLocation({
-    super.key,
-    required this.controller,
-    required this.state,
-    required this.hintText,
-    this.fillColor,
-    this.focusNode,
-    // required this.stateValidation,
-  });
+  final bool withoutBorder;
+  final bool isEditable;
+  const CustomSearchLocation(
+      {super.key,
+      required this.controller,
+      required this.state,
+      required this.hintText,
+      this.fillColor,
+      this.focusNode,
+      this.withoutBorder = false,
+      this.isEditable = true
+      // required this.stateValidation,
+      });
 
   @override
   State<CustomSearchLocation> createState() => _CustomSearchLocationState();
@@ -52,53 +57,61 @@ class _CustomSearchLocationState extends State<CustomSearchLocation> {
         hintText: widget.hintText,
         hintStyle: hintTextStyle,
         fillColor: widget.fillColor ?? background,
-        filled: true,
+        filled: widget.withoutBorder ? false : true,
         contentPadding:
             const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-        // border: InputBorder.none,
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(5.0),
-          borderSide: const BorderSide(
-            color: Color(0xFFCDCDCD),
-            // width: 2.0,
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(5.0),
-          borderSide: const BorderSide(
-            color: Color(0xFFCDCDCD),
-            // width: 2.0,
-          ),
-        ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(5.0),
-          borderSide: const BorderSide(
-            color: Color(0xFFCDCDCD),
-            // width: 2.0,
-          ),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(5.0),
-          borderSide: const BorderSide(
-            color: Color(0xFFCDCDCD),
-            // width: 2.0,
-          ),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(5.0),
-          borderSide: const BorderSide(
-            color: Color(0xFFCDCDCD),
-            // color: redColor,
-            // width: 2.0,
-          ),
-        ),
-
+        border: widget.withoutBorder
+            ? const UnderlineInputBorder()
+            : OutlineInputBorder(
+                borderRadius: BorderRadius.circular(5.0),
+                borderSide: const BorderSide(color: Colors.black54),
+              ),
+        focusedBorder: widget.withoutBorder
+            ? const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.black54),
+              )
+            : OutlineInputBorder(
+                borderRadius: BorderRadius.circular(5.0),
+                borderSide: const BorderSide(color: Color(0xFFCDCDCD)),
+              ),
+        enabledBorder: widget.withoutBorder
+            ? const UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.black54),
+              )
+            : OutlineInputBorder(
+                borderRadius: BorderRadius.circular(5.0),
+                borderSide: const BorderSide(color: Color(0xFFCDCDCD)),
+              ),
+        disabledBorder: widget.withoutBorder
+            ? const UnderlineInputBorder(
+                borderSide: BorderSide(color: Color(0xFFCDCDCD)),
+              )
+            : OutlineInputBorder(
+                borderRadius: BorderRadius.circular(5.0),
+                borderSide: const BorderSide(color: Color(0xFFCDCDCD)),
+              ),
+        focusedErrorBorder: widget.withoutBorder
+            ? const UnderlineInputBorder(
+                borderSide: BorderSide(color: redColor),
+              )
+            : OutlineInputBorder(
+                borderRadius: BorderRadius.circular(5.0),
+                borderSide: const BorderSide(color: Color(0xFFCDCDCD)),
+              ),
+        errorBorder: widget.withoutBorder
+            ? const UnderlineInputBorder(
+                borderSide: BorderSide(color: redColor),
+              )
+            : OutlineInputBorder(
+                borderRadius: BorderRadius.circular(5.0),
+                borderSide: const BorderSide(color: Color(0xFFCDCDCD)),
+              ),
         errorStyle: const TextStyle(
           color: redColor, // Change error text color
           fontSize: 13, // Adjust error text size if needed
         ),
       ),
-      onTap: _navigateToSearchPage,
+      onTap: widget.isEditable ? _navigateToSearchPage : null,
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'Please select location';
@@ -118,7 +131,9 @@ class SearchLocationPage extends StatefulWidget {
 }
 
 class _SearchLocationPageState extends State<SearchLocationPage> {
-  String kGoogleApiKey = 'AIzaSyA5TT3UUixs2V3IGu1t9wjXkkCRCn3n2hg';
+ 
+  String kGoogleApiKey = dotenv.env['API_KEY'] ?? '';
+
   final TextEditingController _searchController = TextEditingController();
   late GoogleMapsPlaces googlePlace;
   List<Prediction> predictions = [];
@@ -144,7 +159,6 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
         setState(() {
           predictions = [];
         });
-        debugPrint("No predictions found.");
       }
     } catch (error) {
       debugPrint("Error occurred while fetching places: $error");
@@ -174,6 +188,7 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
       appBar: AppBar(
         elevation: 1,
         backgroundColor: background,
+        // ignore: deprecated_member_use
         shadowColor: greyColor1.withOpacity(0.5),
         title: TextField(
           controller: _searchController,

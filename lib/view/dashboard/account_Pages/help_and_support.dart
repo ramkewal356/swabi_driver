@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/widgets/Custom%20Page%20Layout/custom_pageLayout.dart';
 import 'package:flutter_driver/widgets/custom_list_tile.dart';
 import 'package:flutter_driver/core/constants/assets.dart';
 import 'package:flutter_driver/common/styles/app_colors.dart';
+import 'package:flutter_driver/widgets/custom_page_layout.dart';
 import 'package:go_router/go_router.dart';
 
 class HelpAndSupport extends StatelessWidget {
@@ -10,14 +10,14 @@ class HelpAndSupport extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomPagelayout(
+    return CustomPageLayout(
         appBarTitle: 'Help & Support',
         child: Column(
           children: [
             const SizedBox(
               height: 30,
             ),
-            Custom_ListTile(
+            CustomListTile(
               img: rideIssue,
               iconColor: btnColor,
               heading: "Raised Issue",
@@ -30,7 +30,7 @@ class HelpAndSupport extends StatelessWidget {
             //   onTap: () {},
             //   // onTap: () => context.push("/termCondition"),
             // ),
-            Custom_ListTile(
+            CustomListTile(
                 img: contact,
                 disableColor: true,
                 iconColor: btnColor,
@@ -38,7 +38,7 @@ class HelpAndSupport extends StatelessWidget {
                 onTap: () {
                   // context.push("/contact");
                 }),
-            Custom_ListTile(
+            CustomListTile(
               disableColor: true,
               img: privacyPolicy,
               iconColor: btnColor,
@@ -46,7 +46,7 @@ class HelpAndSupport extends StatelessWidget {
               onTap: () {},
               // onTap: () => context.push("/termCondition"),
             ),
-            Custom_ListTile(
+            CustomListTile(
               img: tnc,
               iconColor: btnColor,
               heading: "Term & Condition",

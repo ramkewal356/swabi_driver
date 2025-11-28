@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_driver/data/response/status.dart';
 import 'package:flutter_driver/view_model/auth_view_model.dart';
-import 'package:flutter_driver/widgets/Custom%20%20Button/custom_btn.dart';
 import 'package:flutter_driver/common/styles/app_colors.dart';
+import 'package:flutter_driver/widgets/custom_btn.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
 

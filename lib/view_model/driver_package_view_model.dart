@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_driver/data/models/common_model.dart';
-import 'package:flutter_driver/data/models/driver_package_model.dart';
-// import 'package:flutter_driver/data/models/driver_package_history_model.dart';
 import 'package:flutter_driver/data/models/get_package_details_model.dart';
 import 'package:flutter_driver/data/models/package_history_model.dart';
+import 'package:flutter_driver/data/models/upcoming_package_booking_model.dart';
 import 'package:flutter_driver/data/response/api_response.dart';
 import 'package:flutter_driver/data/respositories/driver_packages_repository.dart';
 import 'package:flutter_driver/core/utils/utils.dart';
@@ -14,9 +13,9 @@ class DriverPackageViewModel with ChangeNotifier {
   DriverpackageserviceRepository driverpackageserviceRepository =
       DriverpackageserviceRepository();
 
-  ApiResponse<DriverPackageBookingListModel> packageBookingList =
+  ApiResponse<UpcomingPackagebookingModel> packageBookingList =
       ApiResponse.initial();
-  void setPackageList(ApiResponse<DriverPackageBookingListModel> response) {
+  void setPackageList(ApiResponse<UpcomingPackagebookingModel> response) {
     packageBookingList = response;
     notifyListeners();
   }
@@ -52,7 +51,7 @@ class DriverPackageViewModel with ChangeNotifier {
     }
   }
 
-  Future<DriverPackageBookingListModel?> getPackageBookingList() async {
+  Future<void> getPackageBookingList() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var driverId = pref.getString('userId');
     Map<String, dynamic> query = {"driverId": driverId};
@@ -62,7 +61,7 @@ class DriverPackageViewModel with ChangeNotifier {
       var value = await driverpackageserviceRepository
           .getPackageUpcommingListApi(query: query);
 
-      if (value?.status.httpCode == '200') {
+      if (value.status?.httpCode == '200') {
         setPackageList(ApiResponse.completed(value));
         debugPrint("Driver Booking Details Success");
       } else {
@@ -72,10 +71,10 @@ class DriverPackageViewModel with ChangeNotifier {
       setPackageList(ApiResponse.error(e.toString()));
       debugPrint('error: $e');
     }
-    return null;
+ 
   }
 
-  Future<DriverPackageDetailModel?> getPackageDetailList({
+  Future<void> getPackageDetailList({
     required String driverAssignId,
   }) async {
     Map<String, dynamic> query = {"driverAssignedId": driverAssignId};
@@ -94,7 +93,7 @@ class DriverPackageViewModel with ChangeNotifier {
       setPackageDetails(ApiResponse.error(e.toString()));
       debugPrint('error: $e');
     }
-    return null;
+   
   }
 
   Future<CommonModel?> activityStart(

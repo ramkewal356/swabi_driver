@@ -1,13 +1,15 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/widgets/Custom%20%20Button/custom_btn.dart';
-
-import 'package:flutter_driver/widgets/Custom%20Page%20Layout/custom_pageLayout.dart';
+import 'package:flutter_driver/data/response/status.dart';
+import 'package:flutter_driver/widgets/custom_btn.dart';
+import 'package:flutter_driver/widgets/custom_page_layout.dart';
 import 'package:flutter_driver/widgets/custom_text_form_field.dart';
-
 import 'package:flutter_driver/common/styles/app_colors.dart';
 import 'package:flutter_driver/common/styles/text_styles.dart';
 import 'package:flutter_driver/core/utils/utils.dart';
-import 'package:flutter_driver/view_model/raiseIssue_view_model.dart';
+import 'package:flutter_driver/view_model/raise_issue_view_model.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class CustomRideissuePage extends StatefulWidget {
@@ -37,7 +39,9 @@ class _CustomRideissuePageState extends State<CustomRideissuePage> {
   ];
   @override
   Widget build(BuildContext context) {
-    return CustomPagelayout(
+    var status =
+        context.watch<RaiseIssueViewModel>().raiseRequestResonse.status;
+    return CustomPageLayout(
       appBarTitle: 'Raise Issue',
       child: SingleChildScrollView(
         child: Padding(
@@ -101,6 +105,7 @@ class _CustomRideissuePageState extends State<CustomRideissuePage> {
               CustomButtonSmall(
                   height: 45,
                   width: double.infinity,
+                  loading: status == Status.loading,
                   btnHeading: 'Submit',
                   onTap: () {
                     if (_selectedIssue != null) {
@@ -110,8 +115,8 @@ class _CustomRideissuePageState extends State<CustomRideissuePage> {
                         debugPrint(
                             'Description: ${_descriptionController.text}');
                         if (_formKey.currentState!.validate()) {
-                          Provider.of<RaiseissueViewModel>(context,
-                                  listen: false)
+                          context
+                              .read<RaiseIssueViewModel>()
                               .requestRaiseIssue(
                                   context: context,
                                   bookingId: widget.bookingId,
@@ -120,14 +125,19 @@ class _CustomRideissuePageState extends State<CustomRideissuePage> {
                                           'My reason is not listed'
                                       ? _descriptionController.text
                                       : _selectedIssue ?? '',
-                                  vendorId: widget.vendorId);
-                          // Utils.toastSuccessMessage(
-                          //   'Raise Request Successfully',
-                          // );
-                          Navigator.of(context).pop();
+                                  vendorId: widget.vendorId)
+                              .then((onValue) {
+                            if (onValue?.status?.httpCode == '200') {
+                              Utils.toastSuccessMessage(
+                                'Raise Issue Request Successfully',
+                              );
+                              context.pop();
+                            }
+                          });
                         }
                       } else {
-                        Provider.of<RaiseissueViewModel>(context, listen: false)
+                        context
+                            .read<RaiseIssueViewModel>()
                             .requestRaiseIssue(
                                 context: context,
                                 bookingId: widget.bookingId,
@@ -136,9 +146,15 @@ class _CustomRideissuePageState extends State<CustomRideissuePage> {
                                     _selectedIssue == 'My reason is not listed'
                                         ? _descriptionController.text
                                         : _selectedIssue ?? '',
-                                vendorId: widget.vendorId);
-
-                        Navigator.of(context).pop();
+                                vendorId: widget.vendorId)
+                            .then((onValue) {
+                          if (onValue?.status?.httpCode == '200') {
+                            Utils.toastSuccessMessage(
+                              'Raise Issue Request Successfully',
+                            );
+                            context.pop();
+                          }
+                        });
                       }
                     } else {
                       Utils.toastMessage('Please select an issue.');

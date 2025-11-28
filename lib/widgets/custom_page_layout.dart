@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_driver/common/styles/app_colors.dart';
 import 'package:go_router/go_router.dart';
 
-class CustomPagelayout extends StatelessWidget {
+class CustomPageLayout extends StatelessWidget {
   final String appBarTitle;
   final void Function()? onTap;
   final Widget child;
   final Widget? actionIcon;
-  const CustomPagelayout(
+  const CustomPageLayout(
       {super.key,
       required this.appBarTitle,
       this.onTap,

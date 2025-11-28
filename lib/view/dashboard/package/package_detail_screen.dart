@@ -3,14 +3,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_driver/data/models/get_issue_by_booking_id_model.dart'
     hide Status;
-import 'package:flutter_driver/widgets/Custom%20%20Button/custom_btn.dart';
-import 'package:flutter_driver/widgets/Custom%20Page%20Layout/custom_pageLayout.dart';
+import 'package:flutter_driver/widgets/custom_btn.dart';
 import 'package:flutter_driver/core/constants/assets.dart';
 import 'package:flutter_driver/common/styles/app_colors.dart';
 import 'package:flutter_driver/common/styles/text_styles.dart';
 import 'package:flutter_driver/core/utils/utils.dart';
 import 'package:flutter_driver/view_model/driver_package_view_model.dart';
-import 'package:flutter_driver/view_model/raiseIssue_view_model.dart';
+import 'package:flutter_driver/view_model/raise_issue_view_model.dart';
+import 'package:flutter_driver/widgets/custom_page_layout.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -19,9 +19,8 @@ import '../../../data/response/status.dart';
 
 class Packagedetailpage extends StatefulWidget {
   final String driverAssignedId;
-  final String driverId;
-  const Packagedetailpage(
-      {super.key, required this.driverAssignedId, required this.driverId});
+
+  const Packagedetailpage({super.key, required this.driverAssignedId});
 
   @override
   State<Packagedetailpage> createState() => _PackagedetailpageState();
@@ -37,7 +36,7 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
     WidgetsBinding.instance.addPostFrameCallback(
       (timeStamp) {
         getPackageDetails();
-        getIssueBybookingId();
+        // getIssueBybookingId();
       },
     );
 
@@ -54,25 +53,24 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
     context
         .read<DriverPackageViewModel>()
         .getPackageDetailList(driverAssignId: widget.driverAssignedId);
+    getIssueBybookingId();
   }
 
-  Future<void> getIssueBybookingId() async {
-    context.read<RaiseissueViewModel>().getIssueByBookingId(
-        context: context,
-        bookingId: widget.driverAssignedId,
-        userId: widget.driverId,
-        bookingType: 'PACKAGE_BOOKING');
+  void getIssueBybookingId() async {
+    context.read<RaiseIssueViewModel>().getIssueByBookingId(
+        bookingId: widget.driverAssignedId, bookingType: 'PACKAGE_BOOKING');
   }
 
   Future<void> getTimezone() async {
     try {
       final timezoneInfo = await FlutterTimezone.getLocalTimezone();
-      final timezoneString = timezoneInfo.toString();
+      final timezoneString = timezoneInfo.identifier;
 
       if (!mounted) return;
 
       setState(() {
         _timeZone = timezoneString;
+        debugPrint('timeZone $_timeZone');
       });
     } catch (e) {
       debugPrint('Could not get the local timezone');
@@ -82,8 +80,9 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
   @override
   Widget build(BuildContext context) {
     GetIssueByBookingIdModel? getIssueByBookingId =
-        context.watch<RaiseissueViewModel>().getissueDetail.data;
-    return CustomPagelayout(
+        context.watch<RaiseIssueViewModel>().getIssueData.data;
+
+    return CustomPageLayout(
       appBarTitle: 'Package Details',
       child:
           Consumer<DriverPackageViewModel>(builder: (context, viewData, child) {
@@ -389,9 +388,14 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
                                       onTap: () {
                                         context.push('/rideIssue', extra: {
                                           'bookingId':
-                                              package?.packageBookingId ?? '',
+                                              package?.packageBookingId
+                                                  .toString() ??
+                                              '',
                                           'bookingType': 'PACKAGE_BOOKING',
-                                          "vendorId": package?.vendorId ?? ''
+                                          "vendorId":
+                                              package?.vendorId.toString() ?? ''
+                                        }).then((onValue) {
+                                          getPackageDetails();
                                         });
                                       })
                                   : CustomButtonSmall(
@@ -415,7 +419,6 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
                                           : () {
                                               showConfirmation(
                                                   context: context,
-                                                  loading: false,
                                                   title: "Start",
                                                   onTap: () {
                                                     if (package
@@ -441,15 +444,7 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
                                                           context.pop();
                                                         }
                                                       });
-
-                                                      // if (!viewData.isLoading) {
-                                                      // Provider.of<DriverPackageViewModel>(
-                                                      //         context,
-                                                      //         listen: false)
-                                                      //     .updateDayStatus(
-                                                      //         'ONGOING');
                                                     }
-                                                    // }
                                                   });
                                             })
                                   : package?.dayStatus == 'ONGOING'
@@ -466,7 +461,6 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
                                               : () {
                                                   showConfirmation(
                                                       context: context,
-                                                      loading: false,
                                                       title: 'Complete',
                                                       onTap: () {
                                                         context
@@ -486,18 +480,6 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
                                                           getPackageDetails();
                                                           context.pop('update');
                                                         });
-
-                                                        // if (viewData
-                                                        //         .packageBookingList
-                                                        //         .status ==
-                                                        //     Status.loading) {
-                                                        //   Provider.of<DriverPackageViewModel>(
-                                                        //           context,
-                                                        //           listen: false)
-                                                        //       .updateDayStatus(
-                                                        //           'COMPLETED');
-                                                        //   context.pop('update');
-                                                        // }
                                                       });
                                                 })
                                       : Container()
@@ -532,91 +514,96 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
   void showConfirmation(
       {required BuildContext context,
       required String title,
-      required bool loading,
+      // required bool loading,
       required void Function()? onTap}) {
     showModalBottomSheet(
         context: context,
         backgroundColor: background,
         isDismissible: false,
-        // barrierDismissible:
-        //     false, // Prevents closing the modal by tapping outside
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         builder: (BuildContext dialogContext) {
-          return SingleChildScrollView(
-            child: AlertDialog(
-              actionsAlignment: MainAxisAlignment.center,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              titlePadding:
-                  const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Confirmation',
-                    style: TextStyle(
-                        color: btnColor,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600),
+          return StatefulBuilder(builder: (context, setState) {
+            return SingleChildScrollView(
+              child: AlertDialog(
+                actionsAlignment: MainAxisAlignment.center,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                titlePadding:
+                    const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Confirmation',
+                      style: TextStyle(
+                          color: btnColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    IconButton(
+                        alignment: Alignment.topRight,
+                        onPressed: () {
+                          context.pop();
+                        },
+                        icon: const Icon(
+                          Icons.close,
+                          color: btnColor,
+                        )),
+                  ],
+                ),
+                backgroundColor: background,
+                insetPadding: const EdgeInsets.all(10),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                actionsPadding:
+                    const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                content: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 20, horizontal: 0),
+                  child: Text(
+                    'Are you sure you want to $title this activity?',
+                    textAlign: TextAlign.center,
+                    style: titleTextStyle,
                   ),
-                  IconButton(
-                      alignment: Alignment.topRight,
-                      onPressed: () {
-                        context.pop();
-                      },
-                      icon: const Icon(
-                        Icons.close,
-                        color: btnColor,
+                ),
+                actions: <Widget>[
+                  GestureDetector(
+                    onTap: () {
+                      context.pop();
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                          border: Border.all(color: btnColor),
+                          borderRadius: BorderRadius.circular(5)),
+                      child: Center(
+                          child: Text(
+                        'Exit',
+                        style: textTextStyle1,
                       )),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  Consumer<DriverPackageViewModel>(
+                    builder: (context, vm, state) {
+                      return CustomButtonSmall(
+                          width: double.infinity,
+                          loading: vm.startActivity.status == Status.loading ||
+                              vm.completeActivity.status == Status.loading,
+                          height: 45,
+                          btnHeading: 'Yes, $title',
+                          onTap: onTap);
+                    },
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
                 ],
               ),
-              backgroundColor: background,
-              insetPadding: const EdgeInsets.all(10),
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-              actionsPadding:
-                  const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-              content: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 20, horizontal: 0),
-                child: Text(
-                  'Are you sure you want to $title this activity?',
-                  textAlign: TextAlign.center,
-                  style: titleTextStyle,
-                ),
-              ),
-              actions: <Widget>[
-                GestureDetector(
-                  onTap: () {
-                    context.pop();
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    decoration: BoxDecoration(
-                        border: Border.all(color: btnColor),
-                        borderRadius: BorderRadius.circular(5)),
-                    child: Center(
-                        child: Text(
-                      'Exit',
-                      style: textTextStyle1,
-                    )),
-                  ),
-                ),
-                const SizedBox(
-                  height: 15,
-                ),
-                CustomButtonSmall(
-                    width: double.infinity,
-                    loading: loading,
-                    height: 45,
-                    btnHeading: 'Yes, $title',
-                    onTap: onTap),
-                const SizedBox(
-                  height: 5,
-                ),
-              ],
-            ),
-          );
+            );
+          });
         });
   }
 }
@@ -744,4 +731,3 @@ Container pendingTextItem() {
     ),
   );
 }
-// }

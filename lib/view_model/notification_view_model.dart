@@ -1,75 +1,111 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_driver/data/models/common_model.dart';
 import 'package:flutter_driver/data/models/get_all_notification_model.dart';
 import 'package:flutter_driver/data/respositories/notification_repository.dart';
-import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../data/response/api_response.dart';
 
 class NotificationViewModel with ChangeNotifier {
   final _myRepo = NotificationRepository();
+  int pageNumber = 0;
+  int pageSize = 10;
+  bool isLastPage = false;
+  bool isLoadingMore = false;
+  int totalUnreadNotification = 0;
 
-  // GetAllNotificationModel? getAllNotificationModel;
-  int? totalUnreadNotification;
-  bool isLoading = false;
-  Future<void> updateNotification({
-    required BuildContext context,
-    required String userId,
-  }) async {
-    Map<String, dynamic> query = {"receiverId": userId};
+  ApiResponse<List<Content>> notificationList = ApiResponse.initial();
+
+  void setNotificationList(ApiResponse<List<Content>> response) {
+    notificationList = response;
+    notifyListeners();
+  }
+
+  ApiResponse<CommonModel> updateNotification = ApiResponse.initial();
+
+  void setOnUpdateNotification(ApiResponse<CommonModel> response) {
+    updateNotification = response;
+    notifyListeners();
+  }
+
+  ApiResponse<bool> clearNotification = ApiResponse.initial();
+
+  void setOnClearNotification(ApiResponse<bool> response) {
+    clearNotification = response;
+    notifyListeners();
+  }
+
+  Future<void> updateNotificationApi() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    var driverId = pref.getString('userId');
+    Map<String, dynamic> query = {"receiverId": driverId};
     try {
-      await _myRepo
-          .updateNotificationStatusApi(context: context, query: query)
-          .then((onValue) {
-        if (onValue?.status?.httpCode == '200') {
-          context.push('/notification', extra: {'userId': userId});
-          // updateNotificationStatus = onValue;
-          // notifyListeners();
-        }
-      });
+      setOnUpdateNotification(ApiResponse.loading());
+      var resp = await _myRepo.updateNotificationStatusApi(query: query);
+      setOnUpdateNotification(ApiResponse.completed(resp));
     } catch (e) {
       debugPrint('error $e');
+      setOnUpdateNotification(ApiResponse.error(e.toString()));
     }
   }
 
-  Future<GetAllNotificationModel?> getAllNotificationList(
-      {required BuildContext context,
-      required String userId,
-      required int pageNumber,
-      required int pageSize,
+  Future<void> getAllNotificationList(
+      {required bool isFilter,
+      required bool isPagination,
+      int? pageNumber1,
+      int? pageSize1,
       required String readStatus}) async {
+    if (isLoadingMore) return;
+    if (!isPagination && isFilter) {
+      pageNumber = 0;
+      isLastPage = false;
+
+      setNotificationList(ApiResponse.loading());
+    }
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    var driverId = pref.getString('userId');
     Map<String, dynamic> query = {
-      "receiverId": userId,
+      "receiverId": driverId,
       "readStatus": readStatus,
-      'pageNumber': pageNumber,
-      'pageSize': pageSize,
+      'pageNumber': pageNumber1 ?? pageNumber,
+      'pageSize': pageSize1 ?? pageSize,
       'receiverRole': 'DRIVER'
     };
+    if (isLastPage) return;
+    isLoadingMore = true;
     try {
-      isLoading = true;
-      notifyListeners();
+      var resp = await _myRepo.getAllNotificationApi(query: query);
+      List<Content> newData = resp.data?.content ?? [];
+      List<Content> allData = (pageNumber == 0)
+          ? newData
+          : [...notificationList.data ?? [], ...newData];
+      setNotificationList(ApiResponse.completed(allData));
+      isLastPage = resp.data?.last ?? false;
       if (readStatus == 'FALSE') {
-        await _myRepo
-            .getAllNotificationApi(context: context, query: query)
-            .then((onValue) {
-          if (onValue?.status?.httpCode == '200') {
-            totalUnreadNotification = onValue?.data?.totalElements;
-            notifyListeners();
-          }
-        });
-      } else {
-        var resp =
-            await _myRepo.getAllNotificationApi(context: context, query: query);
-
-        return resp;
+        totalUnreadNotification = resp.data?.totalElements ?? 0;
       }
-      isLoading = false;
-      notifyListeners();
+      pageNumber++;
+    } catch (e) {
+      setNotificationList(ApiResponse.error(e.toString()));
+    } finally {
+      isLoadingMore = false;
+    }
+  }
+
+  Future<void> clearAllNotificationApi() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    var driverId = pref.getString('userId');
+    Map<String, dynamic> query = {
+      "receiverId": driverId,
+      "receiverRole": 'DRIVER'
+    };
+    try {
+      setOnClearNotification(ApiResponse.loading());
+      var resp = await _myRepo.clearAllNotificationApi(query: query);
+      setOnClearNotification(ApiResponse.completed(resp));
     } catch (e) {
       debugPrint('error $e');
-      isLoading = false;
-      notifyListeners();
-    } finally {
-      isLoading = false;
-      notifyListeners();
+      setOnClearNotification(ApiResponse.error(e.toString()));
     }
-    return null;
   }
 }

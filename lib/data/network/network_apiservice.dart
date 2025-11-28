@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
-import 'package:http_parser/http_parser.dart';
 import 'package:http/http.dart' as http;
 // ignore: depend_on_referenced_packages
 import 'package:shared_preferences/shared_preferences.dart';

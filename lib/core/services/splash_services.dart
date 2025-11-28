@@ -1,49 +1,19 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_driver/view_model/user_view_model.dart';
 
 class SplashServices {
-
-  // Future<UserModel> getUserData ()=> UserViewModel().getUser();
-
   UserViewModel userViewModel = UserViewModel();
 
-  void login (BuildContext context){
-    userViewModel.getUser().then((value) async {
-      if(value.token == null || value.token == '') {
-        await Future.delayed(const Duration(seconds: 4));
-        debugPrint('Token ${value.token}');
-        context.push('/login');
-      }else{
-        await Future.delayed(const Duration(seconds: 4));
-        // context.push('/');
-        debugPrint('Token ${value.token}');
-        context.push('/');
-      }
-    }).onError((error, stackTrace){
-      if(kDebugMode){
-        print(error.toString());
-      }});
-}
-
-  // void checkAunthentication (BuildContext context)async{
-  //   getUserData().then((value)async{
-  //     if(value.token == null || value.token == ''){
-  //       await Future.delayed(Duration(seconds: 4));
-  //       context.go('/login');
-  //     }else{
-  //       await Future.delayed(Duration(seconds: 4));
-  //       context.push('/');
-  //     }
-  //
-  //   }).onError((error, stackTrace){
-  //     if(kDebugMode){
-  //       print(error.toString());
-  //     }
-  //   });
-  //
-  // }
-
-
+  void login(BuildContext context) async {
+    var resp = await userViewModel.getUser();
+    if (resp.token == null || (resp.token ?? '').isEmpty) {
+      context.push('/login');
+    } else {
+      context.push('/');
+    }
+   
+  }
 }

@@ -31,6 +31,7 @@ class _CustomtabbarState extends State<Customtabbar> {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: background,
+                  // ignore: deprecated_member_use
                   border: Border.all(color: naturalGreyColor.withOpacity(0.3))),
               child: TabBar(
                 // isScrollable: true,

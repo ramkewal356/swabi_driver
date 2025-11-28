@@ -1,20 +1,21 @@
 // routes.dart
 
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/widgets/custom_ride_issue_page.dart';
+import 'package:flutter_driver/view/dashboard/bottom_navigation_bar.dart';
+import 'package:flutter_driver/view/dashboard/package/upcoming_package_booking_screen.dart';
+import 'package:flutter_driver/view/dashboard/raiseIssue_pages/custom_ride_issue_page.dart';
 import 'package:flutter_driver/view/auth_screens/change_password_screen.dart';
-import 'package:flutter_driver/view/dashboard/account_Pages/help&support.dart';
-import 'package:flutter_driver/view/dashboard/account_Pages/notification.dart';
-import 'package:flutter_driver/view/dashboard/account_Pages/profile_screen.dart';
-import 'package:flutter_driver/view/dashboard/account_Pages/raise_issue_details.dart';
-import 'package:flutter_driver/view/dashboard/account_Pages/term_condition.dart';
+import 'package:flutter_driver/view/dashboard/account_pages/help_and_support.dart';
+import 'package:flutter_driver/view/dashboard/notification/notification_screen.dart';
+import 'package:flutter_driver/view/dashboard/account_pages/profile_screen.dart';
+import 'package:flutter_driver/view/dashboard/raiseIssue_pages/raise_issue_screen.dart';
+import 'package:flutter_driver/view/dashboard/account_pages/term_condition.dart';
 import 'package:flutter_driver/view/dashboard/home_screen.dart';
-import 'package:flutter_driver/view/dashboard/account_Pages/edit_profile_screen.dart';
 import 'package:flutter_driver/view/dashboard/package/package_detail_screen.dart';
-import 'package:flutter_driver/view/dashboard/package/package_management_screen.dart';
+import 'package:flutter_driver/view/dashboard/history/history_management_screen.dart';
 import 'package:flutter_driver/view/dashboard/raiseIssue_pages/issue_view_details.dart';
-import 'package:flutter_driver/view/dashboard/rental/rental_view_detail_screen.dart';
-import 'package:flutter_driver/view/dashboard/rental/history/rental_history_managment.dart';
+import 'package:flutter_driver/view/dashboard/rental/rental_booking_detail_screen.dart';
+import 'package:flutter_driver/view/dashboard/rental/rental_booking_managment.dart';
 import 'package:flutter_driver/view/auth_screens/forgot_screen.dart';
 import 'package:flutter_driver/view/auth_screens/login_screen.dart';
 import 'package:flutter_driver/view/auth_screens/otp_verification_screen.dart';
@@ -25,7 +26,6 @@ import 'package:go_router/go_router.dart';
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final GoRouter myRouter = GoRouter(
-  // initialLocation: '/profilePage/editProfilePage',
   initialLocation: '/splash',
   navigatorKey: _rootNavigatorKey,
   routes: <RouteBase>[
@@ -41,81 +41,57 @@ final GoRouter myRouter = GoRouter(
       },
     ),
 
+    ShellRoute(
+      builder: (context, state, child) =>
+          CustomBottomNavigationBar(child: child),
+      routes: [
+        GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+        GoRoute(
+            path: '/rentalManagement',
+            builder: (context, state) => const RentalBookingManagment()),
+        GoRoute(
+            path: '/packageManagement',
+            builder: (context, state) => const UpcommingPackagebooking()),
+        GoRoute(
+            path: '/user', builder: (context, state) => const ProfilePage()),
+      ],
+    ),
     GoRoute(
-      path: '/',
+      path: '/historyManagement',
       builder: (BuildContext context, GoRouterState state) {
-        // var zoneId = state.extra as Map<String, dynamic>;
-        return const home_screen(
-            // timeZone: zoneId['zoneId'],
-            );
+       
+        return const HistoryManagementScreen();
       },
     ),
-
     GoRoute(
       path: '/notification',
       builder: (BuildContext context, GoRouterState state) {
-        var data = state.extra as Map<String, dynamic>;
-        return NotificationPage(
-          userId: data['userId'],
-        );
+       
+        return NotificationScreen();
       },
     ),
- 
     GoRoute(
         path: '/profilePage',
         builder: (BuildContext context, GoRouterState state) {
-          // var data = state.extra as Map<String, dynamic>;
-          return ProfilePage(
-              // user: data['userId'],
-          );
-        },
-        routes: [
-          GoRoute(
-            path: 'editProfilePage',
-            builder: (BuildContext context, GoRouterState state) {
-              var data = state.extra as Map<String, dynamic>;
-              var phone = state.extra as Map<String, dynamic>;
-              return EditProfiePage(
-                usrId: data['uId'],
-                mobileNumber: phone['phoneNo'],
-              );
-            },
-          ),
-        ]),
-    GoRoute(
-      path: '/historyManagement',
-      pageBuilder: (BuildContext context, GoRouterState state) {
-        var data = state.extra as Map<String, dynamic>;
-        return NoTransitionPage(
-            child: DriverHistoryManagment(
-          myID: data["myID"],
-        ));
+        return ProfilePage();
       },
+     
     ),
-
-    GoRoute(
-      path: '/packageBookingManagement',
-      // parentNavigatorKey: _rootNavigatorKey,
-      builder: (BuildContext context, GoRouterState state) {
-        return const PackageManagementScreen();
-      },
-    ),
+   
     GoRoute(
       path: '/packageDetailPage',
-      // parentNavigatorKey: _rootNavigatorKey,
+      
       builder: (BuildContext context, GoRouterState state) {
         var bookingId = state.extra as Map<String, dynamic>;
-        var driverId = state.extra as Map<String, dynamic>;
         return Packagedetailpage(
           driverAssignedId: bookingId["driverAssignedId"],
-          driverId: driverId["driverId"],
+        
         );
       },
     ),
     GoRoute(
       path: '/setting',
       pageBuilder: (BuildContext context, GoRouterState state) {
-        // var data = state.extra as Map<String, dynamic>;
         return const NoTransitionPage(
             child: Scaffold(
           body: Center(child: Text("Setting Page")),
@@ -132,8 +108,6 @@ final GoRouter myRouter = GoRouter(
         );
       },
     ),
-   
-
     GoRoute(
       path: '/forgotPassword',
       parentNavigatorKey: _rootNavigatorKey,
@@ -162,7 +136,6 @@ final GoRouter myRouter = GoRouter(
         );
       },
     ),
-  
     GoRoute(
       path: '/termCondition',
       parentNavigatorKey: _rootNavigatorKey,
@@ -170,7 +143,6 @@ final GoRouter myRouter = GoRouter(
         return const TermCondition();
       },
     ),
-   
     GoRoute(
       path: '/help&support',
       parentNavigatorKey: _rootNavigatorKey,
@@ -194,27 +166,26 @@ final GoRouter myRouter = GoRouter(
       path: '/getRaiseIssue',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (BuildContext context, GoRouterState state) {
-        return const Raiseissuedetails();
+        return const RaiseIssueScreen();
       },
     ),
     GoRoute(
       path: '/issueDetailsbyId',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (BuildContext context, GoRouterState state) {
-        return const Issueviewdetails();
+        var data = state.extra as Map<String, dynamic>;
+        return IssueViewDetails(
+          issueId: data["issueId"],
+        );
       },
     ),
-
-
     GoRoute(
       path: '/bookingDetails',
       parentNavigatorKey: _rootNavigatorKey,
       builder: (BuildContext context, GoRouterState state) {
         var data = state.extra as Map<String, dynamic>;
-        var id = state.extra as Map<String, dynamic>;
-        return BookingDetailsOfDriver(
-          bookingId: data['bookId'],
-          driverId: id['myDriverId'],
+        return RentalBookingDetailScreen(
+          bookingId: data['bookingId'],
         );
       },
     ),

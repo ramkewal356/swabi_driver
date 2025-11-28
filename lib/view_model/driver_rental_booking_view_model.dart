@@ -1,231 +1,111 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_driver/data/models/common_model.dart';
+import 'package:flutter_driver/data/models/get_rental_booking_by_id_model.dart';
+import 'package:flutter_driver/data/models/rental_booking_model.dart';
 import 'package:flutter_driver/data/response/api_response.dart';
-import 'package:flutter_driver/data/models/driver_booking_model.dart';
 import 'package:flutter_driver/data/respositories/driver_rental_repository.dart';
 import 'package:flutter_driver/core/utils/utils.dart';
-import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class DriverGetBookingListViewModel with ChangeNotifier {
-  final _myRepo = DriverRentalBookingListRepository();
-  ApiResponse<DriverBookingModel> DataList = ApiResponse.loading();
-  ApiResponse<DriverBookingModel> DataList1 = ApiResponse.loading();
-  ApiResponse<DriverBookingModel> DataList2 = ApiResponse.loading();
-  ApiResponse<DriverBookingModel> DataList3 = ApiResponse.loading();
+class DriverRentalBookingViewModel with ChangeNotifier {
+  final _myRepo = DriverRentalBookingRepository();
+  int pageNumber = 0;
+  int pageSize = 10;
+  bool isLastPage = false;
+  bool isLoadingMore = false;
+  ApiResponse<List<BookingContent>> bookingdataList = ApiResponse.initial();
 
-  setDataList(ApiResponse<DriverBookingModel> response) {
-    DataList = response;
+  void setDataList(ApiResponse<List<BookingContent>> response) {
+    bookingdataList = response;
     notifyListeners();
   }
 
-  setDataList1(ApiResponse<DriverBookingModel> response) {
-    DataList1 = response;
+  ApiResponse<GetRentalBookingByIdModel> bookingDetailsData =
+      ApiResponse.initial();
+
+  void setDataListById(ApiResponse<GetRentalBookingByIdModel> response) {
+    bookingDetailsData = response;
     notifyListeners();
   }
 
-  setDataList2(ApiResponse<DriverBookingModel> response) {
-    DataList2 = response;
+  ApiResponse<CommonModel> startAndCompleteResponse = ApiResponse.initial();
+
+  void setStartAndComplete(ApiResponse<CommonModel> response) {
+    startAndCompleteResponse = response;
     notifyListeners();
   }
 
-  setDataList3(ApiResponse<DriverBookingModel> response) {
-    DataList3 = response;
-    notifyListeners();
-  }
+  Future<void> fetchDriverGetBookingListViewModel(
+      {required bool isFilter,
+      required bool isPagination,
+      required String filterText,
+      int? pageNumer1,
+      int? pageSize1}) async {
+    if (isLoadingMore) return; // Prevent multiple calls
 
-  Future<DriverBookingModel?> fetchDriverGetBookingListViewModel(
-      data, BuildContext context) async {
-    try {
+    if (!isPagination && isFilter) {
+      pageNumber = 0;
+      isLastPage = false;
+
       setDataList(ApiResponse.loading());
-      var resp = await _myRepo.driverBookingListRepositoryApi(
-          context: context, query: data);
-      setDataList(ApiResponse.completed(resp));
+    }
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    var driverId = pref.getString('userId');
+    Map<String, dynamic> query = {
+      "driverId": driverId,
+      "pageNumber": pageNumer1 ?? pageNumber,
+      "pageSize": pageSize1 ?? pageSize,
+      "bookingStatus": filterText
+    };
+    if (isLastPage) return;
+    isLoadingMore = true;
+    try {
+      var resp = await _myRepo.driverBookingListRepositoryApi(query: query);
+      List<BookingContent> newData = resp.data?.content ?? [];
+      List<BookingContent> allData = (pageNumber == 0)
+          ? newData
+          : [...bookingdataList.data ?? [], ...newData];
+
+      isLastPage = resp.data?.last ?? false;
+      pageNumber++;
+
+      setDataList(ApiResponse.completed(allData));
       debugPrint("Driver Booking List Success");
-      return resp;
+      // return resp;
     } catch (error) {
       setDataList(ApiResponse.error(error.toString()));
       debugPrint(error.toString());
+    } finally {
+      isLoadingMore = false;
+    }
+  }
+
+  Future<void> getBookingDetailsApi({required String bookingId}) async {
+    Map<String, dynamic> query = {"id": bookingId};
+    try {
+      setDataListById(ApiResponse.loading());
+      var resp = await _myRepo.driverBookingDetailsRepositoryApi(query: query);
+      setDataListById(ApiResponse.completed(resp));
+    } catch (e) {
+      setDataListById(ApiResponse.error(e.toString()));
+    }
+  }
+
+  Future<CommonModel?> startAndCompleteBookingApi(
+      {required String bookingId, required String bookingStatus}) async {
+    Map<String, dynamic> query = {
+      "id": bookingId,
+      "bookingStatus": bookingStatus
+    };
+    try {
+      setStartAndComplete(ApiResponse.loading());
+      var resp = await _myRepo.bookingStartAndCompleteApi(query: query);
+      setStartAndComplete(ApiResponse.completed(resp));
+      Utils.toastSuccessMessage(resp.data?.body ?? '');
+      return resp;
+    } catch (e) {
+      setStartAndComplete(ApiResponse.error(e.toString()));
     }
     return null;
-   
-  }
-
-  Future fetchDriverGetBookingListViewModel1(data, BuildContext context) async {
-    setDataList1(ApiResponse.loading());
-    _myRepo
-        .driverBookingListRepositoryApi(context: context, query: data)
-        .then((value) {
-      setDataList1(ApiResponse.completed(value));
-      debugPrint("Driver Booking List Success");
-      // Utils.toastMessage("Driver Booking UP_RUNNING List Successfull");
-    }).onError((error, stackTrace) {
-      setDataList1(ApiResponse.error(error.toString()));
-      debugPrint(error.toString());
-      // Utils.flushBarErrorMessage(error.toString(),context);
-    });
-  }
-
-  Future fetchDriverGetBookingListViewModel2(data, BuildContext context) async {
-    setDataList2(ApiResponse.loading());
-    _myRepo
-        .driverBookingListRepositoryApi(context: context, query: data)
-        .then((value) {
-      setDataList2(ApiResponse.completed(value));
-      debugPrint("Driver Booking List Success");
-      // Utils.toastMessage("Driver Booking BOOKED List Successfull");
-    }).onError((error, stackTrace) {
-      setDataList2(ApiResponse.error(error.toString()));
-      debugPrint(error.toString());
-      // Utils.flushBarErrorMessage(error.toString(),context);
-    });
-  }
-
-  Future fetchDriverGetBookingListViewModel3(data, BuildContext context) async {
-    setDataList3(ApiResponse.loading());
-    _myRepo
-        .driverBookingListRepositoryApi(context: context, query: data)
-        .then((value) {
-      setDataList3(ApiResponse.completed(value));
-      debugPrint("Driver Booking List Success");
-      // Utils.toastMessage("Driver Booking BOOKED List Successfull");
-    }).onError((error, stackTrace) {
-      setDataList3(ApiResponse.error(error.toString()));
-      debugPrint(error.toString());
-      // Utils.flushBarErrorMessage(error.toString(),context);
-    });
-  }
-}
-
-///Driver Get Booking Details Single Full View Model
-class DriverGetBookingDetailsViewModel with ChangeNotifier {
-  final _myRepo = DriverRentalBookingDetailsRepository();
-  ApiResponse<DriverGetBookingDetailsModel> DataList = ApiResponse.loading();
-
-  setDataList(ApiResponse<DriverGetBookingDetailsModel> response) {
-    DataList = response;
-    notifyListeners();
-  }
-
-  void updateBookingStatus(String newStatus) {
-    if (DataList.data?.data != null) {
-      DataList.data?.data.bookingStatus = newStatus;
-      notifyListeners();
-    }
-  }
-
-  Future fetchDriverGetBookingDetailsViewModel(
-      data, BuildContext context, String bookID, String myIdDriver) async {
-    setDataList(ApiResponse.loading());
-    _myRepo
-        .driverBookingDetailsRepositoryApi(context: context, query: data)
-        .then((value) {
-      setDataList(ApiResponse.completed(value));
-      debugPrint("Driver Booking Details Success");
-      context.push('/bookingDetails',
-          extra: {'bookId': bookID, 'myDriverId': myIdDriver}).then((value) {
-        Provider.of<DriverGetBookingListViewModel>(context, listen: false)
-            .fetchDriverGetBookingListViewModel({
-          "driverId": myIdDriver,
-          "pageNumber": "0",
-          "pageSize": "5",
-          "bookingStatus": "BOOKED"
-        }, context);
-      });
-      // Utils.toastMessage("Driver Booking Details Successful");
-    }).onError((error, stackTrace) {
-      setDataList(ApiResponse.error(error.toString()));
-      debugPrint(error.toString());
-      // Utils.flushBarErrorMessage(error.toString(),context);
-    });
-  }
-}
-
-///Driver On Running Ride View Model
-class DriverOnRunningViewModel with ChangeNotifier {
-  final _myRepo = DriverOnRunningRepository();
-  bool _loading = false;
-  bool get loading => _loading;
-  setLoading(bool value) {
-    _loading = value;
-    notifyListeners();
-  }
-
-  ApiResponse<DriverOnRunningModel> DataList = ApiResponse.loading();
-
-  setDataList(ApiResponse<DriverOnRunningModel> response) {
-    DataList = response;
-    notifyListeners();
-  }
-
-  Future fetchDriverStartRideViewModel(
-      data, BuildContext context, String bookId, String drvID) async {
-    setLoading(true);
-
-    setDataList(ApiResponse.loading());
-    _myRepo
-        .driverOnRunningRepositoryApi(context: context, query: data)
-        .then((value) {
-      setLoading(false);
-      setDataList(ApiResponse.completed(value));
-      debugPrint("Driver On Going Success");
-      context.pop();
-     
-      Utils.toastSuccessMessage("Driver Ongoing Successfully");
-    }).onError((error, stackTrace) {
-      setLoading(false);
-      setDataList(ApiResponse.error(error.toString()));
-      debugPrint("Driver On Running field");
-      debugPrint(error.toString());
-      Utils.toastMessage(error.toString());
-    });
-  }
-}
-
-///Driver Start Ride View Model
-class DriverCompletedBookingViewModel with ChangeNotifier {
-  final _myRepo = DriverBookingCompletedRepository();
-  bool _loading = false;
-  bool get loading => _loading;
-  ApiResponse<DriverBookingCompletedModel> DataList = ApiResponse.loading();
-
-  setLoading(bool value) {
-    _loading = value;
-    notifyListeners();
-  }
-
-  setDataList(ApiResponse<DriverBookingCompletedModel> response) {
-    DataList = response;
-    notifyListeners();
-  }
-
-  Future fetchDriverBookingCompletedViewModel(
-      data, BuildContext context, String driverId) async {
-    setLoading(true);
-
-    setDataList(ApiResponse.loading());
-    _myRepo
-        .driverDriverBookingCompletedRepositoryApi(
-            context: context, query: data)
-        .then((value) {
-      setLoading(false);
-      setDataList(ApiResponse.completed(value));
-      context.pop();
-      debugPrint("Driver Booking Completed Successfully");
-      Provider.of<DriverGetBookingListViewModel>(context, listen: false)
-          .fetchDriverGetBookingListViewModel({
-        "driverId": driverId,
-        "pageNumber": "0",
-        "pageSize": "10",
-        "bookingStatus": "BOOKED"
-      }, context);
-      context.go('/');
-      Utils.toastSuccessMessage("Booking has been Completed Successfully");
-    }).onError((error, stackTrace) {
-      setLoading(false);
-      setDataList(ApiResponse.error(error.toString()));
-      debugPrint("Driver Booking Completed field");
-      debugPrint(error.toString());
-      // Utils.flushBarErrorMessage(error.toString(),context);
-    });
   }
 }

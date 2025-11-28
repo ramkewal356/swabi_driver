@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_driver/core/utils/validatorclass.dart';
 import 'package:flutter_driver/data/response/status.dart';
 import 'package:flutter_driver/view_model/auth_view_model.dart';
-import 'package:flutter_driver/widgets/Custom%20%20Button/custom_btn.dart';
+import 'package:flutter_driver/widgets/custom_btn.dart';
 import 'package:flutter_driver/widgets/custom_text_form_field.dart';
 import 'package:flutter_driver/common/styles/app_colors.dart';
 import 'package:flutter_driver/common/styles/text_styles.dart';
@@ -150,7 +150,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               }
                             }),
                         const SizedBox(height: 10),
-                        Login_SignUpBtn(
+                        LoginSignUpBtn(
                           onTap: () => context.push("/login"),
                           btnHeading: 'Sign In',
                           sideHeading: 'Back to',

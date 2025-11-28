@@ -2,18 +2,13 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_driver/core/utils/validatorclass.dart';
 import 'package:flutter_driver/data/response/status.dart';
-import 'package:flutter_driver/widgets/Custom%20%20Button/custom_btn.dart';
+import 'package:flutter_driver/widgets/custom_btn.dart';
 import 'package:flutter_driver/widgets/custom_text_form_field.dart';
-import 'package:flutter_driver/widgets/custom_text_widget.dart';
-
 import 'package:flutter_driver/core/constants/assets.dart';
 import 'package:flutter_driver/common/styles/app_colors.dart';
 import 'package:flutter_driver/common/styles/text_styles.dart';
-
 import 'package:flutter_driver/view_model/auth_view_model.dart';
 import 'package:go_router/go_router.dart';
-
-// ignore: depend_on_referenced_packages
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -77,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
     debugPrint("FCM Token: $notificationToken");
   }
 
-  savecredential() async {
+  Future<void> savecredential() async {
     final prefsData = await SharedPreferences.getInstance();
 
     setState(() {
@@ -109,14 +104,21 @@ class _LoginScreenState extends State<LoginScreen> {
                   // child: Center(child: Image.asset(appLogo1)),
                 ),
                 const SizedBox(height: 10),
-                const Align(
+                Align(
                   alignment: Alignment.centerLeft,
-                  child: CustomTextWidget(
-                      content: "WELCOME!\nPlease sign in to your account",
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      maxline: 2,
-                      textColor: textColor),
+                  child: Text(
+                    'WELCOME!\nPlease sign in to your account',
+                    style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: textColor),
+                  ),
+                  // child: CustomTextWidget(
+                  //     content: "WELCOME!\nPlease sign in to your account",
+                  //     fontSize: 20,
+                  //     fontWeight: FontWeight.w600,
+                  //     maxline: 2,
+                  //     textColor: textColor),
                 ),
                 const SizedBox(height: 4),
                 Padding(
@@ -203,7 +205,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ],
                 ),
-                CustomButtonBig(
+                CustomButtonSmall(
+                  height: 45,
+                  width: double.infinity,
                   btnHeading: "Sign In",
                   loading: authViewMode.loginResponse.status == Status.loading,
                   onTap: () {

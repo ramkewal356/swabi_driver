@@ -1,175 +1,173 @@
+
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_driver/common/styles/app_colors.dart';
 import 'package:flutter_driver/common/styles/text_styles.dart';
 
 // ignore: must_be_immutable
-class CustomDropdown extends StatefulWidget {
-  String? hintText;
+class CustomDropdownButton extends StatefulWidget {
+  String? selecteValue;
+  final String? hintText;
+  final List<String> itemsList;
+  final Function(String?)? onChanged;
+  final FocusNode? focusNode;
+  final TextEditingController controller;
+  final List Function(BuildContext)? selectedItemBuilder;
   final String? Function(String?)? validator;
-  TextEditingController controller;
-  final List<dynamic> items;
-  final Color? fillColor;
-  final prifixIconVisible;
-  final Color? selectedBorderColor;
-  final Widget? prifixIcon;
-  final String? img;
-  // final void Function()? onChanged;
-  final ValueChanged<String> onChanged;
-
-  CustomDropdown({
-    super.key,
-    required this.hintText,
-    required this.items,
-    this.fillColor,
-    this.selectedBorderColor,
-    this.validator,
-    required this.controller,
-    this.prifixIconVisible,
-    this.prifixIcon,
-    this.img,
-    required this.onChanged,
-  });
+  final bool withoutBorder;
+  final bool isEditable;
+  CustomDropdownButton(
+      {super.key,
+      required this.itemsList,
+      this.onChanged,
+      required this.hintText,
+      this.selecteValue,
+      this.focusNode,
+      required this.controller,
+      this.selectedItemBuilder,
+      this.validator,
+      this.withoutBorder = false,
+      this.isEditable = true});
 
   @override
-  State<CustomDropdown> createState() => _CustomDropdownState();
+  State<CustomDropdownButton> createState() => _CustomDropdownButtonState();
 }
 
-class _CustomDropdownState extends State<CustomDropdown> {
-  bool isOpen = false;
-  // TextEditingController controller = TextEditingController();
+class _CustomDropdownButtonState extends State<CustomDropdownButton> {
+  bool isSelected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_update);
+  }
+
+  void _update() {
+    setState(() {
+      debugPrint('selecteditem ${widget.controller.text}');
+    });
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_update);
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              isOpen = !isOpen;
-            });
-          },
-          child: TextFormField(
-            controller: widget.controller,
-            readOnly: true,
-
-            decoration: InputDecoration(
-                filled: true,
-                prefixIcon: widget.prifixIconVisible == true
-                    ? Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Image.asset(
-                          widget.img ?? '',
-                          width: 15,
-                          height: 15,
-                        ),
-                      )
-                    : widget.prifixIcon,
-                fillColor: widget.fillColor ?? Colors.transparent,
-                contentPadding: const EdgeInsetsDirectional.symmetric(
-                    vertical: 10, horizontal: 10),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
-                  borderSide: const BorderSide(
-                    color: Color(0xFFCDCDCD),
-                    // width: 2.0,
-                  ),
+    return FormField<String>(
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        validator: widget.validator,
+        initialValue:
+            widget.controller.text.isNotEmpty ? widget.controller.text : null,
+        builder: (FormFieldState<String> field) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              DropdownButton2<String>(
+                underline: Container(),
+                isExpanded: true,
+                hint: Text(
+                  widget.hintText ?? 'Select item',
+                  textAlign: TextAlign.start,
+                  style: hintTextStyle,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
-                  borderSide: const BorderSide(
-                    color: Color(0xFFCDCDCD),
-                    // width: 2.0,
-                  ),
-                ),
-                errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5),
-                    borderSide: const BorderSide(color: Colors.red)),
-                focusedErrorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5),
-                    borderSide: const BorderSide(color: Color(0xFFCDCDCD))),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5),
-                    borderSide: const BorderSide(color: Color(0xFFCDCDCD))),
-                hintText: widget.hintText,
-                enabled: true,
-                hintStyle: textStyle,
-                suffixIcon: isOpen
-                    ? const Icon(Icons.keyboard_arrow_up)
-                    : const Icon(Icons.keyboard_arrow_down)),
-            // validator: widget.validator,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please select Item';
-              }
-            
-
-              return null;
-            },
-            onChanged: widget.onChanged,
-            onTap: () {
-              setState(() {
-                isOpen = !isOpen;
-              });
-            },
-          ),
-        ),
-        // if (isOpen)
-        Visibility(
-          visible: isOpen,
-          child: Container(
-            constraints: const BoxConstraints(maxHeight: 250),
-            decoration: BoxDecoration(
-                color: widget.fillColor,
-                border: Border.all(color: Colors.black),
-                borderRadius: BorderRadius.circular(10)),
-            child: ListView(
-              scrollDirection: Axis.vertical,
-              // physics: PageScrollPhysics(),
-              primary: true,
-              shrinkWrap: true,
-              children: widget.items
-                  .map((e) => InkWell(
-                        onTap: () {
-                          widget.onChanged(e);
-
-                          setState(() {
-                            // widget.selectedValue = e;
-                            // print({'Selected value..': widget.selectedValue});
-                            isOpen = false;
-                            widget.controller.text = e;
-                          });
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.all(2),
-                          decoration: widget.controller.text == e
-                              ? BoxDecoration(
-                                  border: Border.all(
-                                      color: widget.selectedBorderColor ??
-                                          Colors.black),
-                                  borderRadius: BorderRadius.circular(10))
-                              : const BoxDecoration(),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    e,
-                                    style: textStyle,
-                                  ),
-                                ),
-                                if (widget.controller.text == e)
-                                  const Icon(Icons.check)
-                              ],
+                items: widget.itemsList
+                    .toSet()
+                    .map((String item) => DropdownMenuItem<String>(
+                          value: item,
+                          child: Text(
+                            item,
+                            style: titleTextStyle,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ))
+                    .toList(),
+                    
+                value: widget.controller.text == ''
+                    ? null
+                    : widget.controller.text,
+                onChanged: widget.isEditable
+                    ? (value) {
+                  setState(() {
+                    // widget.selecteValue = value;
+                          widget.controller.text = value ?? '';
+                  });
+                  field.didChange(value);
+                  if (widget.onChanged != null) {
+                    widget.onChanged!(value);
+                  }
+                      }
+                    : null,
+                buttonStyleData: ButtonStyleData(
+                  height: 50,
+                  padding: widget.withoutBorder
+                      ? const EdgeInsets.only(left: 0, right: 4, bottom: 2)
+                      : const EdgeInsets.only(left: 0, right: 10),
+                  decoration: widget.withoutBorder
+                      ? const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: Colors.black54,
+                              width: 1.2,
                             ),
                           ),
+                          // color: background,
+                        )
+                      : BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(
+                            color: Colors.black26,
+                            width: 1.2,
+                          ),
+                          color: background,
                         ),
-                      ))
-                  .toList(),
-            ),
-          ),
-        ),
-      ],
-    );
+                  elevation: 0,
+                ),
+                iconStyleData: const IconStyleData(
+                  icon: Icon(
+                    Icons.keyboard_arrow_down_outlined,
+                  ),
+                  iconSize: 24,
+                  iconEnabledColor: Colors.black38,
+                  iconDisabledColor: Colors.grey,
+                ),
+                dropdownStyleData: DropdownStyleData(
+                  maxHeight: 250,
+                  // width: 160,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: background,
+                  ),
+                  offset: const Offset(0, 0),
+                  scrollbarTheme: ScrollbarThemeData(
+                    radius: const Radius.circular(20),
+                    // ignore: deprecated_member_use
+                    thickness: MaterialStateProperty.all(6),
+                    thumbColor: WidgetStateProperty.all(btnColor),
+                    // ignore: deprecated_member_use
+                    thumbVisibility: MaterialStateProperty.all(true),
+                  ),
+                ),
+                menuItemStyleData: const MenuItemStyleData(
+                  height: 40,
+                  overlayColor: WidgetStatePropertyAll(greenColor),
+                  padding: EdgeInsets.only(left: 14, right: 14),
+                ),
+              ),
+              if (field.hasError)
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Text(
+                    field.errorText!,
+                    style: const TextStyle(color: redColor),
+                  ),
+                )
+            ],
+          );
+        });
   }
 }

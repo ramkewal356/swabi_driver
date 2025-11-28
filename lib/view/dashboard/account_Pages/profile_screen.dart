@@ -1,24 +1,24 @@
-import 'dart:io';
+// ignore_for_file: deprecated_member_use
 
-import 'package:dio/dio.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/data/models/driver_profile_model.dart';
-import 'package:flutter_driver/widgets/Custom%20%20Button/custom_btn.dart';
-import 'package:flutter_driver/widgets/Custom%20Page%20Layout/custom_pageLayout.dart';
-import 'package:flutter_driver/widgets/login/login_customTextFeild.dart';
-import 'package:flutter_driver/core/constants/assets.dart';
+import 'package:flutter_driver/common/styles/text_styles.dart';
+import 'package:flutter_driver/data/response/status.dart';
+import 'package:flutter_driver/view_model/user_view_model.dart';
+import 'package:flutter_driver/widgets/custom_btn.dart';
+import 'package:flutter_driver/widgets/custom_dropdown_button.dart';
+import 'package:flutter_driver/widgets/custom_page_layout.dart';
+import 'package:flutter_driver/widgets/custom_phonefield.dart';
+import 'package:flutter_driver/widgets/custom_search_location.dart';
+import 'package:flutter_driver/widgets/image_picker_widget.dart';
 import 'package:flutter_driver/common/styles/app_colors.dart';
-import 'package:flutter_driver/core/utils/dimensions.dart';
 import 'package:flutter_driver/view/auth_screens/change_password_screen.dart';
 import 'package:flutter_driver/view_model/driver_profile_view_model.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_cropper/image_cropper.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
- 
   const ProfilePage({super.key});
 
   @override
@@ -26,326 +26,327 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  String dataUser = '';
-  File? _image;
+  String driverId = '';
+  String _profileImg = '';
+  String countryCode = '971';
+  bool isEditing = false;
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _genderController = TextEditingController();
+  final TextEditingController _countryController = TextEditingController();
+  final TextEditingController _stateController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _contactController = TextEditingController();
+  final TextEditingController _emiratesController = TextEditingController();
+  final TextEditingController _licenceController = TextEditingController();
 
-  final ImagePicker _picker = ImagePicker();
   @override
   void initState() {
     super.initState();
     getDriverDetails();
   }
 
-  void getDriverDetails() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      context.read<DriverProfileViewModel>().getDriverByIdApi();
-    });
+  void getDriverDetails() async {
+    var vm = context.read<DriverProfileViewModel>();
+    await vm.getDriverByIdApi();
+    var data = vm.getDriverDetails.data?.data;
+    _firstNameController.text = data?.firstName ?? '';
+    _lastNameController.text = data?.lastName ?? '';
+    _genderController.text = data?.gender ?? '';
+    _emailController.text = data?.email ?? '';
+    _locationController.text = data?.driverAddress ?? '';
+    _contactController.text = data?.mobile ?? '';
+    _countryController.text = data?.country ?? 'United Arab Emirates';
+    _stateController.text = data?.state ?? '';
+    _profileImg = data?.profileImageUrl ?? '';
+    _emiratesController.text = data?.emiratesId ?? '';
+    _licenceController.text = data?.licenceNumber ?? '';
+    driverId = data?.driverId.toString() ?? '';
+    getStateList();
   }
 
-// Method to pick image from camera or gallery
-  Future<void> _showImageSourceSelection() async {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return SafeArea(
-          child: Wrap(
-            children: [
-              ListTile(
-                leading: const Icon(Icons.camera),
-                title: const Text("Camera"),
-                onTap: () {
-                  Navigator.of(context).pop();
-                  _pickImage(ImageSource.camera);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.photo),
-                title: const Text("Gallery"),
-                onTap: () {
-                  Navigator.of(context).pop();
-                  _pickImage(ImageSource.gallery);
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Future<void> _pickImage(ImageSource source) async {
+  void getStateList() async {
     try {
-      // Step 1: Pick an image from the selected source
-      final pickedFile = await _picker.pickImage(
-        source: source,
-        imageQuality: 100, // Max quality
-      );
-
-      if (pickedFile != null) {
-        // Step 2: Crop the image
-        final croppedFile = await ImageCropper().cropImage(
-          sourcePath: pickedFile.path,
-          // cropStyle: CropStyle.rectangle,
-          aspectRatio:
-              const CropAspectRatio(ratioX: 1, ratioY: 1), // Square crop
-          compressQuality: 100, // Max quality during cropping
-          uiSettings: [
-            AndroidUiSettings(
-              toolbarTitle: 'Crop Image',
-              toolbarColor: btnColor,
-              toolbarWidgetColor: Colors.white,
-              hideBottomControls: true,
-              lockAspectRatio: true,
-            ),
-            IOSUiSettings(title: 'Crop Image'),
-          ],
-        );
-
-        if (croppedFile != null) {
-          // Step 3: Compress the image
-          var compressedFile = await _compressImage(File(croppedFile.path));
-
-          setState(() {
-            _image = compressedFile;
-          });
-
-          // Step 4: Upload the image
-          await _uploadImage(_image!);
-        }
-      }
+      context
+          .read<GetCountryStateListViewModel>()
+          .getStateList(country: _countryController.text);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
-      );
+      debugPrint('error $e');
     }
   }
 
-  Future<File> _compressImage(File file) async {
-    final dir = await Directory.systemTemp.createTemp();
-    final targetPath = '${dir.path}/temp.jpg';
-    final result1 = await FlutterImageCompress.compressAndGetFile(
-      file.absolute.path,
-      targetPath,
-      quality: 85, // Adjust quality as needed
-      format: CompressFormat.jpeg,
-    );
-    final File result = File(result1?.path ?? '');
-
-    return result; // Return the File
+  void _uploadImage(File file) {
+    try {
+      context
+          .read<DriverProfileViewModel>()
+          .uploadProfilePicApi(file: file.path);
+    } catch (e) {
+      debugPrint('error $e');
+    }
   }
 
-  Future<void> _uploadImage(File file) async {
-    var profilePic =
-        await MultipartFile.fromFile(file.path, filename: "profile.jpg");
-    // Map<String, dynamic> body = {"driverId": widget.user, "image": profilePic};
+  void _logout() async {
     try {
-      // Provider.of<UploadProfilePicViewModel>(context, listen: false)
-      //     .uploadProfilePic(context: context, body: body)
-      //     .then((onValue) {
-      //   Provider.of<DriverProfileViewModel>(context, listen: false)
-      //       .fetchDriverDetailViewModelApi(
-      //           context, {"driverId": userId}, userId);
-      // });
+      UserViewModel().remove();
+
+      context.go('/login');
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
-      );
+      debugPrint("Logout error: $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    debugPrint(dataUser);
-
-    var driverProfileData =
-        context.watch<DriverProfileViewModel>().getDriverDetails.data?.data;
-
+    var stateList =
+        context.watch<GetCountryStateListViewModel>().stateList.data;
+    var updateStatus =
+        context.watch<DriverProfileViewModel>().updateDriver.status;
+    var getStatus =
+        context.watch<DriverProfileViewModel>().getDriverDetails.status;
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      body: CustomPagelayout(
-        appBarTitle: 'Profile',
-        actionIcon: InkWell(
-          onTap: () {
-            context.push("/profilePage/editProfilePage", extra: {
-              'uId': dataUser,
-              'phoneNo': driverProfileData?.mobile,
-            });
-          },
-          child: Padding(
-            padding: const EdgeInsets.only(right: 22),
-            child: Image.asset(
-              edit,
-              width: 26,
-              height: 30,
+      body: CustomPageLayout(
+        appBarTitle: isEditing ? 'Edit Profile Screen' : 'Profile Screen',
+        onTap: () {
+          context.go('/'); // ALWAYS go to dashboard
+        },
+        actionIcon: IconButton(
+            onPressed: () {
+              _showLogoutConfirmation();
+            },
+            icon: Icon(
+              Icons.logout,
               color: background,
-            ),
-          ),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 10),
-              Stack(
-                children: [
-                  _image != null
-                      ? CircleAvatar(
-                          backgroundImage: FileImage(_image!),
-                          radius: 60,
-                        )
-                      : (driverProfileData?.profileImageUrl ?? '').isNotEmpty
-                          ? CircleAvatar(
-                              backgroundImage: Image.network(
-                                      driverProfileData?.profileImageUrl ?? '')
-                                  .image,
-                              radius: 60,
-                            )
-                          : const CircleAvatar(
-                              radius: 60,
-                              child: Icon(Icons.person, size: 60),
+            )),
+        child: getStatus == Status.loading
+            ? Center(
+                child: CircularProgressIndicator(
+                  color: greenColor,
+                ),
+              )
+            : SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 10),
+                        Center(
+                            child: Container(
+                          height: 125,
+                          width: 125,
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(width: 4, color: btnColor)),
+                          child: ImagePickerWidget(
+                            initialImageUrl: _profileImg,
+                            isEditable: true,
+                            onImageSelected: _uploadImage,
+                          ),
+                        )),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _iconButton(
+                              Icons.lock_outline,
+                              'Change Password',
+                              () {
+                                _showModalBottomSheet(context,
+                                    ChangePassword(driverId: driverId));
+                              },
                             ),
-                  Positioned(
-                    bottom: 10,
-                    right: 0,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(50),
-                      onTap: _showImageSourceSelection,
-                      child: const Card(
-                        elevation: 0,
-                        shape: CircleBorder(),
-                        color: btnColor,
-                        child: SizedBox(
-                            height: 30,
-                            width: 30,
-                            child: Icon(
-                              Icons.camera_alt_outlined,
-                              color: background,
-                            )),
-                      ),
+                            _iconButton(
+                              Icons.edit,
+                              'Edit Profile',
+                              () {
+                                setState(() {
+                                  isEditing = !isEditing;
+                                });
+                              },
+                            )
+                          ],
+                        ),
+                        const Divider(
+                          height: 20,
+                        ),
+                        DetailItem(
+                            icon: Icons.account_balance,
+                            title: 'Driver Id',
+                            readOnly: true,
+                            controller: TextEditingController(text: driverId)),
+                        DetailItem(
+                          icon: Icons.person,
+                          title: 'First Name',
+                          readOnly: !isEditing,
+                          controller: _firstNameController,
+                          validator: (p0) {
+                            if (p0 == null || p0.isEmpty) {
+                              return 'Please enter first name';
+                            }
+                            return null;
+                          },
+                        ),
+                        DetailItem(
+                          icon: Icons.person,
+                          title: 'Last Name',
+                          readOnly: !isEditing,
+                          controller: _lastNameController,
+                          validator: (p0) {
+                            if (p0 == null || p0.isEmpty) {
+                              return 'Please enter last name';
+                            }
+                            return null;
+                          },
+                        ),
+                        DetailItem(
+                          icon: Icons.email,
+                          title: 'Email',
+                          readOnly: true,
+                          controller: _emailController,
+                          validator: (p0) {
+                            if (p0 == null || p0.isEmpty) {
+                              return 'Please enter email address';
+                            }
+                            return null;
+                          },
+                        ),
+                        DetailItem(
+                          icon: Icons.male,
+                          title: 'Gender',
+                          readOnly: !isEditing,
+                          child: CustomDropdownButton(
+                            isEditable: isEditing,
+                            withoutBorder: true,
+                            itemsList: ['Male', 'Female'],
+                            hintText: 'Select Gender',
+                            controller: _genderController,
+                            onChanged: (value) {
+                              setState(() {
+                                _genderController.text = value ?? '';
+                              });
+                            },
+                          ),
+                        ),
+                        DetailItem(
+                          readOnly: !isEditing,
+                          icon: Icons.phone,
+                          title: 'Contact No',
+                          controller: _contactController,
+                          child: Customphonefield(
+                              readOnly: !isEditing,
+                              withoutBorder: true,
+                              hintText: 'Enter phone number',
+                              fillColor: background,
+                              initalCountryCode: countryCode,
+                              controller: _contactController),
+                        ),
+                        DetailItem(
+                          icon: Icons.public,
+                          title: 'Country',
+                          readOnly: !isEditing,
+                          child: CustomDropdownButton(
+                            isEditable: isEditing,
+                            withoutBorder: true,
+                            itemsList: [],
+                            hintText: 'Select Country',
+                            controller: _countryController,
+                            onChanged: (value) {
+                              setState(() {
+                                _countryController.text = value ?? '';
+                              });
+                            },
+                          ),
+                        ),
+                        DetailItem(
+                          icon: Icons.location_city,
+                          title: 'State',
+                          readOnly: !isEditing,
+                          child: CustomDropdownButton(
+                            isEditable: isEditing,
+                            withoutBorder: true,
+                            itemsList: stateList ?? [],
+                            hintText: 'Select State',
+                            controller: _stateController,
+                            onChanged: (value) {
+                              setState(() {
+                                _stateController.text = value ?? '';
+                              });
+                            },
+                          ),
+                        ),
+                        DetailItem(
+                          readOnly: !isEditing,
+                          icon: Icons.location_on,
+                          title: 'Location',
+                          child: CustomSearchLocation(
+                            isEditable: isEditing,
+                            withoutBorder: true,
+                            fillColor: background,
+                            controller: _locationController,
+                            state: _stateController.text,
+                            hintText: 'Search location',
+                          ),
+                        ),
+                        DetailItem(
+                          icon: Icons.account_balance,
+                          title: 'Emirates Id',
+                          readOnly: true,
+                          controller: _emiratesController,
+                          validator: (p0) {
+                            if (p0 == null || p0.isEmpty) {
+                              return 'Please enter emirates id';
+                            }
+                            return null;
+                          },
+                        ),
+                        DetailItem(
+                          icon: Icons.card_membership,
+                          title: 'Licence Number',
+                          readOnly: true,
+                          controller: _licenceController,
+                          validator: (p0) {
+                            if (p0 == null || p0.isEmpty) {
+                              return 'Please enter licence number';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 15),
+                        if (isEditing)
+                          CustomButtonSmall(
+                            height: 45,
+                            loading: updateStatus == Status.loading,
+                            width: double.infinity,
+                            btnHeading: 'Update',
+                            onTap: () {
+                              if (_formKey.currentState!.validate()) {
+                                context
+                                    .read<DriverProfileViewModel>()
+                                    .updateProfileApi(
+                                      context: context,
+                                      firstName: _firstNameController.text,
+                                      lastName: _lastNameController.text,
+                                      gender: _genderController.text,
+                                      country: _countryController.text.isEmpty
+                                          ? 'United Arab Emirates'
+                                          : _countryController.text,
+                                      state: _stateController.text,
+                                      location: _locationController.text,
+                                    );
+                              }
+                            },
+                          ),
+                        const SizedBox(height: 10),
+                      ],
                     ),
-                  )
-                ],
+                  ),
+                ),
               ),
-              const SizedBox(height: 10),
-              CommonTextFeild(
-                heading: "Driver Id",
-                headingReq: true,
-                controller: TextEditingController(text: dataUser),
-                prefixIcon: true,
-                readOnly: true,
-                img: idCard,
-              ),
-              const SizedBox(height: 10),
-              CommonTextFeild(
-                heading: "Full Name",
-                headingReq: true,
-                controller: TextEditingController(
-                    text:
-                        "${driverProfileData?.firstName ?? ''} ${driverProfileData?.lastName ?? ''}"),
-                prefixIcon: true,
-                readOnly: true,
-                img: profile,
-              ),
-              const SizedBox(height: 10),
-              CommonTextFeild(
-                heading: "Email",
-                headingReq: true,
-                controller:
-                    TextEditingController(text: driverProfileData?.email),
-                prefixIcon: true,
-                readOnly: true,
-                img: email,
-              ),
-              const SizedBox(height: 10),
-              CommonTextFeild(
-                heading: "Gender",
-                headingReq: true,
-                prefixIcon: true,
-                controller:
-                    TextEditingController(text: driverProfileData?.gender),
-                readOnly: true,
-                img: gender,
-              ),
-              const SizedBox(height: 10),
-              CommonTextFeild(
-                heading: "Country",
-                headingReq: true,
-                prefixIcon: true,
-                controller: TextEditingController(
-                    text: driverProfileData?.country ?? ''),
-                readOnly: true,
-                img: address,
-              ),
-              const SizedBox(height: 10),
-              CommonTextFeild(
-                heading: "State",
-                headingReq: true,
-                prefixIcon: true,
-                controller:
-                    TextEditingController(text: driverProfileData?.state ?? ''),
-                readOnly: true,
-                img: address,
-              ),
-              const SizedBox(height: 10),
-              CommonTextFeild(
-                heading: "Location",
-                headingReq: true,
-                prefixIcon: true,
-                controller: TextEditingController(
-                    text: driverProfileData?.driverAddress),
-                readOnly: true,
-                img: address,
-              ),
-              const SizedBox(height: 10),
-              CommonTextFeild(
-                heading: "Contact No",
-                headingReq: true,
-                prefixIcon: true,
-                controller: TextEditingController(
-                    text:
-                        "+${driverProfileData?.countryCode ?? '971'} ${driverProfileData?.mobile ?? ''}"),
-                readOnly: true,
-                img: phone,
-              ),
-              const SizedBox(height: 10),
-              CommonTextFeild(
-                heading: "Emirates Id",
-                headingReq: true,
-                prefixIcon: true,
-                controller:
-                    TextEditingController(text: driverProfileData?.emiratesId),
-                readOnly: true,
-                img: emiID,
-              ),
-              const SizedBox(height: 10),
-              CommonTextFeild(
-                heading: "Licence Number",
-                headingReq: true,
-                prefixIcon: true,
-                controller: TextEditingController(
-                    text: driverProfileData?.licenceNumber),
-                readOnly: true,
-                img: drivingLic,
-              ),
-              const SizedBox(height: 15),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: CustomButtonSmall(
-                    height: 45,
-                    width: double.infinity,
-                    btnHeading: 'CHANGE PASSWORD',
-                    onTap: () {
-                      _showModalBottomSheet(
-                          context,
-                          ChangePassword(
-                              driverId:
-                                  driverProfileData?.driverId.toString() ??
-                                      ''));
-                    }),
-              ),
-              const SizedBox(height: 10),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -375,65 +376,119 @@ class _ProfilePageState extends State<ProfilePage> {
           });
         });
   }
+
+  Widget _iconButton(IconData? icon, String lable, VoidCallback onTap) {
+    return TextButton.icon(
+      style: ButtonStyle(
+        side: MaterialStateProperty.all(
+          const BorderSide(
+            color: btnColor, // Border color
+            width: 1.5, // Border width
+          ),
+        ),
+        shape: MaterialStateProperty.all(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8), // Optional: Rounded corners
+          ),
+        ),
+      ),
+      onPressed: onTap,
+      label: Text(
+        lable,
+        style: TextStyle(color: btnColor, fontWeight: FontWeight.w600),
+      ),
+      icon: Icon(
+        icon,
+        color: btnColor,
+      ),
+    );
+  }
+
+  void _showLogoutConfirmation() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            "Logout",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: Text("Are you sure you want to logout?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                "Cancel",
+                style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w600, color: Colors.black),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _logout();
+              },
+              child: Text(
+                "Logout",
+                style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w600, color: btnColor),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
 
-class ProfileContainer extends StatelessWidget {
-  final dynamic imgPath;
-  final VoidCallback onTap;
-  final String name;
-
-  const ProfileContainer(
-      {required this.onTap, required this.imgPath, this.name = "", super.key});
+class DetailItem extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final Widget? child;
+  final bool readOnly;
+  final TextEditingController? controller;
+  final String? Function(String?)? validator;
+  const DetailItem(
+      {super.key,
+      required this.icon,
+      required this.title,
+      required this.readOnly,
+      this.controller,
+      this.child,
+      this.validator});
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          width: AppDimension.getWidth(context) * .3,
-          height: AppDimension.getHeight(context) * .2,
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: curvePageColor,
+    return Padding(
+      padding: const EdgeInsets.only(top: 15),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: btnColor),
+              const SizedBox(width: 10),
+              Text(title, style: titleTextStyle),
+            ],
           ),
-          child: imgPath.runtimeType != String
-              ? Container(
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                          image: FileImage(imgPath), fit: BoxFit.cover)),
-                )
-              : Container(
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                          image: NetworkImage(
-                              // AppUrl.userProfileUpdate +
-                              imgPath),
-                          // image: AssetImage(imgPath),
-                          fit: BoxFit.cover))),
-        ),
-        Positioned(
-          bottom: 20,
-          right: 0,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(50),
-            onTap: onTap,
-            child: const Card(
-              elevation: 0,
-              shape: CircleBorder(),
-              color: lightBrownColor,
-              child: SizedBox(
-                  height: 30,
-                  width: 30,
-                  child: Icon(
-                    Icons.camera_alt_outlined,
-                    color: background,
-                  )),
-            ),
-          ),
-        )
-      ],
+          // const SizedBox(height: 4),
+          child ??
+              TextFormField(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                readOnly: readOnly,
+                controller: controller,
+                decoration: const InputDecoration(
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black54)),
+                    enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.black54))),
+                validator: validator,
+              ),
+        ],
+      ),
     );
   }
 }

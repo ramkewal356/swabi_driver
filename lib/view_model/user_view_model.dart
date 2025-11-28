@@ -9,7 +9,7 @@ class UserViewModel with ChangeNotifier {
   bool _loading = false;
   bool get loading => _loading;
   String filename = '';
-  setLoading(bool value) {
+  void setLoading(bool value) {
     _loading = value;
     notifyListeners();
   }
@@ -61,7 +61,7 @@ class UserViewModel with ChangeNotifier {
 
  
 
-  Future<dynamic> remove(context) async {
+  void remove() async {
     final SharedPreferences sp = await SharedPreferences.getInstance();
     sp.remove('token');
     sp.remove('userId');

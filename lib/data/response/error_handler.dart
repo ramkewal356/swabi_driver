@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_driver/data/response/app_excaptions.dart';
-import 'package:flutter_driver/data/response/baseResponse.dart';
+import 'package:flutter_driver/data/response/base_response_model.dart';
 import 'package:flutter_driver/core/constants/string.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class ErrorHandler {
   int? responseStatusCode;
+  // ignore: strict_top_level_inference
   static void handleError(e) {
     if (e is NetworkException) {
       // Handle network issues

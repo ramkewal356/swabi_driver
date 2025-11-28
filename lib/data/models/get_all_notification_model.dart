@@ -59,9 +59,12 @@ class Data {
             ? []
             : List<Content>.from(
                 json["content"]!.map((x) => Content.fromJson(x))),
-        pageable: json["pageable"] == null
-            ? null
-            : Pageable.fromJson(json["pageable"]),
+        pageable: (json["pageable"] is Map<String, dynamic>)
+            ? Pageable.fromJson(json["pageable"])
+            : null,
+        // pageable: json["pageable"] == null
+        //     ? null
+        //     : Pageable.fromJson(json["pageable"]),
         totalPages: json["totalPages"],
         totalElements: json["totalElements"],
         last: json["last"],

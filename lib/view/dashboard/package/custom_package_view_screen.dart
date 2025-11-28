@@ -1,151 +1,8 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/widgets/Custom%20%20Button/custom_btn.dart';
 import 'package:flutter_driver/common/styles/app_colors.dart';
-import 'package:flutter_driver/common/styles/text_styles.dart';
 
-// class Custompackageviewpage extends StatefulWidget {
-//   final String driverAssignId;
-//   final String date;
-//   final String pickUpLocation;
-//   final String activityName;
-//   final String daySatus;
-//   final String pickupTime;
-//   final bool loader;
-//   final void Function()? onTap;
-//   const Custompackageviewpage(
-//       {super.key,
-//       required this.driverAssignId,
-//       required this.date,
-//       required this.pickUpLocation,
-//       required this.activityName,
-//       required this.daySatus,
-//       required this.loader,
-//       required this.pickupTime,
-//       required this.onTap});
-
-//   @override
-//   State<Custompackageviewpage> createState() => _CustompackageviewpageState();
-// }
-
-// class _CustompackageviewpageState extends State<Custompackageviewpage> {
-//   @override
-//   Widget build(BuildContext context) {
-
-//     return Container(
-//       padding: const EdgeInsets.all(10),
-//       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-//       decoration: BoxDecoration(
-//           border: Border.all(color: Colors.black12),
-//           // color: bgGreyColor,
-//           borderRadius: BorderRadius.circular(10)),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           Row(
-//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//             children: [
-//               Text(
-//                 'Driver Assign ID:${widget.driverAssignId}',
-//                 style: textStyle,
-//               ),
-//               Text(
-//                 'Date: ${widget.date}',
-//                 style: textStyle,
-//               )
-//             ],
-//           ),
-//           const SizedBox(
-//             height: 5,
-//           ),
-
-//           Row(
-//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//             children: [
-//               Text(
-//                 'Activity Name:',
-//                 style: titleTextStyle,
-//               ),
-//               Text(
-//                 'PickupTime: ${widget.pickupTime}',
-//                 style: titleTextStyle,
-//               )
-//             ],
-//           ),
-//           Row(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               const Icon(
-//                 Icons.check,
-//                 color: Colors.green,
-//               ),
-//               Expanded(
-//                 child: Text(
-//                   widget.activityName,
-//                   style: const TextStyle(color: Colors.green),
-//                 ),
-//               ),
-//             ],
-//           ),
-//           const SizedBox(
-//             height: 5,
-//           ),
-//           Row(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               Text(
-//                 'PickUp Location: ',
-//                 style: textStyle,
-//               ),
-//               Expanded(
-//                 child: Text(
-//                   widget.pickUpLocation,
-//                   style: textStyle,
-//                 ),
-//               )
-//             ],
-//           ),
-//           const SizedBox(
-//             height: 5,
-//           ),
-//           // Spacer(),
-//           Row(
-//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//             children: [
-//               Container(
-//                 height: 35,
-//                 padding: const EdgeInsets.all(8),
-//                 decoration: BoxDecoration(
-//                     color: widget.daySatus == 'COMPLETED'
-//                         ? greenColor
-//                         : widget.daySatus == 'ONGOING'
-//                             ? Colors.orange
-//                             : widget.daySatus == 'PENDING'
-//                                 ? redColor
-//                                 : null,
-//                     borderRadius: BorderRadius.circular(5)),
-//                 child: Center(
-//                   child: Text(
-//                     widget.daySatus,
-//                     style: const TextStyle(
-//                         color: Colors.white, fontWeight: FontWeight.w600),
-//                     textAlign: TextAlign.center,
-//                   ),
-//                 ),
-//               ),
-//               CustomButtonSmall(
-//                 width: 120,
-//                 height: 40,
-//                 loading: widget.loader,
-//                 btnHeading: "View Details",
-//                 onTap: widget.onTap,
-//               ),
-//             ],
-//           )
-//         ],
-//       ),
-//     );
-//   }
-// }
 
 class CustomPackageViewPage extends StatelessWidget {
   final String driverAssignId;
@@ -184,138 +41,205 @@ class CustomPackageViewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: background,
-      elevation: 4,
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      shadowColor: Colors.black26,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            /// ---- Header ----
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "ID: $driverAssignId",
-                  style: textStyle.copyWith(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 15,
-                  ),
-                ),
-                Row(
-                  children: [
-                    const Icon(Icons.calendar_today,
-                        size: 16, color: Colors.grey),
-                    const SizedBox(width: 5),
-                    Text(
-                      date,
-                      style: textStyle.copyWith(color: Colors.black54),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 12),
-
-            /// ---- Activity Name ----
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Activity",
-                  style: titleTextStyle.copyWith(fontWeight: FontWeight.w600),
-                ),
-                Row(
-                  children: [
-                    const Icon(Icons.access_time,
-                        size: 18, color: Colors.indigo),
-                    const SizedBox(width: 6),
-                    Text(
-                      pickupTime,
-                      style: const TextStyle(
-                        color: Colors.indigo,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            ),
-            const SizedBox(height: 6),
-            Row(
-              children: [
-                const Icon(Icons.check_circle, color: Colors.green),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    activityName,
-                    style: const TextStyle(
-                      color: Colors.green,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 12),
-
-            /// ---- Location ----
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Icon(Icons.location_on, color: Colors.redAccent),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    pickUpLocation,
-                    style: textStyle.copyWith(fontSize: 14),
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 20),
-
-            /// ---- Status + Button ----
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: _statusColor(),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    dayStatus,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-
-                /// Custom Button
-                CustomButtonSmall(
-                  width: 130,
-                  height: 42,
-                  loading: loader,
-                  btnHeading: "View Details",
-                  onTap: onTap,
-                ),
-              ],
-            ),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        gradient: LinearGradient(
+          colors: [
+            Colors.white.withOpacity(0.88),
+            Colors.white.withOpacity(0.45),
           ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.07),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(
+          color: Colors.black.withOpacity(0.05),
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(18),
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  
+                  /// ---------- HEADER ----------
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "#$driverAssignId",
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          const Icon(Icons.calendar_month,
+                              size: 18, color: Colors.black54),
+                          const SizedBox(width: 5),
+                          Text(
+                            date,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.black54,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 14),
+
+                  /// ---------- ACTIVITY ----------
+                  Row(
+                    children: [
+                      const Icon(Icons.bolt_rounded,
+                          color: greenColor, size: 22),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          activityName,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: greenColor,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  /// ---------- TIME ----------
+                  Row(
+                    children: [
+                      const Icon(Icons.access_time_filled_rounded,
+                          color: Colors.indigo, size: 20),
+                      const SizedBox(width: 8),
+                      Text(
+                        pickupTime,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.indigo,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 14),
+
+                  /// ---------- LOCATION ----------
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(Icons.location_on_rounded,
+                          color: Colors.redAccent, size: 22),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          pickUpLocation,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            height: 1.4,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  /// ---------- STATUS + BUTTON ----------
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      /// Status pill
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: _statusColor().withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(30),
+                          border: Border.all(
+                            color: _statusColor().withOpacity(0.5),
+                          ),
+                        ),
+                        child: Text(
+                          dayStatus,
+                          style: TextStyle(
+                            color: _statusColor(),
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.4,
+                          ),
+                        ),
+                      ),
+
+                      /// View Details button
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        height: 45,
+                        width: 140,
+                        decoration: BoxDecoration(
+                          color: buttonColor,
+                          borderRadius: BorderRadius.circular(14),
+                          boxShadow: [
+                            BoxShadow(
+                              color: buttonColor.withOpacity(0.3),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            )
+                          ],
+                        ),
+                        child: InkWell(
+                          onTap: loader ? null : onTap,
+                          child: Center(
+                            child: loader
+                                ? const SizedBox(
+                                    height: 22,
+                                    width: 22,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.5,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Text(
+                                    "View Details",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
