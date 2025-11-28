@@ -64,7 +64,7 @@ class _HistoryPackagebookingState extends State<HistoryPackagebooking> {
                   });
                   context.push('/packageDetailPage', extra: {
                     "driverAssignedId": package?.driverAssignedId.toString(),
-                    "driverId": package?.driverId.toString()
+                    "bookingId": package?.packageBookingId.toString()
                   }).then((onValue) {
                     getPackageHistoryList();
                     setState(() {

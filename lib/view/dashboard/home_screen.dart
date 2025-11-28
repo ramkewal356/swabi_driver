@@ -1,7 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_driver/common/styles/app_colors.dart';
@@ -10,7 +9,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-
 import 'package:flutter_driver/view_model/driver_profile_view_model.dart';
 import 'package:flutter_driver/view_model/driver_rental_booking_view_model.dart';
 import 'package:flutter_driver/view_model/driver_package_view_model.dart';
@@ -39,12 +37,13 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadData();
-      startNotificationPolling();
     });
   }
 
   void _loadData() {
     context.read<DriverProfileViewModel>().getDriverByIdApi();
+    startNotificationPolling();
+
     context
         .read<DriverRentalBookingViewModel>()
         .fetchDriverGetBookingListViewModel(
@@ -101,8 +100,15 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: status == Status.loading
           ? SpinKitFadingCircle(
-              color: btnColor,
+              duration: const Duration(milliseconds: 500),
+              itemBuilder: (_, __) => DecoratedBox(
+                decoration: BoxDecoration(
+                  color: btnColor,
+                  shape: BoxShape.circle,
+                ),
+              ),
             )
+
           : _buildBody(),
     );
   }
@@ -192,7 +198,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 _timer?.cancel();
                 context.push('/notification').then((onValue) {
                   _loadData();
-                  startNotificationPolling();
                 });
               },
               icon: const Icon(Icons.notifications_none,
@@ -321,10 +326,17 @@ class _HomeScreenState extends State<HomeScreen> {
             // handle online
           }),
           _quickAction(Icons.history, "History", Colors.orange, () {
-            context.push('/historyManagement');
+            _timer?.cancel();
+            context.push('/historyManagement').then((onValue) {
+              _loadData();
+            });
           }),
           _quickAction(Icons.support_agent, "Support", Colors.red, () {
-            context.push('/help&support');
+            _timer?.cancel();
+
+            context.push('/help&support').then((onValue) {
+              _loadData();
+            });
           }),
         ],
       ),
@@ -392,7 +404,11 @@ class _HomeScreenState extends State<HomeScreen> {
             width: 120,
             btnHeading: 'Raised Issue',
             onTap: () {
-              context.push('/getRaiseIssue');
+              _timer?.cancel();
+
+              context.push('/getRaiseIssue').then((onValue) {
+                _loadData();
+              });
             },
           )
         ],
@@ -444,6 +460,8 @@ class _HomeScreenState extends State<HomeScreen> {
               return BookingDetailsContainer(
                 loader: selectedIndex == index,
                 onTapContainer: () {
+                  _timer?.cancel();
+
                   setState(() => selectedIndex = index);
                   context.push('/bookingDetails', extra: {
                     "bookingId": item.id.toString(),
@@ -498,9 +516,11 @@ class _HomeScreenState extends State<HomeScreen> {
               pickupTime: pkg.pickupTime ?? "N/A",
               loader: indexValue == index,
               onTap: () {
+                _timer?.cancel();
+
                 context.push('/packageDetailPage', extra: {
                   "driverAssignedId": pkg.driverAssignedId.toString(),
-                  "driverId": pkg.driverId.toString()
+                  "bookingId": pkg.packageBookingId.toString()
                 }).then((_) => _loadData());
               },
             );

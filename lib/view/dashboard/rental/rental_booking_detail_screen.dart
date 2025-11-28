@@ -309,12 +309,17 @@ class _RentalBookingDetailScreenState extends State<RentalBookingDetailScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              (getIssueByBookingId?.data ?? []).isEmpty
-                                  ? CustomButtonSmall(
+                             
+                              CustomButtonSmall(
                                       width: 120,
                                       height: 45,
-                                      btnHeading: 'Raise Issue',
+                                  btnHeading:
+                                      getIssueByBookingId?.data?.isEmpty ?? true
+                                          ? 'Raise Issue'
+                                          : 'View Issue',
                                       onTap: () {
+                                    if ((getIssueByBookingId?.data ?? [])
+                                        .isEmpty) {
                                         context.push('/rideIssue', extra: {
                                           'bookingId':
                                               bookingDetails?.id.toString() ??
@@ -325,15 +330,12 @@ class _RentalBookingDetailScreenState extends State<RentalBookingDetailScreen> {
                                               ''
                                         }).then((onValue) {
                                           getRentalDetails();
-                                        });
-                                      })
-                                  : CustomButtonSmall(
-                                      height: 45,
-                                      width: 120,
-                                      btnHeading: 'View Issue',
-                                      onTap: () {
-                                        context.push("/getRaiseIssue");
+                                      });
+                                    } else {
+                                      context.push("/getRaiseIssue");
+                                    }
                                       }),
+                                 
                               bookingDetails?.bookingStatus == "BOOKED" ||
                                       bookingDetails?.bookingStatus ==
                                           "ON_RUNNING"

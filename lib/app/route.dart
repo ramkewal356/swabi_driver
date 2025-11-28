@@ -82,9 +82,10 @@ final GoRouter myRouter = GoRouter(
       path: '/packageDetailPage',
       
       builder: (BuildContext context, GoRouterState state) {
-        var bookingId = state.extra as Map<String, dynamic>;
+        var data = state.extra as Map<String, dynamic>;
         return Packagedetailpage(
-          driverAssignedId: bookingId["driverAssignedId"],
+          driverAssignedId: data["driverAssignedId"],
+          bookingId: data["bookingId"],
         
         );
       },

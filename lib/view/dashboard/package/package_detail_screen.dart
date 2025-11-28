@@ -1,8 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:flutter_driver/data/models/get_issue_by_booking_id_model.dart'
-    hide Status;
 import 'package:flutter_driver/widgets/custom_btn.dart';
 import 'package:flutter_driver/core/constants/assets.dart';
 import 'package:flutter_driver/common/styles/app_colors.dart';
@@ -19,8 +17,9 @@ import '../../../data/response/status.dart';
 
 class Packagedetailpage extends StatefulWidget {
   final String driverAssignedId;
-
-  const Packagedetailpage({super.key, required this.driverAssignedId});
+  final String bookingId;
+  const Packagedetailpage(
+      {super.key, required this.driverAssignedId, required this.bookingId});
 
   @override
   State<Packagedetailpage> createState() => _PackagedetailpageState();
@@ -58,7 +57,7 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
 
   void getIssueBybookingId() async {
     context.read<RaiseIssueViewModel>().getIssueByBookingId(
-        bookingId: widget.driverAssignedId, bookingType: 'PACKAGE_BOOKING');
+        bookingId: widget.bookingId, bookingType: 'PACKAGE_BOOKING');
   }
 
   Future<void> getTimezone() async {
@@ -79,7 +78,7 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
 
   @override
   Widget build(BuildContext context) {
-    GetIssueByBookingIdModel? getIssueByBookingId =
+    var getIssueByBookingId =
         context.watch<RaiseIssueViewModel>().getIssueData.data;
 
     return CustomPageLayout(
@@ -364,9 +363,6 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
                                 InfoRow(
                                     label: 'Location',
                                     value: '${activity?.address}')
-                                // textItem(
-                                //     title: 'Location',
-                                //     titleValue: '${activity?.address}')
                               ],
                             ),
                           ),
@@ -380,31 +376,30 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              (getIssueByBookingId?.data ?? []).isEmpty
-                                  ? CustomButtonSmall(
-                                      height: 40,
-                                      width: 120,
-                                      btnHeading: 'Raise Issue',
-                                      onTap: () {
-                                        context.push('/rideIssue', extra: {
-                                          'bookingId':
-                                              package?.packageBookingId
-                                                  .toString() ??
-                                              '',
-                                          'bookingType': 'PACKAGE_BOOKING',
-                                          "vendorId":
-                                              package?.vendorId.toString() ?? ''
-                                        }).then((onValue) {
-                                          getPackageDetails();
-                                        });
-                                      })
-                                  : CustomButtonSmall(
-                                      height: 40,
-                                      width: 120,
-                                      btnHeading: 'View Issue',
-                                      onTap: () {
-                                        context.push("/getRaiseIssue");
-                                      }),
+                              CustomButtonSmall(
+                                  height: 40,
+                                  width: 120,
+                                  btnHeading:
+                                      getIssueByBookingId?.data?.isEmpty ?? true
+                                          ? 'Raise Issue'
+                                          : 'View Issue',
+                                  onTap: () {
+                                    if ((getIssueByBookingId?.data ?? [])
+                                        .isEmpty) {
+                                      context.push('/rideIssue', extra: {
+                                        'bookingId': package?.packageBookingId
+                                                .toString() ??
+                                            '',
+                                        'bookingType': 'PACKAGE_BOOKING',
+                                        "vendorId":
+                                            package?.vendorId.toString() ?? ''
+                                      }).then((onValue) {
+                                        getPackageDetails();
+                                      });
+                                    } else {
+                                      context.push("/getRaiseIssue");
+                                    }
+                                  }),
                               package?.dayStatus == 'PENDING'
                                   ? CustomButtonSmall(
                                       width: 170,
