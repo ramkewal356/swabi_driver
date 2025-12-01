@@ -26,7 +26,7 @@ class Packagedetailpage extends StatefulWidget {
 }
 
 class _PackagedetailpageState extends State<Packagedetailpage> {
-  bool btn = false;
+ 
   String? dateFormat;
   String _timeZone = 'unknown';
   String formattedTodayDate = '';
@@ -401,29 +401,125 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
                                     }
                                   }),
                               package?.dayStatus == 'PENDING'
-                                  ? CustomButtonSmall(
-                                      width: 170,
-                                      height: 40,
-                                      btnHeading: 'Activity Start',
-                                      isEnabled:
-                                          formattedTodayDate == package?.date
-                                              ? btn = true
+                                  ? Builder(builder: (context) {
+                                      bool canStart = false;
+
+                                      try {
+                                        final pickupDateTime = DateTime.parse(
+                                          "${package?.date} ${package?.pickupTime}",
+                                        );
+
+                                        final now = DateTime.now();
+                                        final diff = pickupDateTime
+                                            .difference(now)
+                                            .inMinutes;
+
+                                        // enable only when remaining time <= 10 mins
+                                        if (diff <= 10) {
+                                          canStart = true;
+                                        }
+                                      } catch (e) {
+                                        debugPrint("Error: $e");
+                                      }
+                                      return CustomButtonSmall(
+                                          width: 170,
+                                          height: 40,
+                                          btnHeading: 'Activity Start',
+                                          isEnabled: formattedTodayDate ==
+                                                  package?.date
+                                              ? true
                                               : false,
-                                      onTap: btn != true
-                                          ? null
-                                          : () {
-                                              showConfirmation(
-                                                  context: context,
-                                                  title: "Start",
-                                                  onTap: () {
-                                                    if (package
-                                                            ?.pickupLocation ==
-                                                        null) {
-                                                      Utils.toastMessage(
-                                                          'Pickup location is required to start the ride');
-                                                    } else {
-                                                      viewData
-                                                          .activityStart(
+                                          onTap: () {
+                                            if (!canStart) {
+                                              Utils.toastMessage(
+                                                  "You can start activity only within 10 minutes before pickup");
+                                              return;
+                                            }
+
+                                            showConfirmation(
+                                                context: context,
+                                                title: "Start",
+                                                onTap: () {
+                                                  if (package?.pickupLocation ==
+                                                      null) {
+                                                    Utils.toastMessage(
+                                                        'Pickup location is required to start the ride');
+                                                  } else {
+                                                    viewData
+                                                        .activityStart(
+                                                            context: context,
+                                                            packageBookingId:
+                                                                package
+                                                                    ?.packageBookingId,
+                                                            date: package?.date,
+                                                            zoneId: _timeZone)
+                                                        .then((onValue) {
+                                                      if (onValue?.status
+                                                              ?.httpCode ==
+                                                          '200') {
+                                                        getPackageDetails();
+                                                        context.pop();
+                                                      }
+                                                    });
+                                                  }
+                                                });
+                                          });
+                                    })
+                                  : package?.dayStatus == 'ONGOING'
+                                      ? Builder(builder: (context) {
+                                          bool canComplete = false;
+
+                                          try {
+                                            final lastActivity =
+                                                package?.activityList?.last;
+
+                                            final closingTime =
+                                                DateFormat("dd-MM-yyyy HH:mm")
+                                                    .parse(
+                                              "${package?.date} ${lastActivity?.endTime}",
+                                            );
+
+                                            final allowedCompleteTime =
+                                                closingTime.add(
+                                                    const Duration(hours: 2));
+
+                                            final now = DateTime.now();
+
+                                            if (now
+                                                .isAfter(allowedCompleteTime)) {
+                                              canComplete = true;
+                                            }
+
+                                            // Must drop user before complete
+                                            // if (package?.dropTime == null) {
+                                            //   canComplete = false;
+                                            // }
+                                          } catch (e) {
+                                            debugPrint("Error: $e");
+                                          }
+
+                                          return CustomButtonSmall(
+                                              width: 170,
+                                              height: 40,
+                                              btnHeading: 'Activity Complete',
+                                              isEnabled: formattedTodayDate ==
+                                                      package?.date 
+                                                  ? true
+                                                  : false,
+                                              onTap: () {
+                                                if (!canComplete) {
+                                                  Utils.toastMessage(
+                                                      "You can complete activity ONLY after 2 hours of closing time and after dropping user.");
+                                                  return;
+                                                }
+                                                showConfirmation(
+                                                    context: context,
+                                                    title: 'Complete',
+                                                    onTap: () {
+                                                      context
+                                                          .read<
+                                                              DriverPackageViewModel>()
+                                                          .activityComplete(
                                                               context: context,
                                                               packageBookingId:
                                                                   package
@@ -432,51 +528,12 @@ class _PackagedetailpageState extends State<Packagedetailpage> {
                                                                   package?.date,
                                                               zoneId: _timeZone)
                                                           .then((onValue) {
-                                                        if (onValue?.status
-                                                                ?.httpCode ==
-                                                            '200') {
-                                                          getPackageDetails();
-                                                          context.pop();
-                                                        }
+                                                        getPackageDetails();
+                                                        context.pop('update');
                                                       });
-                                                    }
-                                                  });
-                                            })
-                                  : package?.dayStatus == 'ONGOING'
-                                      ? CustomButtonSmall(
-                                          width: 170,
-                                          height: 40,
-                                          btnHeading: 'Activity Complete',
-                                          isEnabled: formattedTodayDate ==
-                                                  package?.date
-                                              ? btn = true
-                                              : false,
-                                          onTap: btn != true
-                                              ? null
-                                              : () {
-                                                  showConfirmation(
-                                                      context: context,
-                                                      title: 'Complete',
-                                                      onTap: () {
-                                                        context
-                                                            .read<
-                                                                DriverPackageViewModel>()
-                                                            .activityComplete(
-                                                                context:
-                                                                    context,
-                                                                packageBookingId:
-                                                                    package
-                                                                        ?.packageBookingId,
-                                                                date: package
-                                                                    ?.date,
-                                                                zoneId:
-                                                                    _timeZone)
-                                                            .then((onValue) {
-                                                          getPackageDetails();
-                                                          context.pop('update');
-                                                        });
-                                                      });
-                                                })
+                                                    });
+                                              });
+                                        })
                                       : Container()
                             ],
                           ),

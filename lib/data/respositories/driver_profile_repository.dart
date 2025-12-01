@@ -81,27 +81,21 @@ class DriverProfileRepository {
 
 class CountryStateRepository {
  
-
   Future<dynamic> getCountryListApi(
-      {
-      required Map<String, String> header}) async {
+     ) async {
     var http = HttpService(
         isAuthorizeRequest: false,
-        baseURL: AppUrl.locationBaseUrl,
+      baseURL: AppUrl.countryStateBaseUrl,
         endURL: AppUrl.getCountryList,
         methodType: HttpMethodType.GET,
         bodyType: HttpBodyType.JSON,
-        headers: header);
+    );
     try {
       Response<dynamic>? response = await http.request<dynamic>();
       debugPrint("getcountry List response ${response?.data}");
-   
       return response?.data;
-
-      // return resp;
     } catch (error) {
       debugPrint('error.. $error');
-     
       http.handleErrorResponse(error: error);
       rethrow;
     }
@@ -112,11 +106,11 @@ class CountryStateRepository {
   }) async {
     var http = HttpService(
         isAuthorizeRequest: false,
-        baseURL: AppUrl.locationBaseUrl,
+        baseURL: AppUrl.countryStateBaseUrl,
+     
         endURL: AppUrl.getStateNameUrl,
         methodType: HttpMethodType.GET,
         bodyType: HttpBodyType.JSON,
-        // headers: header
         body: body);
     try {
       Response<dynamic>? response = await http.request<dynamic>();
@@ -130,26 +124,4 @@ class CountryStateRepository {
     }
   }
 
-  Future<dynamic> getAccessTokentApi({
-  
-    required Map<String, String> header,
-  }) async {
-    var http = HttpService(
-        isAuthorizeRequest: false,
-        baseURL: AppUrl.locationBaseUrl,
-        endURL: AppUrl.getAccessTokenUrl,
-        methodType: HttpMethodType.GET,
-        bodyType: HttpBodyType.JSON,
-        headers: header);
-    try {
-      Response<dynamic>? response = await http.request<dynamic>();
-      debugPrint("getcountry List response ${response?.data}");
-      return response?.data;
-    } catch (error) {
-      debugPrint('error.. $error');
-    
-      http.handleErrorResponse(error: error);
-      rethrow;
-    }
-  }
 }

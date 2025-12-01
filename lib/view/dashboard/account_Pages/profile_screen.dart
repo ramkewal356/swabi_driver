@@ -64,14 +64,19 @@ class _ProfilePageState extends State<ProfilePage> {
     _emiratesController.text = data?.emiratesId ?? '';
     _licenceController.text = data?.licenceNumber ?? '';
     driverId = data?.driverId.toString() ?? '';
-    getStateList();
+    countryList();
+    getStateListApi(_countryController.text);
+  }
+void countryList() {
+   
+    context.read<GetCountryStateListViewModel>().getCountryList();
   }
 
-  void getStateList() async {
+  void getStateListApi(String country) async {
     try {
       context
           .read<GetCountryStateListViewModel>()
-          .getStateList(country: _countryController.text);
+          .getStateList(country: country);
     } catch (e) {
       debugPrint('error $e');
     }
@@ -99,6 +104,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    var countryList = context
+        .watch<GetCountryStateListViewModel>()
+        .getCountryListResponse
+        .data;  
     var stateList =
         context.watch<GetCountryStateListViewModel>().stateList.data;
     var updateStatus =
@@ -252,13 +261,18 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: CustomDropdownButton(
                             isEditable: isEditing,
                             withoutBorder: true,
-                            itemsList: [],
+                            itemsList: countryList ?? [],
                             hintText: 'Select Country',
                             controller: _countryController,
                             onChanged: (value) {
+                             
                               setState(() {
                                 _countryController.text = value ?? '';
+                                _stateController.text = '';
+                                stateList = []; 
                               });
+                              getStateListApi(value!);
+                              setState(() {}); 
                             },
                           ),
                         ),

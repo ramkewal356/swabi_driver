@@ -1,10 +1,8 @@
 class AppUrl {
   static var baseUrl = "https://live.swabi.xyz/api";
   static var baseUrlForImage = "https://live.swabi.xyz/api";
-  // static var baseUrl = 'https://dev-api.swabitours.com';
-  // static var baseUrlForImage = "https://dev-api.swabitours.com";
-  static var locationBaseUrl = 'https://www.universal-tutorial.com';
-  static var stateBaseUrl = 'https://countriesnow.space/api/v0.1';
+  // static var locationBaseUrl = 'https://www.universal-tutorial.com';
+  static var countryStateBaseUrl = 'https://countriesnow.space';
 
   ///registration URL
   static var login = "$baseUrl/login";
@@ -49,8 +47,6 @@ class AppUrl {
       '/rental/get_rental_booking_by_driverId';
   static var changeBookingStatus = '/rental/change_booking_status';
   static var uploadProfilePic = '/driver/upload_driver_profile_image';
-  static var getCountryList = '/countries/';
-  static var getStateList = '/states/';
-  static var getAccessTokenUrl = '/api/getaccesstoken';
-  static var getStateNameUrl = '/countries/states';
+  static var getCountryList = '/api/v0.1/countries';
+  static var getStateNameUrl = '/api/v0.1/countries/states';
 }

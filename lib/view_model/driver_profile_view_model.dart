@@ -106,10 +106,10 @@ class DriverProfileViewModel with ChangeNotifier {
 class GetCountryStateListViewModel with ChangeNotifier {
   final _myRepo = CountryStateRepository();
 
-  ApiResponse<List<dynamic>> getCountryListModel = ApiResponse.initial();
+  ApiResponse<List<String>> getCountryListResponse = ApiResponse.initial();
 
-  void setOnCountryList(ApiResponse<List<dynamic>> response) {
-    getCountryListModel = response;
+  void setOnCountryList(ApiResponse<List<String>> response) {
+    getCountryListResponse = response;
     notifyListeners();
   }
 
@@ -120,34 +120,19 @@ class GetCountryStateListViewModel with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<dynamic> getAccessToken({
-    required BuildContext context,
-  }) async {
-    Map<String, String> headers = {
-      'api-token':
-          'ky36oc3IK7cBvBSMi9wkMQsvyf2kLTHLg83JuA8pYL5tLotwdV_401qVFkMHMunj8nM',
-      'user-email': 'saurabhm@shilshatech.com',
-    };
-    try {
-      var resp = await _myRepo.getAccessTokentApi(header: headers);
-      return resp;
-    } catch (e) {
-      debugPrint('error$e');
-    }
-    return null;
-  }
+  
 
-  Future<void> getCountryList({
-    required BuildContext context,
-    required String token,
-  }) async {
-    Map<String, String> header = {
-      "Authorization": 'Bearer $token',
-    };
+  Future<void> getCountryList() async {
+   
     try {
       setOnCountryList(ApiResponse.loading());
-      var resp = await _myRepo.getCountryListApi(header: header);
-      setOnCountryList(ApiResponse.completed(resp));
+      var resp = await _myRepo.getCountryListApi();
+      final List data = resp["data"];
+
+      List<String> countryList =
+          data.map((e) => e["country"].toString()).toList();
+      debugPrint('countryList$countryList');
+      setOnCountryList(ApiResponse.completed(countryList));
     } catch (e) {
       debugPrint('error$e');
       setOnCountryList(ApiResponse.error(e.toString()));
@@ -168,7 +153,7 @@ class GetCountryStateListViewModel with ChangeNotifier {
           // Filter the data to get the country-specific states
           var countryData = onValue.data?.firstWhere(
             (item) => item.name == country,
-            // orElse: () => null,
+            
           );
 
           if (countryData != null) {

@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:flutter_driver/core/utils/utils.dart';
 import 'package:flutter_driver/data/response/status.dart';
 import 'package:flutter_driver/widgets/custom_btn.dart';
 import 'package:flutter_driver/core/constants/assets.dart';
@@ -339,83 +340,108 @@ class _RentalBookingDetailScreenState extends State<RentalBookingDetailScreen> {
                               bookingDetails?.bookingStatus == "BOOKED" ||
                                       bookingDetails?.bookingStatus ==
                                           "ON_RUNNING"
-                                  ? Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10),
-                                      child: CustomButtonSmall(
-                                          height: 45,
-                                          loading:
-                                              actionStatus == Status.loading,
-                                          width: 120,
-                                          btnHeading:
-                                              bookingDetails?.bookingStatus ==
-                                                      "BOOKED"
-                                                  ? "Start"
-                                                  : "Complete",
-                                          isEnabled: formattedTodayDate ==
-                                                  bookingDetails?.date
-                                              ? btnEnable = true
-                                              : false,
-                                          onTap: btnEnable != true
-                                              ? null
-                                              : () {
-                                                  if (bookingDetails
-                                                          ?.bookingStatus ==
-                                                      "BOOKED") {
-                                                    showConfirmation(
-                                                        context: context,
-                                                        loading: false,
-                                                        title: 'Start',
-                                                        onTap: () {
-                                                          context
-                                                              .read<
-                                                                  DriverRentalBookingViewModel>()
-                                                              .startAndCompleteBookingApi(
-                                                                  bookingId:
-                                                                      bookingDetails
-                                                                              ?.id
-                                                                              .toString() ??
-                                                                          '',
-                                                                  bookingStatus:
-                                                                      'ON_RUNNING')
-                                                              .then((onValue) {
-                                                            if (onValue?.status
-                                                                    ?.httpCode ==
-                                                                '200') {
-                                                              context.pop();
-                                                              getRentalDetails();
-                                                            }
-                                                          });
-                                                        });
-                                                  } else {
-                                                    showConfirmation(
-                                                        context: context,
-                                                        loading: false,
-                                                        title: 'Complete',
-                                                        onTap: () {
-                                                          context
-                                                              .read<
-                                                                  DriverRentalBookingViewModel>()
-                                                              .startAndCompleteBookingApi(
-                                                                  bookingId:
-                                                                      bookingDetails
-                                                                              ?.id
-                                                                              .toString() ??
-                                                                          '',
-                                                                  bookingStatus:
-                                                                      'COMPLETED')
-                                                              .then((onValue) {
-                                                            if (onValue?.status
-                                                                    ?.httpCode ==
-                                                                '200') {
-                                                              context.pop();
-                                                              getRentalDetails();
-                                                            }
-                                                          });
-                                                        });
-                                                  }
-                                                }),
-                                    )
+                                  ? Builder(builder: (context) {
+                                      bool canStart = false;
+
+                                      try {
+                                        final pickupDateTime = DateTime.parse(
+                                          "${bookingDetails?.date} ${bookingDetails?.pickupTime}",
+                                        );
+
+                                        final now = DateTime.now();
+                                        final diff = pickupDateTime
+                                            .difference(now)
+                                            .inMinutes;
+
+                                        // enable only when remaining time <= 10 mins
+                                        if (diff <= 10 && diff >= 0) {
+                                          canStart = true;
+                                        }
+                                      } catch (e) {
+                                        debugPrint("Error: $e");
+                                      }
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        child: CustomButtonSmall(
+                                            height: 45,
+                                            loading:
+                                                actionStatus == Status.loading,
+                                            width: 120,
+                                            btnHeading:
+                                                bookingDetails?.bookingStatus ==
+                                                        "BOOKED"
+                                                    ? "Start"
+                                                    : "Complete",
+                                            isEnabled: formattedTodayDate ==
+                                                    bookingDetails?.date
+                                                ? true
+                                                : false,
+                                            onTap: () {
+                                              if (bookingDetails
+                                                      ?.bookingStatus ==
+                                                  "BOOKED") {
+                                                if (!canStart) {
+                                                  Utils.toastMessage(
+                                                      "You can start ride ONLY within 10 minutes before pickup time");
+                                                  return;
+                                                }
+                                                showConfirmation(
+                                                    context: context,
+                                                    loading: false,
+                                                    title: 'Start',
+                                                    onTap: () {
+                                                      context
+                                                          .read<
+                                                              DriverRentalBookingViewModel>()
+                                                          .startAndCompleteBookingApi(
+                                                              bookingId:
+                                                                  bookingDetails
+                                                                          ?.id
+                                                                          .toString() ??
+                                                                      '',
+                                                              bookingStatus:
+                                                                  'ON_RUNNING')
+                                                          .then((onValue) {
+                                                        if (onValue?.status
+                                                                ?.httpCode ==
+                                                            '200') {
+                                                          context.pop();
+                                                          getRentalDetails();
+                                                        }
+                                                      });
+                                                    });
+                                              } else {
+                                                showConfirmation(
+                                                    context: context,
+                                                    loading: false,
+                                                    title: 'Complete',
+                                                    onTap: () {
+                                                      context
+                                                          .read<
+                                                              DriverRentalBookingViewModel>()
+                                                          .startAndCompleteBookingApi(
+                                                              bookingId:
+                                                                  bookingDetails
+                                                                          ?.id
+                                                                          .toString() ??
+                                                                      '',
+                                                              bookingStatus:
+                                                                  'COMPLETED')
+                                                          .then((onValue) {
+                                                        if (onValue?.status
+                                                                ?.httpCode ==
+                                                            '200') {
+                                                          context.pop();
+                                                          getRentalDetails();
+                                                        }
+                                                      });
+                                                    });
+                                              }
+                                            }),
+                                      );
+                                    }
+                                  )
                                   : const SizedBox(),
                             ],
                           ),

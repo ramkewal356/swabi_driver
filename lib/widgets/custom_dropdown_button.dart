@@ -81,7 +81,7 @@ class _CustomDropdownButtonState extends State<CustomDropdownButton> {
                           value: item,
                           child: Text(
                             item,
-                            style: titleTextStyle,
+                            style: textStyle,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ))
