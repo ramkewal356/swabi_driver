@@ -7,6 +7,7 @@ import 'package:flutter_driver/firebase_options.dart';
 import 'package:flutter_driver/service_locator.dart';
 import 'package:flutter_driver/app/route.dart';
 import 'package:flutter_driver/view_model/auth_view_model.dart';
+import 'package:flutter_driver/view_model/dashboard_view_model.dart';
 import 'package:flutter_driver/view_model/driver_rental_booking_view_model.dart';
 import 'package:flutter_driver/view_model/driver_profile_view_model.dart';
 import 'package:flutter_driver/view_model/driver_package_view_model.dart';
@@ -34,6 +35,7 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(create: (context) => AuthViewModel()),
         ChangeNotifierProvider(create: (context) => UserViewModel()),
+        ChangeNotifierProvider(create: (context) => DashboardViewModel()),
         ChangeNotifierProvider(
             create: (context) => DriverRentalBookingViewModel()),
         ChangeNotifierProvider(create: (context) => DriverProfileViewModel()),

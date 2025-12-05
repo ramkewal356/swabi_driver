@@ -4,14 +4,20 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_driver/common/styles/app_colors.dart';
+import 'package:flutter_driver/data/models/dashboard_model.dart' hide Status;
+import 'package:flutter_driver/data/models/rental_booking_model.dart'
+    hide Status;
+import 'package:flutter_driver/data/models/upcoming_package_booking_model.dart'
+    hide Status;
+import 'package:flutter_driver/view_model/dashboard_view_model.dart';
 import 'package:flutter_driver/widgets/custom_btn.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_driver/view_model/driver_profile_view_model.dart';
-import 'package:flutter_driver/view_model/driver_rental_booking_view_model.dart';
-import 'package:flutter_driver/view_model/driver_package_view_model.dart';
+// import 'package:flutter_driver/view_model/driver_rental_booking_view_model.dart';
+// import 'package:flutter_driver/view_model/driver_package_view_model.dart';
 import 'package:flutter_driver/view_model/notification_view_model.dart';
 import 'package:flutter_driver/data/response/status.dart';
 import 'package:flutter_driver/view/dashboard/rental/booking_details_container.dart';
@@ -44,17 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
     context.read<DriverProfileViewModel>().getDriverByIdApi();
     startNotificationPolling();
 
-    context
-        .read<DriverRentalBookingViewModel>()
-        .fetchDriverGetBookingListViewModel(
-          isFilter: true,
-          isPagination: false,
-          filterText: 'BOOKED',
-          pageNumer1: 0,
-          pageSize1: 5,
-        );
-
-    context.read<DriverPackageViewModel>().getPackageBookingList();
+    context.read<DashboardViewModel>().getDashboardDataApi();
   }
 
   void startNotificationPolling() {
@@ -92,13 +88,17 @@ class _HomeScreenState extends State<HomeScreen> {
         context.watch<DriverProfileViewModel>().getDriverDetails.data?.data;
     var status =
         context.watch<DriverProfileViewModel>().getDriverDetails.status;
+    var dashboardData =
+        context.watch<DashboardViewModel>().dashboardData.data?.data;
+    var dashboardStatus =
+        context.watch<DashboardViewModel>().dashboardData.status;
     return Scaffold(
       backgroundColor: const Color(0xfff1f3f6),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(100),
         child: _buildModernAppBar(driverData),
       ),
-      body: status == Status.loading
+        body: status == Status.loading || dashboardStatus == Status.loading
           ? SpinKitFadingCircle(
               duration: const Duration(milliseconds: 500),
               itemBuilder: (_, __) => DecoratedBox(
@@ -108,8 +108,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             )
-
-          : _buildBody(),
+            : _buildBody(
+                dashboardData ?? DashboardData(),
+              )
     );
   }
 
@@ -228,12 +229,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // ---------------------------- BODY ----------------------------
 
-  Widget _buildBody() {
+  Widget _buildBody(DashboardData dashboardData) {
     return Container(
       padding: const EdgeInsets.only(top: 12),
       child: Column(
         children: [
-          _buildStatsRow(),
+          _buildStatsRow(
+              dashboardData.todayRideCount, dashboardData.upcomingRideCount),
           SizedBox(height: 15),
           _buildQuickActions(),
           const SizedBox(height: 12),
@@ -251,7 +253,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Padding(
                     key: _rentalKey,
                     padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: _buildRentalList(),
+                    child: _buildRentalList(dashboardData.recentRentalRides),
                   ),
                   const SizedBox(height: 20),
                   _buildSectionHeader("Recent Package Bookings", () {
@@ -262,7 +264,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Padding(
                     key: _packageKey,
                     padding: const EdgeInsets.symmetric(horizontal: 0),
-                    child: _buildPackageList(),
+                    child: _buildPackageList(dashboardData.recentPackageRides),
                   ),
                   const SizedBox(height: 25),
                   _buildRaiseIssueCard(),
@@ -276,15 +278,15 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildStatsRow() {
+  Widget _buildStatsRow(int? todaysRides, int? upcomingsRides) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _statCard("Today's Rides", "12", Colors.blue),
+          _statCard("Today's Rides", '${todaysRides ?? 0}', Colors.blue),
           SizedBox(width: 10),
-          _statCard("Upcoming's Rides", "45", Colors.green),
+          _statCard("Upcoming's Rides", '${upcomingsRides ?? 0}', Colors.green),
         ],
       ),
     );
@@ -437,26 +439,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // ---------------------------- RENTAL LIST ----------------------------
-  Widget _buildRentalList() {
-    return Consumer<DriverRentalBookingViewModel>(
-      builder: (context, viewModel, child) {
-        final response = viewModel.bookingdataList;
-
-        if (response.status == Status.loading) {
-          return const Center(
-              child: SpinKitCircle(color: Colors.blue, size: 50));
-        }
-
-        if (response.status == Status.completed) {
-          final data = response.data ?? [];
-          if (data.isEmpty) return _emptyCard();
-
-          return ListView.builder(
+  Widget _buildRentalList(List<BookingContent>? rentalList) {
+    if (rentalList == null || rentalList.isEmpty) {
+      return _emptyCard();
+    }
+    return ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: data.length,
+      itemCount: rentalList.length,
             itemBuilder: (context, index) {
-              final item = data[index];
+        final item = rentalList[index];
               return BookingDetailsContainer(
                 loader: selectedIndex == index,
                 onTapContainer: () {
@@ -483,27 +475,37 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           );
-        }
+    // return Consumer<DriverRentalBookingViewModel>(
+    //   builder: (context, viewModel, child) {
+    //     final response = viewModel.bookingdataList;
 
-        return _emptyCard();
-      },
-    );
+    //     if (response.status == Status.loading) {
+    //       return const Center(
+    //           child: SpinKitCircle(color: Colors.blue, size: 50));
+    //     }
+
+    //     if (response.status == Status.completed) {
+    //       final data = response.data ?? [];
+    //       if (data.isEmpty) return _emptyCard();
+
+    //     }
+
+    //     return _emptyCard();
+    //   },
+    // );
   }
 
   // ---------------------------- PACKAGE LIST ----------------------------
-  Widget _buildPackageList() {
-    return Consumer<DriverPackageViewModel>(
-      builder: (context, viewData, child) {
-        final packages = viewData.packageBookingList.data?.data ?? [];
-
-        if (packages.isEmpty) return _emptyCard();
-
-        return ListView.builder(
+  Widget _buildPackageList(List<Datum>? packageList) {
+    if (packageList == null || packageList.isEmpty) {
+      return _emptyCard();
+    }
+    return ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: packages.length,
+      itemCount: packageList.length,
           itemBuilder: (context, index) {
-            var pkg = packages[index];
+        var pkg = packageList[index];
             var activity =
                 pkg.activityList?.map((e) => e.activityName).join(", ");
 
@@ -526,8 +528,42 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           },
         );
-      },
-    );
+    // return Consumer<DriverPackageViewModel>(
+    //   builder: (context, viewData, child) {
+    //     final packages = viewData.packageBookingList.data?.data ?? [];
+
+    //     if (packages.isEmpty) return _emptyCard();
+
+    //     return ListView.builder(
+    //       shrinkWrap: true,
+    //       physics: const NeverScrollableScrollPhysics(),
+    //       itemCount: packages.length,
+    //       itemBuilder: (context, index) {
+    //         var pkg = packages[index];
+    //         var activity =
+    //             pkg.activityList?.map((e) => e.activityName).join(", ");
+
+    //         return CustomPackageViewPage(
+    //           driverAssignId: pkg.driverAssignedId.toString(),
+    //           date: pkg.date ?? "",
+    //           pickUpLocation: pkg.pickupLocation ?? "N/A",
+    //           activityName: activity ?? '',
+    //           dayStatus: pkg.dayStatus ?? "",
+    //           pickupTime: pkg.pickupTime ?? "N/A",
+    //           loader: indexValue == index,
+    //           onTap: () {
+    //             _timer?.cancel();
+
+    //             context.push('/packageDetailPage', extra: {
+    //               "driverAssignedId": pkg.driverAssignedId.toString(),
+    //               "bookingId": pkg.packageBookingId.toString()
+    //             }).then((_) => _loadData());
+    //           },
+    //         );
+    //       },
+    //     );
+    //   },
+    // );
   }
 
   // ---------------------------- EMPTY CARD ----------------------------

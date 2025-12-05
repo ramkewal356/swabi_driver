@@ -19,6 +19,7 @@ class AppUrl {
   static var driverBookingList =
       "$baseUrl/rental/get_rental_booking_by_driverId";
   static var driverBookingDetails = "$baseUrl/rental/get_rental_booking_by_id";
+  static var getDashboardUrl = "/driver/dashboard";
   static var driverBookingListUrl =
       "/package_booking/get_package_booking_by_driver_id";
   static var driverBookingDetailListUrl =
