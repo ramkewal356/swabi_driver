@@ -95,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: const Color(0xfff1f3f6),
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(100),
+          preferredSize: const Size.fromHeight(90),
         child: _buildModernAppBar(driverData),
       ),
         body: status == Status.loading || dashboardStatus == Status.loading
@@ -232,48 +232,41 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildBody(DashboardData dashboardData) {
     return Container(
       padding: const EdgeInsets.only(top: 12),
-      child: Column(
-        children: [
-          _buildStatsRow(
-              dashboardData.todayRideCount, dashboardData.upcomingRideCount),
-          SizedBox(height: 15),
-          _buildQuickActions(),
-          const SizedBox(height: 12),
-          Expanded(
-            child: SingleChildScrollView(
-              controller: _scrollController,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionHeader("Recent Rental Bookings", () {
-                    Scrollable.ensureVisible(_rentalKey.currentContext!,
-                        duration: const Duration(milliseconds: 600));
-                  }),
-                  const SizedBox(height: 8),
-                  Padding(
-                    key: _rentalKey,
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: _buildRentalList(dashboardData.recentRentalRides),
-                  ),
-                  const SizedBox(height: 20),
-                  _buildSectionHeader("Recent Package Bookings", () {
-                    Scrollable.ensureVisible(_rentalKey.currentContext!,
-                        duration: const Duration(milliseconds: 600));
-                  }),
-                  const SizedBox(height: 8),
-                  Padding(
-                    key: _packageKey,
-                    padding: const EdgeInsets.symmetric(horizontal: 0),
-                    child: _buildPackageList(dashboardData.recentPackageRides),
-                  ),
-                  const SizedBox(height: 25),
-                  _buildRaiseIssueCard(),
-                  const SizedBox(height: 30),
-                ],
-              ),
+      child: SingleChildScrollView(
+        controller: _scrollController,
+        child: Column(
+          children: [
+            _buildStatsRow(
+                dashboardData.todayRideCount, dashboardData.upcomingRideCount),
+            SizedBox(height: 15),
+            _buildQuickActions(),
+            const SizedBox(height: 12),
+            _buildSectionHeader("Recent Rental Bookings", () {
+              Scrollable.ensureVisible(_rentalKey.currentContext!,
+                  duration: const Duration(milliseconds: 600));
+            }),
+            const SizedBox(height: 8),
+            Padding(
+              key: _rentalKey,
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: _buildRentalList(dashboardData.recentRentalRides),
             ),
-          ),
-        ],
+            const SizedBox(height: 20),
+            _buildSectionHeader("Recent Package Bookings", () {
+              Scrollable.ensureVisible(_rentalKey.currentContext!,
+                  duration: const Duration(milliseconds: 600));
+            }),
+            const SizedBox(height: 8),
+            Padding(
+              key: _packageKey,
+              padding: const EdgeInsets.symmetric(horizontal: 0),
+              child: _buildPackageList(dashboardData.recentPackageRides),
+            ),
+            const SizedBox(height: 25),
+            _buildRaiseIssueCard(),
+            const SizedBox(height: 30),
+          ],
+        ),
       ),
     );
   }
