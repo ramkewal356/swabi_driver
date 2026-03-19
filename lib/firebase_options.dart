@@ -3,17 +3,6 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
-
-/// Default [FirebaseOptions] for use with your Firebase apps.
-///
-/// Example:
-/// dart
-/// import 'firebase_options.dart';
-/// // ...
-/// await Firebase.initializeApp(
-///   options: DefaultFirebaseOptions.currentPlatform,
-/// );
-///
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
@@ -41,48 +30,48 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyB79cVbf7UIfIuOYZPXwJkolnXcEsH-_wM',
-    appId: '1:81360212564:web:d227c97b696bb1af4fc0bd',
-    messagingSenderId: '81360212564',
-    projectId: 'swabi-ac71c',
-    authDomain: 'swabi-ac71c.firebaseapp.com',
-    storageBucket: 'swabi-ac71c.appspot.com',
+    apiKey: 'AIzaSyCUC8I5AJbD3tA2RsEvkBkini8RsK7gxmE',
+    appId: '1:397051185951:web:1093e4ec04ba478b587e2a',
+    messagingSenderId: '397051185951',
+    projectId: 'swabi-92720',
+    authDomain: 'swabi-92720.firebaseapp.com',
+    storageBucket: 'swabi-92720.appspot.com',
     measurementId: 'G-TEX1CR3C1H',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyB79cVbf7UIfIuOYZPXwJkolnXcEsH-_wM',
-    appId: '1:81360212564:android:cd7f438db5264ecd96d3c1',
-    messagingSenderId: '81360212564',
-    projectId: 'swabi-ac71c',
-    storageBucket: 'swabi-ac71c.appspot.com',
+    apiKey: 'AIzaSyCUC8I5AJbD3tA2RsEvkBkini8RsK7gxmE',
+    appId: '1:397051185951:android:1093e4ec04ba478b587e2a',
+    messagingSenderId: '397051185951',
+    projectId: 'swabi-92720',
+    storageBucket: 'swabi-92720.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyAcMTE9r5NAMX8GUaUXVhSkyepPswoV9rk',
-    appId: '1:81360212564:ios:c66db283d07d261d4fc0bd',
-    messagingSenderId: '81360212564',
-    projectId: 'swabi-ac71c',
-    storageBucket: 'swabi-ac71c.appspot.com',
+    appId: '1:397051185951:ios:1093e4ec04ba478b587e2a',
+    messagingSenderId: '397051185951',
+    projectId: 'swabi-92720',
+    storageBucket: 'swabi-92720.appspot.com',
     iosBundleId: 'com.phoenixfx',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyAcMTE9r5NAMX8GUaUXVhSkyepPswoV9rk',
-    appId: '1:81360212564:ios:c77bdb8c83bffacb4fc0bd',
-    messagingSenderId: '81360212564',
-    projectId: 'swabi-ac71c',
-    storageBucket: 'swabi-ac71c.appspot.com',
+    appId: '1:397051185951:ios:1093e4ec04ba478b587e2a',
+    messagingSenderId: '397051185951',
+    projectId: 'swabi-92720',
+    storageBucket: 'swabi-92720.appspot.com',
     iosBundleId: 'com.example.pheonixfx',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyB79cVbf7UIfIuOYZPXwJkolnXcEsH-_wM',
-    appId: '1:81360212564:web:5b863561cacbc28f4fc0bd',
-    messagingSenderId: '81360212564',
-    projectId: 'swabi-ac71c',
-    authDomain: 'swabi-ac71c.firebaseapp.com',
-    storageBucket: 'swabi-ac71c.appspot.com',
+    apiKey: 'AIzaSyCUC8I5AJbD3tA2RsEvkBkini8RsK7gxmE',
+    appId: '1:397051185951:web:1093e4ec04ba478b587e2a',
+    messagingSenderId: '397051185951',
+    projectId: 'swabi-92720',
+    authDomain: 'swabi-92720.firebaseapp.com',
+    storageBucket: 'swabi-92720.appspot.com',
     measurementId: 'G-D1NEQFBK87',
   );
 }

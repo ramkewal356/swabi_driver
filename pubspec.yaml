@@ -80,9 +80,9 @@ dependencies:
   http_parser: any
   dio: ^5.4.3+1
   flutter_timezone: ^5.0.1
-  firebase_core: ^4.2.1
-  firebase_messaging: ^16.0.4
-  flutter_local_notifications: any
+  firebase_core: ^4.5.0
+  firebase_messaging: ^16.1.2
+  flutter_local_notifications: ^20.1.0
   get_it: ^9.0.5
   carousel_slider: ^5.1.1
   google_places_autocomplete_text_field: ^2.0.3

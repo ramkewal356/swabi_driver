@@ -2,6 +2,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_driver/core/utils/validatorclass.dart';
 import 'package:flutter_driver/data/response/status.dart';
+import 'package:flutter_driver/firebase_notification/firebase_messaging_service.dart';
+import 'package:flutter_driver/firebase_options.dart';
 import 'package:flutter_driver/widgets/custom_btn.dart';
 import 'package:flutter_driver/widgets/custom_text_form_field.dart';
 import 'package:flutter_driver/core/constants/assets.dart';
@@ -27,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _rememberMe = false;
   bool obsucePassword = true;
   final _formKey = GlobalKey<FormState>();
-  String? notificationToken = '';
+  String? notificationToken;
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -39,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    requestPermission();
+    // requestPermission();
     getToken();
     savecredential();
     // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -47,29 +49,26 @@ class _LoginScreenState extends State<LoginScreen> {
     // });
   }
 
-  void requestPermission() async {
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-    NotificationSettings settings = await messaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+  // void requestPermission() async {
+  //   FirebaseMessaging messaging = FirebaseMessaging.instance;
+  //   NotificationSettings settings = await messaging.requestPermission(
+  //     alert: true,
+  //     badge: true,
+  //     sound: true,
+  //   );
 
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      debugPrint('User granted permission');
-    } else if (settings.authorizationStatus ==
-        AuthorizationStatus.provisional) {
-      debugPrint('User granted provisional permission');
-    } else {
-      debugPrint('User declined or has not accepted permission');
-    }
-  }
+  //   if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+  //     debugPrint('User granted permission');
+  //   } else if (settings.authorizationStatus ==
+  //       AuthorizationStatus.provisional) {
+  //     debugPrint('User granted provisional permission');
+  //   } else {
+  //     debugPrint('User declined or has not accepted permission');
+  //   }
+  // }
 
   void getToken() async {
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-    String? token = await messaging.getToken();
-    notificationToken = token;
-    debugPrint("FCM Token: $notificationToken");
+    notificationToken = await FirebaseMessagingService.getToken();
   }
 
   Future<void> savecredential() async {
@@ -211,13 +210,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   btnHeading: "Sign In",
                   loading: authViewMode.loginResponse.status == Status.loading,
                   onTap: () {
+                    String platformType =
+                        FirebaseMessagingService().getPlatformType();
                     if (_formKey.currentState!.validate()) {
                       authViewMode.loginApi(
                           context: context,
                           email: emailController.text,
                           password: passwordController.text,
                           notificationToken: notificationToken ?? '',
-                          rememberMe: _rememberMe);
+                          rememberMe: _rememberMe,
+                          platformType: platformType);
                     }
                   },
                 ),

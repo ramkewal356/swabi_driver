@@ -50,12 +50,15 @@ class AuthViewModel with ChangeNotifier {
       required String email,
       required String password,
       required String notificationToken,
-      required bool rememberMe}) async {
+    required bool rememberMe,
+    required String platformType,
+  }) async {
     Map<String, String> data = {
       'email': email,
       'password': password,
-      'notificationToken': notificationToken,
-      'userType': 'DRIVER'
+      'userType': "DRIVER",
+      "notificationToken": notificationToken,
+      "TokenType": platformType
     };
 
     try {

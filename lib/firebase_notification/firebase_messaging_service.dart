@@ -1,125 +1,142 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+
 
 class FirebaseMessagingService {
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
-  FlutterLocalNotificationsPlugin? flutterLocalNotificationsPlugin;
+  static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  static final FlutterLocalNotificationsPlugin _localNotifications =
+      FlutterLocalNotificationsPlugin();
 
-  BuildContext? context;
-
-  Future<String?> getToken() async {
-    return await _firebaseMessaging.getToken();
+  /// Initialize Notification
+  static Future<void> initialize(GlobalKey<NavigatorState> navigatorKey) async {
+    await _requestPermission();
+    await _initLocalNotification(navigatorKey);
+    _firebaseListeners(navigatorKey);
   }
 
-  Future<void> setupFirebase(BuildContext contextRef,
-      {Function(bool)? notificationCallback}) async {
-    context = context;
-    _getDeviceToken();
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      debugPrint('Got a message whilst in the foreground!');
-      debugPrint('Message data: ${message.data}');
-      debugPrint(
-          'Message data notification body: ${message.notification?.body}');
-      if (notificationCallback != null) {
-        notificationCallback(true);
-      }
-      showNotificationWithDefaultSound("${message.notification?.title}",
-          "${message.notification?.body}", message);
-
-      debugPrint(
-          'Message also contained a notification: ${message.notification?.toMap()}');
-      // }
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      debugPrint("objectobjectobjectobject  ${message.data}");
-
-      Map<String, dynamic> mapData = {
-        ...message.data,
-      };
-
-      dynamic senderGData = json.decode(mapData['sender']);
-      debugPrint("mapData['sender']['_id'] ${senderGData["_id"]}");
-
-      debugPrint('A new onMessageOpenedApp event was published!');
-    });
+  /// Request permission
+  static Future<void> _requestPermission() async {
+    await _messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
   }
 
-  Future<String> _getDeviceToken() async {
-    String? deviceToken;
-    // if (Platform.operatingSystem == "ios") {
-    //   _deviceToken = await FirebaseMessaging.instance.getAPNSToken();
-    // } else {
-    //   _deviceToken = await FirebaseMessaging.instance.getToken();
-    // }
-    deviceToken = await FirebaseMessaging.instance.getToken();
+  /// Local notification initialization with customized design & click handler
+  static Future<void> _initLocalNotification(
+      GlobalKey<NavigatorState> navigatorKey) async {
+    // Here you can set up your custom template/styles, channels, etc.
+    const AndroidInitializationSettings androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    if (deviceToken != null) {
-      debugPrint('--------Device Token---------- $deviceToken');
+    final InitializationSettings settings = InitializationSettings(
+      android: androidSettings,
+    );
+    // On notification tap (when app in foreground/background)
+    await _localNotifications.initialize(
+      settings: settings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        if (response.payload != null) {
+          _handleNotificationTap(response.payload!, navigatorKey);
+        }
+      },
+    );
+  }
+
+  /// Get FCM Token
+  static Future<String?> getToken() async {
+    String? token = await _messaging.getToken();
+    debugPrint("FCM Token: $token");
+    return token;
+  }
+
+  String getPlatformType() {
+    if (kIsWeb) {
+      return "WEB";
+    } else if (Platform.isAndroid) {
+      return "ANDROID";
+    } else if (Platform.isIOS) {
+      return "IOS";
+    } else {
+      return "UNKNOWN";
     }
-    return deviceToken == "" ? "simulatorlogin" : deviceToken ?? "dummyToken";
   }
 
-  Future<void> setupLocalNotification() async {
-    debugPrint("LocalNotification initi");
-    // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
-    // If you have skipped STEP 3 then change app_icon to @mipmap/ic_launcher
-    var initializationSettingsAndroid =
-        const AndroidInitializationSettings('@mipmap/ic_launcher');
-    var initializationSettingsIOS = const DarwinInitializationSettings();
-    var initializationSettings = InitializationSettings(
-        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
-    flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-    flutterLocalNotificationsPlugin?.initialize(initializationSettings,
-        onDidReceiveNotificationResponse: (msg) {
-      Fluttertoast.showToast(msg: "Clicked");
+  /// Firebase listeners (foreground, background, notification tap)
+  static void _firebaseListeners(GlobalKey<NavigatorState> navigatorKey) {
+    // Foreground
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      _showNotification(message);
+    });
 
-      debugPrint("msg: $msg, notificationId ${msg.payload}");
-      if (msg.payload == null) {
-        Fluttertoast.showToast(msg: "Somthing went wrong");
-        return;
+    // When app is already opened by clicking notification
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      if (message.data.isNotEmpty) {
+        // Pass your payload to handler
+        _handleNotificationTap(json.encode(message.data), navigatorKey);
       }
-      RemoteMessage remoteMessage =
-          RemoteMessage.fromMap(json.decode(msg.payload!));
-
-      Map<String, dynamic> mapData = {
-        ...remoteMessage.data,
-      };
-
-      dynamic senderGData = json.decode(mapData['sender']);
-      debugPrint("mapData['sender']['_id'] ${senderGData["_id"]}");
-
-    
-    }).then((value) {
-      debugPrint("initilize $value");
+      debugPrint("Notification Clicked: ${message.data}");
     });
   }
 
-  Future showNotificationWithDefaultSound(
-      String title, String body, RemoteMessage remoteMessage) async {
-    var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
-      'your channel id',
-      'your channel name',
-      channelDescription: 'your channel description',
+  /// Show local notification with payload & custom design
+  static Future<void> _showNotification(RemoteMessage message) async {
+    // You can extract the payload (data) here
+    final payload = json.encode(message.data);
+
+    // Here you can customize the notification appearance more if needed
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+      'default_channel',
+      'Default',
+      channelDescription: 'Default notifications',
       importance: Importance.max,
       priority: Priority.high,
+
+      // Examples of further customization:
+      // styleInformation: BigTextStyleInformation(''), // show large text
+      // icon: '@mipmap/ic_notification', // Use different icon
+      // color: Colors.green, // Color for notification
     );
-    // var iOSPlatformChannelSpecifics = new IOSNotificationDetail;
-    var iOSPlatformChannelSpecifics =
-        const DarwinNotificationDetails(presentAlert: true);
-    var platformChannelSpecifics = NotificationDetails(
-        android: androidPlatformChannelSpecifics,
-        iOS: iOSPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin!.show(
-      0,
-      title,
-      body,
-      platformChannelSpecifics,
-      payload: json.encode(remoteMessage.toMap()),
+
+    const NotificationDetails details =
+        NotificationDetails(android: androidDetails);
+
+    await _localNotifications.show(
+      id: 0,
+      title: message.notification?.title ?? 'New Notification',
+      body: message.notification?.body ?? '',
+      notificationDetails: details,
+      payload: payload, // pass the payload as String
     );
+  }
+
+  /// Handle notification tap: open the app and navigate based on payload
+  static void _handleNotificationTap(
+      String payload, GlobalKey<NavigatorState> navigatorKey) {
+    try {
+      final data = json.decode(payload);
+      // For example, use the payload to route user:
+      // Here you can switch based on data fields
+      // This assumes you have named routes set up.
+
+      // Example: If your payload has a 'screen' property, navigate there
+      var screen = data['screen'];
+      if (screen != null && navigatorKey.currentState != null) {
+        navigatorKey.currentState!.pushNamed(screen, arguments: data);
+      } else {
+        // Default behaviour: just open home
+        navigatorKey.currentState?.pushNamed('/');
+      }
+    } catch (e) {
+      // If decode fails, fallback to home
+      navigatorKey.currentState?.pushNamed('/');
+    }
   }
 }
